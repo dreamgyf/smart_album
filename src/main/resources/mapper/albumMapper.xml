@@ -7,18 +7,18 @@
 
     <insert id="insert" parameterType="com.newbee.smart_album.entity.Album">
         insert into album (name,user_id,cover,create_time,last_edit_time,description,is_default_album,photo_amount)
-         VALUES (#{name},#{user_id},#{cover},#{create_time},#{last_edit_time},#{description},#{is_default_album},#{photo_amount})
+         VALUES (#{name},#{userId},#{cover},#{createTime},#{lastEditTime},#{description},#{isDefaultAlbum},#{photoAmount})
     </insert>
 
     <select id="selectDefaultAlbumIdByUserId" resultType="com.newbee.smart_album.entity.Album">
-        select album_id from album where user_id=#{user_id} and name='default_album'
+        select album_id from album where user_id=#{userId} and name='default_album'
     </select>
 
     <update id="updatePhotoAmountById">
-        update album set photo_amount=photo_amount+#{amount} where album_id=#{album_id}
+        update album set photo_amount=photo_amount+#{amount} where album_id=#{albumId}
     </update>
 
     <update id="updateLastEditTimeById">
-        update album set last_edit_time=#{time} where album_id=#{album_id}
+        update album set last_edit_time=#{time} where album_id=#{albumId}
     </update>
 </mapper>

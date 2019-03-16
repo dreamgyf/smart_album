@@ -7,5 +7,5 @@ public interface PhotoMapper {
 
     void insert(Photo photo);
 
-    Photo selectAllByPhotoId(@Param("photo_id") int photo_id);
+    Photo selectAllByPhotoId(@Param("photoId") int photoId);
 }

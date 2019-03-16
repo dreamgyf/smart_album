@@ -7,11 +7,11 @@
 
     <insert id="insert" parameterType="com.newbee.smart_album.entity.Photo">
         insert into photo (name,suffix,path,description,information,user_id,album_id,likes,is_public,size,width,height,in_recycle_bin,original_time)
-         VALUES (#{name},#{suffix},#{path},#{description},#{information},#{user_id},#{album_id},#{likes},#{is_public},#{size},#{width},#{height},#{in_recycle_bin},#{original_time})
+         VALUES (#{name},#{suffix},#{path},#{description},#{information},#{userId},#{albumId},#{likes},#{isPublic},#{size},#{width},#{height},#{inRecycleBin},#{originalTime})
     </insert>
 
     <select id="selectAllByPhotoId" resultType="com.newbee.smart_album.entity.Photo">
         select photo_id,name,suffix,path,description,information,user_id,album_id,likes,is_public,size,width,height,in_recycle_bin,original_time
-        from photo where photo_id=#{photo_id}
+        from photo where photo_id=#{photoId}
     </select>
 </mapper>

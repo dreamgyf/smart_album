@@ -43,24 +43,24 @@ public class UserServiceImpl implements UserService {
         user.setAvatar(photoTool.default_avatar_file);
         user.setSignature("");
         user.setNickname(username);//默认用户名为昵称
-        user.setStore_space((long)1024 * 1024 * 1024 * 5);//默认5GB可用空间
-        user.setUsed_space(0);
-        user.setPhoto_amount(0);
+        user.setStoreSpace((long)1024 * 1024 * 1024 * 5);//默认5GB可用空间
+        user.setUsedSpace(0);
+        user.setPhotoAmount(0);
         //向数据库写入用户信息
         userMapper.insert(user);
         //获取用户ID
         User user_return = userMapper.selectBaseInfoByUsernameOrEmail(username);
-        int user_id = user_return.getUser_id();
+        int user_id = user_return.getUserId();
         Album album = new Album();
-        album.setUser_id(user_id);
+        album.setUserId(user_id);
         album.setName("default_album");
         album.setCover(photoTool.default_cover_file);
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        album.setCreate_time(timestamp);
-        album.setLast_edit_time(timestamp);
+        album.setCreateTime(timestamp);
+        album.setLastEditTime(timestamp);
         album.setDescription("");
-        album.setIs_default_album(1);
-        album.setPhoto_amount(0);
+        album.setIsDefaultAlbum(1);
+        album.setPhotoAmount(0);
         //向数据库写入默认相册信息
         albumMapper.insert(album);
         return "ok";//成功
@@ -75,7 +75,7 @@ public class UserServiceImpl implements UserService {
         else if(!user.getPassword().equals(password_md5))
             return "wrong password";//密码错误
         else
-            return String.valueOf(user.getUser_id());
+            return String.valueOf(user.getUserId());
     }
 
     @Override

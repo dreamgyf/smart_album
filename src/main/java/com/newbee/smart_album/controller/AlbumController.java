@@ -4,6 +4,7 @@ import com.newbee.smart_album.service.AlbumService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,7 +18,7 @@ public class AlbumController {
     @Autowired
     private AlbumService albumService;
 
-    @RequestMapping(value = "/create.do")
+    @RequestMapping(value = "/create.do",method = RequestMethod.POST)
     public Map<String,String> create(@RequestBody Map<String,Object> map, HttpServletRequest request)
     {
         Object user_id_object = request.getSession().getAttribute("user_id");

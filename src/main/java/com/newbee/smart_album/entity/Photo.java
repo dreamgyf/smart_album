@@ -4,7 +4,7 @@ import java.sql.Timestamp;
 
 public class Photo {
 
-    private int photo_id;
+    private int photoId;
 
     private String name;
 
@@ -16,13 +16,13 @@ public class Photo {
 
     private String information;
 
-    private int user_id;
+    private int userId;
 
-    private int album_id;
+    private int albumId;
 
     private int likes;
 
-    private int is_public;
+    private int isPublic;
 
     private long size;
 
@@ -30,24 +30,16 @@ public class Photo {
 
     private int height;
 
-    private int in_recycle_bin;
+    private int inRecycleBin;
 
-    private Timestamp original_time;
+    private Timestamp originalTime;
 
-    public Timestamp getOriginal_time() {
-        return original_time;
+    public int getPhotoId() {
+        return photoId;
     }
 
-    public void setOriginal_time(Timestamp original_time) {
-        this.original_time = original_time;
-    }
-
-    public int getPhoto_id() {
-        return photo_id;
-    }
-
-    public void setPhoto_id(int photo_id) {
-        this.photo_id = photo_id;
+    public void setPhotoId(int photoId) {
+        this.photoId = photoId;
     }
 
     public String getName() {
@@ -90,20 +82,20 @@ public class Photo {
         this.information = information;
     }
 
-    public int getUser_id() {
-        return user_id;
+    public int getUserId() {
+        return userId;
     }
 
-    public void setUser_id(int user_id) {
-        this.user_id = user_id;
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
-    public int getAlbum_id() {
-        return album_id;
+    public int getAlbumId() {
+        return albumId;
     }
 
-    public void setAlbum_id(int album_id) {
-        this.album_id = album_id;
+    public void setAlbumId(int albumId) {
+        this.albumId = albumId;
     }
 
     public int getLikes() {
@@ -114,12 +106,12 @@ public class Photo {
         this.likes = likes;
     }
 
-    public int getIs_public() {
-        return is_public;
+    public int getIsPublic() {
+        return isPublic;
     }
 
-    public void setIs_public(int is_public) {
-        this.is_public = is_public;
+    public void setIsPublic(int isPublic) {
+        this.isPublic = isPublic;
     }
 
     public long getSize() {
@@ -146,11 +138,19 @@ public class Photo {
         this.height = height;
     }
 
-    public int getIn_recycle_bin() {
-        return in_recycle_bin;
+    public int getInRecycleBin() {
+        return inRecycleBin;
     }
 
-    public void setIn_recycle_bin(int in_recycle_bin) {
-        this.in_recycle_bin = in_recycle_bin;
+    public void setInRecycleBin(int inRecycleBin) {
+        this.inRecycleBin = inRecycleBin;
+    }
+
+    public Timestamp getOriginalTime() {
+        return originalTime;
+    }
+
+    public void setOriginalTime(Timestamp originalTime) {
+        this.originalTime = originalTime;
     }
 }

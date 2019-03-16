@@ -1,7 +1,7 @@
 package com.newbee.smart_album.entity;
 
 public class User {
-    private int user_id;
+    private int userId;
 
     private String username;
 
@@ -17,18 +17,18 @@ public class User {
 
     private String nickname;//昵称
 
-    private long store_space;//总存储空间大小
+    private long storeSpace;//总存储空间大小
 
-    private long used_space;//已使用空间大小
+    private long usedSpace;//已使用空间大小
 
-    private int photo_amount;
+    private int photoAmount;
 
-    public int getUser_id() {
-        return user_id;
+    public int getUserId() {
+        return userId;
     }
 
-    public void setUser_id(int user_id) {
-        this.user_id = user_id;
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
     public String getUsername() {
@@ -87,27 +87,27 @@ public class User {
         this.nickname = nickname;
     }
 
-    public long getStore_space() {
-        return store_space;
+    public long getStoreSpace() {
+        return storeSpace;
     }
 
-    public void setStore_space(long store_space) {
-        this.store_space = store_space;
+    public void setStoreSpace(long storeSpace) {
+        this.storeSpace = storeSpace;
     }
 
-    public long getUsed_space() {
-        return used_space;
+    public long getUsedSpace() {
+        return usedSpace;
     }
 
-    public void setUsed_space(long used_space) {
-        this.used_space = used_space;
+    public void setUsedSpace(long usedSpace) {
+        this.usedSpace = usedSpace;
     }
 
-    public int getPhoto_amount() {
-        return photo_amount;
+    public int getPhotoAmount() {
+        return photoAmount;
     }
 
-    public void setPhoto_amount(int photo_amount) {
-        this.photo_amount = photo_amount;
+    public void setPhotoAmount(int photoAmount) {
+        this.photoAmount = photoAmount;
     }
 }

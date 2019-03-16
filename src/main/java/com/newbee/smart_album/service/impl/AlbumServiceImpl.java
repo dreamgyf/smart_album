@@ -23,17 +23,17 @@ public class AlbumServiceImpl implements AlbumService {
     public String create(String name, int user_id, String description) {
         Album album = new Album();
         album.setName(name);
-        album.setUser_id(user_id);
+        album.setUserId(user_id);
         album.setCover(photoTool.default_cover_file);
         if(description != null)
             album.setDescription(description);
         else
             album.setDescription("");
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        album.setCreate_time(timestamp);
-        album.setLast_edit_time(timestamp);
-        album.setIs_default_album(0);
-        album.setPhoto_amount(0);
+        album.setCreateTime(timestamp);
+        album.setLastEditTime(timestamp);
+        album.setIsDefaultAlbum(0);
+        album.setPhotoAmount(0);
         albumMapper.insert(album);
         return "ok";
     }

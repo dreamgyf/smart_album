@@ -7,7 +7,7 @@
 
     <insert id="insert" parameterType="com.newbee.smart_album.entity.User">
         insert into user (username,password,email,gender,avatar,signature,nickname,store_space,used_space,photo_amount)
-        values (#{username},#{password},#{email},#{gender},#{avatar},#{signature},#{nickname},#{store_space},#{used_space},#{photo_amount})
+        values (#{username},#{password},#{email},#{gender},#{avatar},#{signature},#{nickname},#{storeSpace},#{usedSpace},#{photoAmount})
     </insert>
 
     <select id="selectBaseInfoByUsernameOrEmail" resultType="com.newbee.smart_album.entity.User">
@@ -16,7 +16,7 @@
 
     <select id="selectAllByUserId" resultType="com.newbee.smart_album.entity.User">
         select user_id,username,password,email,gender,avatar,signature,nickname,store_space,used_space
-        from user where user_id=#{user_id}
+        from user where user_id=#{userId}
     </select>
 
     <select id="selectExistByUsername" resultType="INTEGER">
@@ -28,11 +28,11 @@
     </select>
 
     <update id="updateUsedSpaceById">
-        update user set used_space=used_space+#{size} where user_id=#{user_id}
+        update user set used_space=used_space+#{size} where user_id=#{userId}
     </update>
 
     <update id="updatePhotoAmountById">
-        update user set photo_amount=photo_amount+#{amount} where user_id=#{user_id}
+        update user set photo_amount=photo_amount+#{amount} where user_id=#{userId}
     </update>
 
 </mapper>

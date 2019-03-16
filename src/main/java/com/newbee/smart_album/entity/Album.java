@@ -4,30 +4,30 @@ import java.sql.Timestamp;
 
 public class Album {
 
-    private Integer album_id;
+    private Integer albumId;
 
     private String name;
 
-    private Integer user_id;
+    private Integer userId;
 
     private String cover;
 
-    private Timestamp create_time;
+    private Timestamp createTime;
 
-    private Timestamp last_edit_time;
+    private Timestamp lastEditTime;
 
     private String description;
 
-    private int is_default_album;
+    private int isDefaultAlbum;
 
-    private int photo_amount;
+    private int photoAmount;
 
-    public Integer getAlbum_id() {
-        return album_id;
+    public Integer getAlbumId() {
+        return albumId;
     }
 
-    public void setAlbum_id(Integer album_id) {
-        this.album_id = album_id;
+    public void setAlbumId(Integer albumId) {
+        this.albumId = albumId;
     }
 
     public String getName() {
@@ -38,12 +38,12 @@ public class Album {
         this.name = name;
     }
 
-    public Integer getUser_id() {
-        return user_id;
+    public Integer getUserId() {
+        return userId;
     }
 
-    public void setUser_id(Integer user_id) {
-        this.user_id = user_id;
+    public void setUserId(Integer userId) {
+        this.userId = userId;
     }
 
     public String getCover() {
@@ -54,20 +54,20 @@ public class Album {
         this.cover = cover;
     }
 
-    public Timestamp getCreate_time() {
-        return create_time;
+    public Timestamp getCreateTime() {
+        return createTime;
     }
 
-    public void setCreate_time(Timestamp create_time) {
-        this.create_time = create_time;
+    public void setCreateTime(Timestamp createTime) {
+        this.createTime = createTime;
     }
 
-    public Timestamp getLast_edit_time() {
-        return last_edit_time;
+    public Timestamp getLastEditTime() {
+        return lastEditTime;
     }
 
-    public void setLast_edit_time(Timestamp last_edit_time) {
-        this.last_edit_time = last_edit_time;
+    public void setLastEditTime(Timestamp lastEditTime) {
+        this.lastEditTime = lastEditTime;
     }
 
     public String getDescription() {
@@ -78,19 +78,19 @@ public class Album {
         this.description = description;
     }
 
-    public int getIs_default_album() {
-        return is_default_album;
+    public int getIsDefaultAlbum() {
+        return isDefaultAlbum;
     }
 
-    public void setIs_default_album(int is_default_album) {
-        this.is_default_album = is_default_album;
+    public void setIsDefaultAlbum(int isDefaultAlbum) {
+        this.isDefaultAlbum = isDefaultAlbum;
     }
 
-    public int getPhoto_amount() {
-        return photo_amount;
+    public int getPhotoAmount() {
+        return photoAmount;
     }
 
-    public void setPhoto_amount(int photo_amount) {
-        this.photo_amount = photo_amount;
+    public void setPhotoAmount(int photoAmount) {
+        this.photoAmount = photoAmount;
     }
 }

@@ -58,7 +58,7 @@ public class UserController {
             int user_id = Integer.parseInt(user_id_object.toString());
             User user = userService.getUserDataByUserId(user_id);
             Map<String,Object> map = new HashMap<>();
-            map.put("user_id",user.getUser_id());
+            map.put("user_id",user.getUserId());
             map.put("username",user.getUsername());
             map.put("email",user.getEmail());
             map.put("gender",user.getGender());

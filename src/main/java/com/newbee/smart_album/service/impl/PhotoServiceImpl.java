@@ -96,7 +96,7 @@ public class PhotoServiceImpl implements PhotoService {
                         map.put(tag.getTagName(),tag.getDescription());
                         if(tag.getTagName().equals("Date/Time Original"))
                         {
-                            photo.setOriginal_time(photoTool.exifTimeToTimestamp(tag.getDescription()));
+                            photo.setOriginalTime(photoTool.exifTimeToTimestamp(tag.getDescription()));
                         }
                     }
                 }
@@ -126,16 +126,16 @@ public class PhotoServiceImpl implements PhotoService {
 //        }
         photo.setWidth(image.getWidth());
         photo.setHeight(image.getHeight());
-        photo.setUser_id(user_id);
+        photo.setUserId(user_id);
         if(description != null)
             photo.setDescription(description);
         else
             photo.setDescription("");
         photo.setLikes(0);
         Album album = albumMapper.selectDefaultAlbumIdByUserId(user_id);
-        photo.setAlbum_id(album.getAlbum_id());
-        photo.setIs_public(isPublic);
-        photo.setIn_recycle_bin(0);
+        photo.setAlbumId(album.getAlbumId());
+        photo.setIsPublic(isPublic);
+        photo.setInRecycleBin(0);
         photo.setPath(upload_path + "/" + uuid_name);
         //将photo对象写入数据库
         photoMapper.insert(photo);
@@ -144,8 +144,8 @@ public class PhotoServiceImpl implements PhotoService {
         //更新用户照片数量
         userMapper.updatePhotoAmountById(user_id,1);
         //更新相册信息
-        albumMapper.updatePhotoAmountById(album.getAlbum_id(),1);
-        albumMapper.updateLastEditTimeById(album.getAlbum_id(),new Timestamp(System.currentTimeMillis()));
+        albumMapper.updatePhotoAmountById(album.getAlbumId(),1);
+        albumMapper.updateLastEditTimeById(album.getAlbumId(),new Timestamp(System.currentTimeMillis()));
         return "ok";//成功
     }
 
@@ -216,7 +216,7 @@ public class PhotoServiceImpl implements PhotoService {
                             map.put(tag.getTagName(),tag.getDescription());
                             if(tag.getTagName().equals("Date/Time Original"))
                             {
-                                photo.setOriginal_time(photoTool.exifTimeToTimestamp(tag.getDescription()));
+                                photo.setOriginalTime(photoTool.exifTimeToTimestamp(tag.getDescription()));
                             }
                         }
                     }
@@ -229,11 +229,11 @@ public class PhotoServiceImpl implements PhotoService {
             }
             photo.setWidth(image.getWidth());
             photo.setHeight(image.getHeight());
-            photo.setUser_id(user_id);
+            photo.setUserId(user_id);
             photo.setLikes(0);
             Album album = albumMapper.selectDefaultAlbumIdByUserId(user_id);
-            photo.setAlbum_id(album.getAlbum_id());
-            photo.setIn_recycle_bin(0);
+            photo.setAlbumId(album.getAlbumId());
+            photo.setInRecycleBin(0);
             photo.setPath(upload_path + "/" + user_id + "/" + uuid_name);
             photo.setDescription("");
             //将photo对象写入数据库
@@ -243,8 +243,8 @@ public class PhotoServiceImpl implements PhotoService {
             //更新照片数量
             userMapper.updatePhotoAmountById(user_id,1);
             //更新相册信息
-            albumMapper.updatePhotoAmountById(album.getAlbum_id(),1);
-            albumMapper.updateLastEditTimeById(album.getAlbum_id(),new Timestamp(System.currentTimeMillis()));
+            albumMapper.updatePhotoAmountById(album.getAlbumId(),1);
+            albumMapper.updateLastEditTimeById(album.getAlbumId(),new Timestamp(System.currentTimeMillis()));
             success_count++;//成功
         }
         Map<String,Object> result = new HashMap<>();

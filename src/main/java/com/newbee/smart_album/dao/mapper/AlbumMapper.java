@@ -9,9 +9,9 @@ public interface AlbumMapper {
 
     void insert(Album album);
 
-    Album selectDefaultAlbumIdByUserId(@Param("user_id") int user_id);
+    Album selectDefaultAlbumIdByUserId(@Param("userId") int userId);
 
-    void updatePhotoAmountById(@Param("album_id") int album_id,@Param("amount") int amount);
+    void updatePhotoAmountById(@Param("albumId") int albumId,@Param("amount") int amount);
 
-    void updateLastEditTimeById(@Param("album_id") int album_id, @Param("time")Timestamp time);
+    void updateLastEditTimeById(@Param("albumId") int albumId, @Param("time")Timestamp time);
 }
