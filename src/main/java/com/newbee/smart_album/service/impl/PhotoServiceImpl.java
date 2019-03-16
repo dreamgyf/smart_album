@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.newbee.smart_album.dao.mapper.AlbumMapper;
 import com.newbee.smart_album.dao.mapper.PhotoMapper;
 import com.newbee.smart_album.dao.mapper.UserMapper;
+import com.newbee.smart_album.entity.Album;
 import com.newbee.smart_album.entity.Photo;
 import com.newbee.smart_album.service.PhotoService;
 import com.newbee.smart_album.tools.PhotoTool;
@@ -23,6 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URLEncoder;
+import java.sql.Timestamp;
 import java.util.*;
 
 @Service
@@ -44,7 +46,7 @@ public class PhotoServiceImpl implements PhotoService {
     private UserMapper userMapper;
 
     @Override
-    public String upload(int user_id,MultipartFile file,String name,String description,int is_public) throws IOException {
+    public String upload(int user_id,MultipartFile file,String name,String description,int isPublic) throws IOException {
         if(file == null)
             return "empty file error";//上传空文件时返回-1
         String fileName = file.getOriginalFilename();
@@ -105,6 +107,23 @@ public class PhotoServiceImpl implements PhotoService {
                 e.printStackTrace();
             }
         }
+//        else if(photoTool.is_png(suffix)) {
+//            try {
+//                Metadata metadata = ImageMetadataReader.readMetadata(upload_file);
+//                for (Directory directory : metadata.getDirectories())
+//                {
+//                    for (Tag tag : directory.getTags())
+//                    {
+//                        if(tag.getTagName().equals("File Modified Date"))
+//                        {
+//                            photo.setOriginal_time(photoTool.pngTimeToTimestamp(tag.getDescription()));
+//                        }
+//                    }
+//                }
+//            } catch (ImageProcessingException e) {
+//                e.printStackTrace();
+//            }
+//        }
         photo.setWidth(image.getWidth());
         photo.setHeight(image.getHeight());
         photo.setUser_id(user_id);
@@ -113,16 +132,20 @@ public class PhotoServiceImpl implements PhotoService {
         else
             photo.setDescription("");
         photo.setLikes(0);
-        photo.setAlbum_id(albumMapper.selectDefaultAlbumIdByUserId(user_id).getAlbum_id());
-        photo.setIs_public(is_public);
+        Album album = albumMapper.selectDefaultAlbumIdByUserId(user_id);
+        photo.setAlbum_id(album.getAlbum_id());
+        photo.setIs_public(isPublic);
         photo.setIn_recycle_bin(0);
         photo.setPath(upload_path + "/" + uuid_name);
         //将photo对象写入数据库
         photoMapper.insert(photo);
         //更新已用空间
-        userMapper.updateUsedSpace(file_size_B);
-        //更新照片数量
-        userMapper.updatePhotoAmount(1);
+        userMapper.updateUsedSpaceById(user_id,file_size_B);
+        //更新用户照片数量
+        userMapper.updatePhotoAmountById(user_id,1);
+        //更新相册信息
+        albumMapper.updatePhotoAmountById(album.getAlbum_id(),1);
+        albumMapper.updateLastEditTimeById(album.getAlbum_id(),new Timestamp(System.currentTimeMillis()));
         return "ok";//成功
     }
 
@@ -208,16 +231,20 @@ public class PhotoServiceImpl implements PhotoService {
             photo.setHeight(image.getHeight());
             photo.setUser_id(user_id);
             photo.setLikes(0);
-            photo.setAlbum_id(albumMapper.selectDefaultAlbumIdByUserId(user_id).getAlbum_id());
+            Album album = albumMapper.selectDefaultAlbumIdByUserId(user_id);
+            photo.setAlbum_id(album.getAlbum_id());
             photo.setIn_recycle_bin(0);
             photo.setPath(upload_path + "/" + user_id + "/" + uuid_name);
             photo.setDescription("");
             //将photo对象写入数据库
             photoMapper.insert(photo);
             //更新已用空间
-            userMapper.updateUsedSpace(file_size_B);
+            userMapper.updateUsedSpaceById(user_id,file_size_B);
             //更新照片数量
-            userMapper.updatePhotoAmount(1);
+            userMapper.updatePhotoAmountById(user_id,1);
+            //更新相册信息
+            albumMapper.updatePhotoAmountById(album.getAlbum_id(),1);
+            albumMapper.updateLastEditTimeById(album.getAlbum_id(),new Timestamp(System.currentTimeMillis()));
             success_count++;//成功
         }
         Map<String,Object> result = new HashMap<>();
@@ -292,7 +319,7 @@ public class PhotoServiceImpl implements PhotoService {
         response.setHeader("content-type","application/octet-stream");
         response.setContentType("application/octet-stream");
         try {
-            response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode("批量下载.zip", "UTF-8"));
+            response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode("download.zip", "UTF-8"));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }

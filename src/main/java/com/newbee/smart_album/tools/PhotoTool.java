@@ -49,4 +49,21 @@ public class PhotoTool {
         Timestamp timestamp = Timestamp.valueOf(date + " " + time);
         return timestamp;
     }
+
+//    public Timestamp pngTimeToTimestamp(String png_time)
+//    {
+//        String year = png_time.substring(png_time.lastIndexOf(" ") + 1);
+//        int temp = png_time.indexOf(" ");
+//        png_time = png_time.substring(temp + 1);
+//        temp = png_time.indexOf("月");
+//        String mouth = png_time.substring(0,temp);
+//        png_time = png_time.substring(temp + 2);
+//        temp = png_time.indexOf(" ");
+//        String day = png_time.substring(0,temp);
+//        png_time = png_time.substring(temp + 1);
+//        temp = png_time.indexOf(" ");
+//        String time = png_time.substring(0,temp);
+//        String fullTime = year + "-" + mouth + "-" + day + " " + time;
+//        return Timestamp.valueOf(fullTime);
+//    }
 }

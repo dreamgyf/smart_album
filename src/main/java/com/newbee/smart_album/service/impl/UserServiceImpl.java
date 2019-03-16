@@ -60,6 +60,7 @@ public class UserServiceImpl implements UserService {
         album.setLast_edit_time(timestamp);
         album.setDescription("");
         album.setIs_default_album(1);
+        album.setPhoto_amount(0);
         //向数据库写入默认相册信息
         albumMapper.insert(album);
         return "ok";//成功

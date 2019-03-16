@@ -27,12 +27,12 @@
         select 1 from user where email=#{email} limit 1
     </select>
 
-    <update id="updateUsedSpace">
-        update user set used_space=used_space+#{size}
+    <update id="updateUsedSpaceById">
+        update user set used_space=used_space+#{size} where user_id=#{user_id}
     </update>
 
-    <update id="updatePhotoAmount">
-        update user set photo_amount=photo_amount+#{amount}
+    <update id="updatePhotoAmountById">
+        update user set photo_amount=photo_amount+#{amount} where user_id=#{user_id}
     </update>
 
 </mapper>

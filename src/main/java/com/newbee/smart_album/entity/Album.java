@@ -20,6 +20,8 @@ public class Album {
 
     private int is_default_album;
 
+    private int photo_amount;
+
     public Integer getAlbum_id() {
         return album_id;
     }
@@ -82,5 +84,13 @@ public class Album {
 
     public void setIs_default_album(int is_default_album) {
         this.is_default_album = is_default_album;
+    }
+
+    public int getPhoto_amount() {
+        return photo_amount;
+    }
+
+    public void setPhoto_amount(int photo_amount) {
+        this.photo_amount = photo_amount;
     }
 }

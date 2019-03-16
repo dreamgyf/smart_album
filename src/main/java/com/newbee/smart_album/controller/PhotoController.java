@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/photo")
 public class PhotoController {
 
     @Autowired
@@ -23,12 +23,12 @@ public class PhotoController {
     public Map<String, Object> upload(@RequestParam MultipartFile file,
                                       @RequestParam(required = false) String name,
                                       @RequestParam(required = false) String description,
-                                      @RequestParam int is_public,
+                                      @RequestParam int isPublic,
                                       HttpServletRequest request) throws IOException {
         Object user_id_object = request.getSession().getAttribute("user_id");
         int user_id = Integer.parseInt(user_id_object.toString());
         Map<String,Object> map_return = new HashMap<>();
-        map_return.put("state",photoService.upload(user_id,file,name,description,is_public));
+        map_return.put("state",photoService.upload(user_id,file,name,description,isPublic));
         return map_return;
     }
 
@@ -40,8 +40,8 @@ public class PhotoController {
         return photoService.uploads(user_id,files);
     }
 
-    @RequestMapping(value = "/downloadPhotos.do",method = RequestMethod.POST)
-    public void downloadPhotos(@RequestBody List<Map<String, Integer>> listmap, HttpServletResponse response)
+    @RequestMapping(value = "/downloads.do",method = RequestMethod.POST)
+    public void downloads(@RequestBody List<Map<String, Integer>> listmap, HttpServletResponse response)
     {
         if(listmap.size() == 1)
             photoService.download(listmap.get(0).get("photo_id"),response);
