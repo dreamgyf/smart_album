@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.newbee.smart_album.dao.mapper.UserMapper">
+
+    <insert id="insert" parameterType="com.newbee.smart_album.entity.User">
+        insert into user (username,password,email,gender,avatar,signature,nickname,store_space,used_space,photo_amount)
+        values (#{username},#{password},#{email},#{gender},#{avatar},#{signature},#{nickname},#{store_space},#{used_space},#{photo_amount})
+    </insert>
+
+    <select id="selectBaseInfoByUsernameOrEmail" resultType="com.newbee.smart_album.entity.User">
+        select user_id,username,password from user where username=#{username} or email=#{username}
+    </select>
+
+    <select id="selectAllByUserId" resultType="com.newbee.smart_album.entity.User">
+        select user_id,username,password,email,gender,avatar,signature,nickname,store_space,used_space
+        from user where user_id=#{user_id}
+    </select>
+
+    <select id="selectExistByUsername" resultType="INTEGER">
+        select 1 from user where username=#{username} limit 1
+    </select>
+
+    <select id="selectExistByEmail" resultType="INTEGER">
+        select 1 from user where email=#{email} limit 1
+    </select>
+
+    <update id="updateUsedSpace">
+        update user set used_space=used_space+#{size}
+    </update>
+
+    <update id="updatePhotoAmount">
+        update user set photo_amount=photo_amount+#{amount}
+    </update>
+
+</mapper>
+

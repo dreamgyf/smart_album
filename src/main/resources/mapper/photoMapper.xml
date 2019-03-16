@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.newbee.smart_album.dao.mapper.PhotoMapper">
+
+    <insert id="insert" parameterType="com.newbee.smart_album.entity.Photo">
+        insert into photo (name,suffix,path,description,information,user_id,album_id,likes,is_public,size,width,height,in_recycle_bin,original_time)
+         VALUES (#{name},#{suffix},#{path},#{description},#{information},#{user_id},#{album_id},#{likes},#{is_public},#{size},#{width},#{height},#{in_recycle_bin},#{original_time})
+    </insert>
+
+    <select id="selectAllByPhotoId" resultType="com.newbee.smart_album.entity.Photo">
+        select photo_id,name,suffix,path,description,information,user_id,album_id,likes,is_public,size,width,height,in_recycle_bin,original_time
+        from photo where photo_id=#{photo_id}
+    </select>
+</mapper>
