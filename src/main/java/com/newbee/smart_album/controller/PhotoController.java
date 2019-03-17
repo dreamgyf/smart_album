@@ -28,7 +28,7 @@ public class PhotoController {
         Object user_id_object = request.getSession().getAttribute("user_id");
         int user_id = Integer.parseInt(user_id_object.toString());
         Map<String,Object> map_return = new HashMap<>();
-        map_return.put("state",photoService.upload(user_id,file,name,description,isPublic));
+        map_return.put("status",photoService.upload(user_id,file,name,description,isPublic));
         return map_return;
     }
 
