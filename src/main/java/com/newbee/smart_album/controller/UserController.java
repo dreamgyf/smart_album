@@ -24,40 +24,40 @@ public class UserController {
     @RequestMapping(value = "/register",method = RequestMethod.POST)
     public Map<String, Object> register(@RequestBody Map<String,String> map)
     {
-        Map<String,Object> map_return = new HashMap<>();
-        map_return.put("status",userService.register(map.get("username"),map.get("password"),map.get("email")));
-        return map_return;
+        Map<String,Object> mapReturn = new HashMap<>();
+        mapReturn.put("status",userService.register(map.get("username"),map.get("password"),map.get("email")));
+        return mapReturn;
     }
 
     @RequestMapping(value = "/login",method = RequestMethod.POST)
     public Map<String, Object> login(@RequestBody Map<String,String> map, HttpServletRequest request, HttpServletResponse response)
     {
-        String state = userService.login(map.get("username"),map.get("password"));
-        Map<String,Object> map_return = new HashMap<>();
-        if(!state.equals("username or email does not exist") && !state.equals("wrong password"))
+        String status = userService.login(map.get("username"),map.get("password"));
+        Map<String,Object> mapReturn = new HashMap<>();
+        if(!status.equals("username or email does not exist") && !status.equals("wrong password"))
         {
             HttpSession session = request.getSession();
-            session.setAttribute("user_id",Integer.parseInt(state));
-            map_return.put("status","ok");
-            return map_return;
+            session.setAttribute("userId",Integer.parseInt(status));
+            mapReturn.put("status","ok");
+            return mapReturn;
         }
         else
         {
-            map_return.put("status",state);
-            return map_return;
+            mapReturn.put("status",status);
+            return mapReturn;
         }
     }
 
     @RequestMapping(value = "/home")
     public Map<String,Object> home(HttpServletRequest request)
     {
-        Object user_id_object = request.getSession().getAttribute("user_id");
-        if(user_id_object != null)
+        Object userIdObject = request.getSession().getAttribute("userId");
+        if(userIdObject != null)
         {
-            int user_id = Integer.parseInt(user_id_object.toString());
-            User user = userService.getUserDataByUserId(user_id);
+            int userId = Integer.parseInt(userIdObject.toString());
+            User user = userService.getUserDataByUserId(userId);
             Map<String,Object> map = new HashMap<>();
-            map.put("user_id",user.getUserId());
+            map.put("userId",user.getUserId());
             map.put("username",user.getUsername());
             map.put("email",user.getEmail());
             map.put("gender",user.getGender());

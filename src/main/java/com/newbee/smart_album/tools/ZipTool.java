@@ -16,7 +16,7 @@ public class ZipTool {
     private PhotoTool photoTool;
 
     public String createZip(List<String> fileFullName,List<String> filePath) {
-        String zipPath = photoTool.temp_dir + UUID.randomUUID() + ".zip";
+        String zipPath = photoTool.TEMP_DIR + UUID.randomUUID() + ".zip";
         File zipFile = new File(zipPath);
         InputStream inputStream = null;
         ZipOutputStream zipOutputStream = null;

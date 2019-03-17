@@ -8,15 +8,15 @@ import java.util.List;
 import java.util.Map;
 
 public interface PhotoService {
-    String upload(int user_id,MultipartFile file,String name,String description,int is_public) throws IOException;
+    String upload(int userId,MultipartFile file,String name,String description,int isPublic) throws IOException;
 
-    Map<String,Object> uploads(int user_id, MultipartFile[] files) throws IOException;
+    Map<String,Object> uploads(int userId, MultipartFile[] files) throws IOException;
 
-    void download(int photo_id, HttpServletResponse response);
+    void download(int photoId, HttpServletResponse response);
 
-    void downloads(List<Map<String,Integer>> listmap,HttpServletResponse response);
+    void downloads(List<Integer> photos,HttpServletResponse response);
 
     String moveToRecycleBin(int userId,List<Integer> photos);
 
-    String edit(int photo_id,String name,String description,int album_id,int isPublic);
+    String edit(int photoId,String name,String description,int albumId,int isPublic);
 }

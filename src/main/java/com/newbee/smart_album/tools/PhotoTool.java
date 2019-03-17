@@ -7,19 +7,19 @@ import java.sql.Timestamp;
 @Component
 public class PhotoTool {
 
-    public static final String temp_dir = "/Users/gaoyunfeng/smart_album/temp/";
+    public static final String TEMP_DIR = "/Users/gaoyunfeng/smart_album/temp/";
 
-    public static final String upload_dir = "/Users/gaoyunfeng/smart_album/";
+    public static final String UPLOAD_DIR = "/Users/gaoyunfeng/smart_album/";
 
-    public static final String default_avatar_file = "/Users/gaoyunfeng/smart_album/avatar/default_avatar.png";
+    public static final String DEFAULT_AVATAR_FILE = "/Users/gaoyunfeng/smart_album/avatar/default_avatar.png";
 
-    public static final String default_cover_file = "/Users/gaoyunfeng/smart_album/cover/default_cover.png";
+    public static final String DEFAULT_COVER_FILE = "/Users/gaoyunfeng/smart_album/cover/default_cover.png";
 
-    private static final String[] allow_suffix = {"jpg","jpeg","png","bmp"};
+    private static final String[] ALLOW_SUFFIX = {"jpg","jpeg","png","bmp"};
 
     public boolean checkSuffix(String suffix)
     {
-        for(String c : allow_suffix)
+        for(String c : ALLOW_SUFFIX)
         {
             if(c.equals(suffix.toLowerCase()))
                 return true;
@@ -27,12 +27,9 @@ public class PhotoTool {
         return false;
     }
 
-    public boolean is_jpeg(String suffix)
+    public boolean isJpeg(String suffix)
     {
-        if("jpeg".equals(suffix.toLowerCase()) || "jpg".equals(suffix.toLowerCase()))
-            return true;
-        else
-            return false;
+        return ("jpeg".equals(suffix.toLowerCase()) || "jpg".equals(suffix.toLowerCase()));
     }
 
 //    public boolean is_png(String suffix)
@@ -40,14 +37,13 @@ public class PhotoTool {
 //        return "png".equals(suffix.toLowerCase());
 //    }
 
-    public Timestamp exifTimeToTimestamp(String exif_time)
+    public Timestamp exifTimeToTimestamp(String exifTime)
     {
-        int tag = exif_time.indexOf(" ");
-        String date = exif_time.substring(0,tag);
-        String time = exif_time.substring(tag + 1);
+        int tag = exifTime.indexOf(" ");
+        String date = exifTime.substring(0,tag);
+        String time = exifTime.substring(tag + 1);
         date = date.replace(":","-");
-        Timestamp timestamp = Timestamp.valueOf(date + " " + time);
-        return timestamp;
+        return Timestamp.valueOf(date + " " + time);
     }
 
 //    public Timestamp pngTimeToTimestamp(String png_time)

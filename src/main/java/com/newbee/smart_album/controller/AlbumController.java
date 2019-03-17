@@ -21,26 +21,26 @@ public class AlbumController {
     @RequestMapping(value = "/create",method = RequestMethod.POST)
     public Map<String,String> create(@RequestBody Map<String,String> map, HttpServletRequest request)
     {
-        Object user_id_object = request.getSession().getAttribute("user_id");
-        int user_id = Integer.parseInt(user_id_object.toString());
-        Map<String,String> map_return = new HashMap<>();
-        map_return.put("status",albumService.create(user_id,map.get("name"),map.get("description")));
-        return map_return;
+        Object userIdObject = request.getSession().getAttribute("userId");
+        int userId = Integer.parseInt(userIdObject.toString());
+        Map<String,String> mapReturn = new HashMap<>();
+        mapReturn.put("status",albumService.create(userId,map.get("name"),map.get("description")));
+        return mapReturn;
     }
 
     @RequestMapping(value = "/edit",method = RequestMethod.POST)
     public Map<String,String> edit(@RequestBody Map<String,Object> map)
     {
-        Map<String,String> map_return = new HashMap<>();
-        map_return.put("status",albumService.edit(Integer.parseInt(map.get("album_id").toString()),map.get("name").toString(),Integer.parseInt(map.get("photo_id").toString()),map.get("description").toString()));
-        return map_return;
+        Map<String,String> mapReturn = new HashMap<>();
+        mapReturn.put("status",albumService.edit(Integer.parseInt(map.get("albumId").toString()),map.get("name").toString(),Integer.parseInt(map.get("photoId").toString()),map.get("description").toString()));
+        return mapReturn;
     }
 
     @RequestMapping(value = "/delete",method = RequestMethod.POST)
     public Map<String,String> delete(@RequestBody Map<String,Object> map)
     {
-        Map<String,String> map_return = new HashMap<>();
-        map_return.put("status",albumService.delete(Integer.parseInt(map.get("album_id").toString())));
-        return map_return;
+        Map<String,String> mapReturn = new HashMap<>();
+        mapReturn.put("status",albumService.delete(Integer.parseInt(map.get("albumId").toString())));
+        return mapReturn;
     }
 }

@@ -26,54 +26,59 @@ public class PhotoController {
                                       @RequestParam(required = false) String description,
                                       @RequestParam int isPublic,
                                       HttpServletRequest request) throws IOException {
-        Object user_id_object = request.getSession().getAttribute("user_id");
-        int user_id = Integer.parseInt(user_id_object.toString());
-        Map<String,Object> map_return = new HashMap<>();
-        map_return.put("status",photoService.upload(user_id,file,name,description,isPublic));
-        return map_return;
+        Object userIdObject = request.getSession().getAttribute("userId");
+        int userId = Integer.parseInt(userIdObject.toString());
+        Map<String,Object> mapReturn = new HashMap<>();
+        mapReturn.put("status",photoService.upload(userId,file,name,description,isPublic));
+        return mapReturn;
     }
 
     @RequestMapping(value = "/uploads",method = RequestMethod.POST)
     public Map<String, Object> uploads(@RequestParam MultipartFile[] files,
                                       HttpServletRequest request) throws IOException {
-        Object user_id_object = request.getSession().getAttribute("user_id");
-        int user_id = Integer.parseInt(user_id_object.toString());
-        return photoService.uploads(user_id,files);
+        Object userIdObject = request.getSession().getAttribute("userId");
+        int userId = Integer.parseInt(userIdObject.toString());
+        return photoService.uploads(userId,files);
     }
 
     @RequestMapping(value = "/downloads",method = RequestMethod.POST)
-    public void downloads(@RequestBody List<Map<String, Integer>> listmap, HttpServletResponse response)
+    public void downloads(@RequestBody List<Map<String, Integer>> listMap, HttpServletResponse response)
     {
-        if(listmap.size() == 1)
-            photoService.download(listmap.get(0).get("photo_id"),response);
+        List<Integer> photos = new ArrayList<>();
+        for(Map<String, Integer> map : listMap)
+        {
+            photos.add(map.get("photoId"));
+        }
+        if(photos.size() == 1)
+            photoService.download(photos.get(0),response);
         else
         {
-            photoService.downloads(listmap,response);
+            photoService.downloads(photos,response);
         }
     }
 
     @RequestMapping(value = "/moveToRecycleBin",method = RequestMethod.POST)
-    public Map<String,String> moveToRecycleBin(@RequestBody List<Map<String, Integer>> listmap,HttpServletRequest request)
+    public Map<String,String> moveToRecycleBin(@RequestBody List<Map<String, Integer>> listMap,HttpServletRequest request)
     {
-        Object user_id_object = request.getSession().getAttribute("user_id");
-        int user_id = Integer.parseInt(user_id_object.toString());
+        Object userIdObject = request.getSession().getAttribute("userId");
+        int userId = Integer.parseInt(userIdObject.toString());
         List<Integer> photos = new ArrayList<>();
-        for(Map<String, Integer> map : listmap)
+        for(Map<String, Integer> map : listMap)
         {
-            photos.add(map.get("photo_id"));
+            photos.add(map.get("photoId"));
         }
-        Map<String,String> map_return = new HashMap<>();
-        map_return.put("status",photoService.moveToRecycleBin(user_id,photos));
-        return map_return;
+        Map<String,String> mapReturn = new HashMap<>();
+        mapReturn.put("status",photoService.moveToRecycleBin(userId,photos));
+        return mapReturn;
     }
 
     @RequestMapping(value = "/edit",method = RequestMethod.POST)
     public Map<String,String> edit(@RequestBody Map<String, Object> map)
     {
-        Map<String,String> map_return = new HashMap<>();
-        map_return.put("status",photoService.edit(Integer.parseInt(map.get("photo_id").toString()),
-                map.get("name").toString(),map.get("description").toString(),Integer.parseInt(map.get("album_id").toString()),
+        Map<String,String> mapReturn = new HashMap<>();
+        mapReturn.put("status",photoService.edit(Integer.parseInt(map.get("photoId").toString()),
+                map.get("name").toString(),map.get("description").toString(),Integer.parseInt(map.get("albumId").toString()),
                 Integer.parseInt(map.get("isPublic").toString())));
-        return map_return;
+        return mapReturn;
     }
 }

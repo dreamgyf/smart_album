@@ -33,14 +33,14 @@ public class UserServiceImpl implements UserService {
         if(userMapper.selectExistByEmail(email) != null)
             return "email has been registered";//邮箱已被注册
         //md5加密
-        String password_md5 = DigestUtils.md5DigestAsHex(password.getBytes());
+        String passwordMd5 = DigestUtils.md5DigestAsHex(password.getBytes());
         //创建User对象，准备写入数据库
         User user = new User();
         user.setUsername(username);
-        user.setPassword(password_md5);
+        user.setPassword(passwordMd5);
         user.setEmail(email);
         user.setGender(0);
-        user.setAvatar(photoTool.default_avatar_file);
+        user.setAvatar(photoTool.DEFAULT_AVATAR_FILE);
         user.setSignature("");
         user.setNickname(username);//默认用户名为昵称
         user.setStoreSpace((long)1024 * 1024 * 1024 * 5);//默认5GB可用空间
@@ -50,12 +50,12 @@ public class UserServiceImpl implements UserService {
         //向数据库写入用户信息
         userMapper.insert(user);
         //获取用户ID
-        User user_return = userMapper.selectBaseInfoByUsernameOrEmail(username);
-        int user_id = user_return.getUserId();
+        User userReturn = userMapper.selectBaseInfoByUsernameOrEmail(username);
+        int userId = userReturn.getUserId();
         Album album = new Album();
-        album.setUserId(user_id);
+        album.setUserId(userId);
         album.setName("default_album");
-        album.setCover(photoTool.default_cover_file);
+        album.setCover(photoTool.DEFAULT_COVER_FILE);
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         album.setCreateTime(timestamp);
         album.setLastEditTime(timestamp);
@@ -70,17 +70,17 @@ public class UserServiceImpl implements UserService {
     @Override
     public String login(String username,String password) {
         User user = userMapper.selectBaseInfoByUsernameOrEmail(username);
-        String password_md5 = DigestUtils.md5DigestAsHex(password.getBytes());
+        String passwordMd5 = DigestUtils.md5DigestAsHex(password.getBytes());
         if(user == null)
             return "username or email does not exist";//用户名邮箱不存在
-        else if(!user.getPassword().equals(password_md5))
+        else if(!user.getPassword().equals(passwordMd5))
             return "wrong password";//密码错误
         else
             return String.valueOf(user.getUserId());
     }
 
     @Override
-    public User getUserDataByUserId(int user_id) {
-        return userMapper.selectAllByUserId(user_id);
+    public User getUserDataByUserId(int userId) {
+        return userMapper.selectAllByUserId(userId);
     }
 }

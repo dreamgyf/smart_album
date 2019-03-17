@@ -45,7 +45,7 @@ public class PhotoServiceImpl implements PhotoService {
     private UserMapper userMapper;
 
     @Override
-    public String upload(int user_id,MultipartFile file,String name,String description,int isPublic) throws IOException {
+    public String upload(int userId, MultipartFile file, String name, String description, int isPublic) throws IOException {
         if(file == null)
             return "empty file error";//上传空文件时返回-1
         String fileName = file.getOriginalFilename();
@@ -68,25 +68,25 @@ public class PhotoServiceImpl implements PhotoService {
             photo.setName(fileName.substring(0,dot));
         photo.setSuffix(suffix);
         //给文件一个随机UUID作为文件在服务器保存的文件名
-        String uuid_name = UUID.randomUUID().toString() + '.' + suffix;
+        String uuidName = UUID.randomUUID().toString() + '.' + suffix;
         //计算文件大小，保存在数据库中
-        long file_size_B = file.getSize();
-        photo.setSize(file_size_B);
+        long fileSizeB = file.getSize();
+        photo.setSize(fileSizeB);
         //创建上传路径
-        String upload_path = photoTool.upload_dir + String.valueOf(user_id);
+        String uploadPath = photoTool.UPLOAD_DIR + userId;
         //上传文件
-        File upload_file = new File(upload_path,uuid_name);
-        if(!upload_file.getParentFile().exists())
+        File uploadFile = new File(uploadPath,uuidName);
+        if(!uploadFile.getParentFile().exists())
         {
-            if(!upload_file.getParentFile().mkdirs())
+            if(!uploadFile.getParentFile().mkdirs())
                 return "upload failed";//上传失败,文件创建失败
         }
-        file.transferTo(upload_file);
+        file.transferTo(uploadFile);
         //如果是jpeg格式的图片，处理EXIF信息
-        if(photoTool.is_jpeg(suffix))
+        if(photoTool.isJpeg(suffix))
         {
             try {
-                Metadata metadata = ImageMetadataReader.readMetadata(upload_file);
+                Metadata metadata = ImageMetadataReader.readMetadata(uploadFile);
                 Map<String,String> map = new HashMap<>();
                 for (Directory directory : metadata.getDirectories())
                 {
@@ -108,7 +108,7 @@ public class PhotoServiceImpl implements PhotoService {
         }
 //        else if(photoTool.is_png(suffix)) {
 //            try {
-//                Metadata metadata = ImageMetadataReader.readMetadata(upload_file);
+//                Metadata metadata = ImageMetadataReader.readMetadata(uploadFile);
 //                for (Directory directory : metadata.getDirectories())
 //                {
 //                    for (Tag tag : directory.getTags())
@@ -125,38 +125,38 @@ public class PhotoServiceImpl implements PhotoService {
 //        }
         photo.setWidth(image.getWidth());
         photo.setHeight(image.getHeight());
-        photo.setUserId(user_id);
+        photo.setUserId(userId);
         if(description != null)
             photo.setDescription(description);
         else
             photo.setDescription("");
         photo.setLikes(0);
-        int album_id = albumMapper.selectDefaultAlbumIdByUserId(user_id);
-        photo.setAlbumId(album_id);
+        int albumId = albumMapper.selectDefaultAlbumIdByUserId(userId);
+        photo.setAlbumId(albumId);
         photo.setIsPublic(isPublic);
         photo.setInRecycleBin(0);
-        photo.setPath(upload_path + "/" + uuid_name);
+        photo.setPath(uploadPath + "/" + uuidName);
         //将photo对象写入数据库
         photoMapper.insert(photo);
         //更新已用空间
-        userMapper.updateUsedSpaceByUserId(user_id,file_size_B);
+        userMapper.updateUsedSpaceByUserId(userId,fileSizeB);
         //更新用户照片数量
-        userMapper.updatePhotoAmountByUserId(user_id,1);
+        userMapper.updatePhotoAmountByUserId(userId,1);
         //更新相册信息
-        albumMapper.updatePhotoAmountByAlbumId(album_id,1);
-        albumMapper.updateLastEditTimeByAlbumId(album_id,new Timestamp(System.currentTimeMillis()));
+        albumMapper.updatePhotoAmountByAlbumId(albumId,1);
+        albumMapper.updateLastEditTimeByAlbumId(albumId,new Timestamp(System.currentTimeMillis()));
         return "ok";//成功
     }
 
     @Override
-    public Map<String,Object> uploads(int user_id, MultipartFile[] files) throws IOException {
-        int success_count = 0;
-        int failed_count = 0;
+    public Map<String,Object> uploads(int userId, MultipartFile[] files) throws IOException {
+        int successCount = 0;
+        int failedCount = 0;
         for(MultipartFile file : files)
         {
             if(file == null)
             {
-                failed_count++;//上传文件为空文件
+                failedCount++;//上传文件为空文件
                 continue;
             }
             String fileName = file.getOriginalFilename();
@@ -166,47 +166,47 @@ public class PhotoServiceImpl implements PhotoService {
                 suffix = fileName.substring(dot + 1);
             else
             {
-                failed_count++;//文件没有后缀名
+                failedCount++;//文件没有后缀名
                 continue;
             }
             if(!photoTool.checkSuffix(suffix))
             {
-                failed_count++;//文件没有后缀名
+                failedCount++;//文件没有后缀名
                 continue;
             }
             BufferedImage image = ImageIO.read(file.getInputStream());
             if(image == null)
             {
-                failed_count++;//文件不是图片
+                failedCount++;//文件不是图片
                 continue;
             }
             //给文件一个随机UUID作为文件在服务器保存的文件名
-            String uuid_name = UUID.randomUUID().toString() + '.' + suffix;
+            String uuidName = UUID.randomUUID().toString() + '.' + suffix;
             //创建上传路径
-            String upload_path = photoTool.upload_dir + String.valueOf(user_id);
+            String uploadPath = photoTool.UPLOAD_DIR + userId;
             //上传文件
-            File upload_file = new File(upload_path,uuid_name);
-            if(!upload_file.getParentFile().exists())
+            File uploadFile = new File(uploadPath,uuidName);
+            if(!uploadFile.getParentFile().exists())
             {
-                if(!upload_file.getParentFile().mkdirs())
+                if(!uploadFile.getParentFile().mkdirs())
                 {
-                    failed_count++;
+                    failedCount++;
                     continue;
                 }
             }
-            file.transferTo(upload_file);
+            file.transferTo(uploadFile);
             //新建一个Photo对象用来保存照片信息并写入数据库
             Photo photo = new Photo();
             photo.setName(fileName.substring(0,dot));
             photo.setSuffix(suffix);
             //计算文件大小，保存在数据库中
-            long file_size_B = file.getSize();
-            photo.setSize(file_size_B);
+            long fileSizeB = file.getSize();
+            photo.setSize(fileSizeB);
             //如果是jpeg格式的图片，处理EXIF信息
-            if(photoTool.is_jpeg(suffix))
+            if(photoTool.isJpeg(suffix))
             {
                 try {
-                    Metadata metadata = ImageMetadataReader.readMetadata(upload_file);
+                    Metadata metadata = ImageMetadataReader.readMetadata(uploadFile);
                     Map<String,String> map = new HashMap<>();
                     for (Directory directory : metadata.getDirectories())
                     {
@@ -228,33 +228,33 @@ public class PhotoServiceImpl implements PhotoService {
             }
             photo.setWidth(image.getWidth());
             photo.setHeight(image.getHeight());
-            photo.setUserId(user_id);
+            photo.setUserId(userId);
             photo.setLikes(0);
-            int album_id = albumMapper.selectDefaultAlbumIdByUserId(user_id);
-            photo.setAlbumId(album_id);
+            int albumId = albumMapper.selectDefaultAlbumIdByUserId(userId);
+            photo.setAlbumId(albumId);
             photo.setInRecycleBin(0);
-            photo.setPath(upload_path + "/" + user_id + "/" + uuid_name);
+            photo.setPath(uploadPath + "/" + userId + "/" + uuidName);
             photo.setDescription("");
             //将photo对象写入数据库
             photoMapper.insert(photo);
             //更新已用空间
-            userMapper.updateUsedSpaceByUserId(user_id,file_size_B);
+            userMapper.updateUsedSpaceByUserId(userId,fileSizeB);
             //更新照片数量
-            userMapper.updatePhotoAmountByUserId(user_id,1);
+            userMapper.updatePhotoAmountByUserId(userId,1);
             //更新相册信息
-            albumMapper.updatePhotoAmountByAlbumId(album_id,1);
-            albumMapper.updateLastEditTimeByAlbumId(album_id,new Timestamp(System.currentTimeMillis()));
-            success_count++;//成功
+            albumMapper.updatePhotoAmountByAlbumId(albumId,1);
+            albumMapper.updateLastEditTimeByAlbumId(albumId,new Timestamp(System.currentTimeMillis()));
+            successCount++;//成功
         }
         Map<String,Object> result = new HashMap<>();
-        result.put("success_count",success_count);
-        result.put("failed_count",failed_count);
+        result.put("successCount",successCount);
+        result.put("failedCount",failedCount);
         return result;
     }
 
     @Override
-    public void download(int photo_id, HttpServletResponse response) {
-        Photo photo = photoMapper.selectAllByPhotoId(photo_id);
+    public void download(int photoId, HttpServletResponse response) {
+        Photo photo = photoMapper.selectAllByPhotoId(photoId);
         File file = new File(photo.getPath());
         String fileName = photo.getName() + "." + photo.getSuffix();
         //设置请求头
@@ -293,14 +293,14 @@ public class PhotoServiceImpl implements PhotoService {
     }
 
     @Override
-    public void downloads(List<Map<String, Integer>> listmap, HttpServletResponse response) {
+    public void downloads(List<Integer> photos, HttpServletResponse response) {
         List<String> fileFullName = new ArrayList<>();
         List<String> filePath = new ArrayList<>();
         //获得每个文件的完整名称和路径
         Photo photo;
-        for(Map<String, Integer> map : listmap)
+        for(int photoId : photos)
         {
-            photo = photoMapper.selectAllByPhotoId(map.get("photo_id"));
+            photo = photoMapper.selectAllByPhotoId(photoId);
             if(!fileFullName.contains(photo.getName() + "." + photo.getSuffix()))
                 fileFullName.add(photo.getName() + "." + photo.getSuffix());
             else {
@@ -362,10 +362,10 @@ public class PhotoServiceImpl implements PhotoService {
     }
 
     @Override
-    public String edit(int photo_id, String name, String description, int album_id, int isPublic) {
-        albumMapper.updatePhotoAmountByAlbumId(photoMapper.selectAllByPhotoId(photo_id).getAlbumId(),-1);
-        photoMapper.updateByPhotoId(photo_id,name,description,album_id,isPublic);
-        albumMapper.updatePhotoAmountByAlbumId(photoMapper.selectAllByPhotoId(photo_id).getAlbumId(),1);
+    public String edit(int photoId, String name, String description, int albumId, int isPublic) {
+        albumMapper.updatePhotoAmountByAlbumId(photoMapper.selectAllByPhotoId(photoId).getAlbumId(),-1);
+        photoMapper.updateByPhotoId(photoId,name,description, albumId,isPublic);
+        albumMapper.updatePhotoAmountByAlbumId(photoMapper.selectAllByPhotoId(photoId).getAlbumId(),1);
         return "ok";
     }
 }

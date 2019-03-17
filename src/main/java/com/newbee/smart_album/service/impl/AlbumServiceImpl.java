@@ -25,11 +25,11 @@ public class AlbumServiceImpl implements AlbumService {
     private PhotoMapper photoMapper;
 
     @Override
-    public String create(int user_id,String name,String description) {
+    public String create(int userId, String name, String description) {
         Album album = new Album();
         album.setName(name);
-        album.setUserId(user_id);
-        album.setCover(photoTool.default_cover_file);
+        album.setUserId(userId);
+        album.setCover(photoTool.DEFAULT_COVER_FILE);
         album.setDescription(description);
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         album.setCreateTime(timestamp);
@@ -41,24 +41,24 @@ public class AlbumServiceImpl implements AlbumService {
     }
 
     @Override
-    public String edit(int album_id, String name, int photo_id, String description) {
-        if(photo_id != 0)
-            albumMapper.editAlbumByAlbumId(album_id,name,photoMapper.selectAllByPhotoId(photo_id).getPath(),description);
+    public String edit(int albumId, String name, int photoId, String description) {
+        if(photoId != 0)
+            albumMapper.editAlbumByAlbumId(albumId,name,photoMapper.selectAllByPhotoId(photoId).getPath(),description);
         else
-            albumMapper.editAlbumByAlbumId(album_id,name,photoTool.default_cover_file,description);
-        albumMapper.updateLastEditTimeByAlbumId(album_id,new Timestamp(System.currentTimeMillis()));
+            albumMapper.editAlbumByAlbumId(albumId,name,photoTool.DEFAULT_COVER_FILE,description);
+        albumMapper.updateLastEditTimeByAlbumId(albumId,new Timestamp(System.currentTimeMillis()));
         return "ok";
     }
 
     @Override
-    public String delete(int album_id) {
-        List<Integer> list = photoMapper.selectPhotoIdByAlbumId(album_id);
-        int default_album_id = albumMapper.selectDefaultAlbumIdByAlbumId(album_id);
+    public String delete(int albumId) {
+        List<Integer> list = photoMapper.selectPhotoIdByAlbumId(albumId);
+        int defaultAlbumId = albumMapper.selectDefaultAlbumIdByAlbumId(albumId);
         for(int photo_id : list)
         {
-            photoMapper.updateAlbumIdByPhotoId(photo_id,default_album_id);
+            photoMapper.updateAlbumIdByPhotoId(photo_id,defaultAlbumId);
         }
-        albumMapper.deleteByAlbumId(album_id);
+        albumMapper.deleteByAlbumId(albumId);
         return "ok";
     }
 }
