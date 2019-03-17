@@ -21,4 +21,8 @@ public interface AlbumMapper {
                          @Param("description") String description);
 
     void deleteByAlbumId(@Param("albumId") int albumId);
+
+    Integer selectUserIdByAlbumId(@Param("albumId") int albumId);
+
+    Integer selectIsDefaultAlbumByAlbumId(@Param("albumId") int albumId);
 }

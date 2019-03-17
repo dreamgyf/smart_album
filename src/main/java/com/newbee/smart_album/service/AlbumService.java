@@ -4,7 +4,7 @@ public interface AlbumService {
 
     String create(int userId,String name,String description);
 
-    String edit(int albumId,String name,int photoId,String description);
+    String edit(int userId,int albumId,String name,int photoId,String description);
 
-    String delete(int albumId);
+    String delete(int userId,int albumId);
 }

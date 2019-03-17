@@ -29,18 +29,23 @@ public class AlbumController {
     }
 
     @RequestMapping(value = "/edit",method = RequestMethod.POST)
-    public Map<String,String> edit(@RequestBody Map<String,Object> map)
+    public Map<String,String> edit(@RequestBody Map<String,Object> map,HttpServletRequest request)
     {
+        Object userIdObject = request.getSession().getAttribute("userId");
+        int userId = Integer.parseInt(userIdObject.toString());
         Map<String,String> mapReturn = new HashMap<>();
-        mapReturn.put("status",albumService.edit(Integer.parseInt(map.get("albumId").toString()),map.get("name").toString(),Integer.parseInt(map.get("photoId").toString()),map.get("description").toString()));
+        mapReturn.put("status",albumService.edit(userId,Integer.parseInt(map.get("albumId").toString()),
+                map.get("name").toString(),Integer.parseInt(map.get("photoId").toString()),map.get("description").toString()));
         return mapReturn;
     }
 
     @RequestMapping(value = "/delete",method = RequestMethod.POST)
-    public Map<String,String> delete(@RequestBody Map<String,Object> map)
+    public Map<String,String> delete(@RequestBody Map<String,Object> map,HttpServletRequest request)
     {
+        Object userIdObject = request.getSession().getAttribute("userId");
+        int userId = Integer.parseInt(userIdObject.toString());
         Map<String,String> mapReturn = new HashMap<>();
-        mapReturn.put("status",albumService.delete(Integer.parseInt(map.get("albumId").toString())));
+        mapReturn.put("status",albumService.delete(userId,Integer.parseInt(map.get("albumId").toString())));
         return mapReturn;
     }
 }

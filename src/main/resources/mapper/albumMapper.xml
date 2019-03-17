@@ -33,4 +33,12 @@
     <delete id="deleteByAlbumId">
         delete from album where album_id=#{albumId}
     </delete>
+
+    <select id="selectUserIdByAlbumId" resultType="INTEGER">
+        select user_id from album where album_id=#{albumId}
+    </select>
+
+    <select id="selectIsDefaultAlbumByAlbumId" resultType="INTEGER">
+        select 1 from album where album_id=#{albumId} and is_default_album=1
+    </select>
 </mapper>

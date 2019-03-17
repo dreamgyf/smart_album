@@ -350,19 +350,25 @@ public class PhotoServiceImpl implements PhotoService {
 
     @Override
     public String moveToRecycleBin(int userId,List<Integer> photos) {
-        for(int photo_id : photos)
+        for(int photoId : photos)
         {
-            photoMapper.moveToRecycleBinByPhotoId(photo_id,new Timestamp(System.currentTimeMillis()));
+            //对photo_id和user_id进行校验
+            if(photoMapper.selectAllByPhotoId(photoId).getUserId() != userId)
+                return "forbid edit";
+            photoMapper.moveToRecycleBinByPhotoId(photoId,new Timestamp(System.currentTimeMillis()));
             //对user表和album表的photo_amount更新，对user表的photo_in_recycle_bin_amount更新
             userMapper.updatePhotoAmountByUserId(userId,-1);
-            albumMapper.updatePhotoAmountByAlbumId(photoMapper.selectAllByPhotoId(photo_id).getAlbumId(),-1);
+            albumMapper.updatePhotoAmountByAlbumId(photoMapper.selectAllByPhotoId(photoId).getAlbumId(),-1);
             userMapper.updatePhotoInRecycleBinAmountByUserId(userId,1);
         }
         return "ok";
     }
 
     @Override
-    public String edit(int photoId, String name, String description, int albumId, int isPublic) {
+    public String edit(int userId,int photoId, String name, String description, int albumId, int isPublic) {
+        //对photo_id和user_id进行校验
+        if(photoMapper.selectAllByPhotoId(photoId).getUserId() != userId)
+            return "forbid edit";
         albumMapper.updatePhotoAmountByAlbumId(photoMapper.selectAllByPhotoId(photoId).getAlbumId(),-1);
         photoMapper.updateByPhotoId(photoId,name,description, albumId,isPublic);
         albumMapper.updatePhotoAmountByAlbumId(photoMapper.selectAllByPhotoId(photoId).getAlbumId(),1);

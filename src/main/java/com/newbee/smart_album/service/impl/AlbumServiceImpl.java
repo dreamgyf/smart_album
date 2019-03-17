@@ -5,7 +5,6 @@ import com.newbee.smart_album.dao.mapper.PhotoMapper;
 import com.newbee.smart_album.entity.Album;
 import com.newbee.smart_album.service.AlbumService;
 import com.newbee.smart_album.tools.PhotoTool;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -14,9 +13,6 @@ import java.util.List;
 
 @Service
 public class AlbumServiceImpl implements AlbumService {
-
-    @Autowired
-    private PhotoTool photoTool;
 
     @Resource
     private AlbumMapper albumMapper;
@@ -41,7 +37,13 @@ public class AlbumServiceImpl implements AlbumService {
     }
 
     @Override
-    public String edit(int albumId, String name, int photoId, String description) {
+    public String edit(int userId,int albumId, String name, int photoId, String description) {
+        //校验user_id和album_id
+        if(albumMapper.selectUserIdByAlbumId(albumId) != userId)
+            return "forbid edit";
+        //如果是默认相册，禁止编辑
+        if(albumMapper.selectIsDefaultAlbumByAlbumId(albumId) != null)
+            return "forbid edit";
         if(photoId != 0)
             albumMapper.editAlbumByAlbumId(albumId,name,photoMapper.selectAllByPhotoId(photoId).getPath(),description);
         else
@@ -51,12 +53,18 @@ public class AlbumServiceImpl implements AlbumService {
     }
 
     @Override
-    public String delete(int albumId) {
+    public String delete(int userId,int albumId) {
+        //校验user_id和album_id
+        if(albumMapper.selectUserIdByAlbumId(albumId) != userId)
+            return "forbid edit";
+        //如果是默认相册，禁止编辑
+        if(albumMapper.selectIsDefaultAlbumByAlbumId(albumId) != null)
+            return "forbid edit";
         List<Integer> list = photoMapper.selectPhotoIdByAlbumId(albumId);
         int defaultAlbumId = albumMapper.selectDefaultAlbumIdByAlbumId(albumId);
-        for(int photo_id : list)
+        for(int photoId : list)
         {
-            photoMapper.updateAlbumIdByPhotoId(photo_id,defaultAlbumId);
+            photoMapper.updateAlbumIdByPhotoId(photoId,defaultAlbumId);
         }
         albumMapper.deleteByAlbumId(albumId);
         return "ok";

@@ -73,10 +73,12 @@ public class PhotoController {
     }
 
     @RequestMapping(value = "/edit",method = RequestMethod.POST)
-    public Map<String,String> edit(@RequestBody Map<String, Object> map)
+    public Map<String,String> edit(@RequestBody Map<String, Object> map,HttpServletRequest request)
     {
+        Object userIdObject = request.getSession().getAttribute("userId");
+        int userId = Integer.parseInt(userIdObject.toString());
         Map<String,String> mapReturn = new HashMap<>();
-        mapReturn.put("status",photoService.edit(Integer.parseInt(map.get("photoId").toString()),
+        mapReturn.put("status",photoService.edit(userId,Integer.parseInt(map.get("photoId").toString()),
                 map.get("name").toString(),map.get("description").toString(),Integer.parseInt(map.get("albumId").toString()),
                 Integer.parseInt(map.get("isPublic").toString())));
         return mapReturn;
