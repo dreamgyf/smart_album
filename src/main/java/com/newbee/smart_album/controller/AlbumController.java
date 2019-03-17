@@ -19,15 +19,28 @@ public class AlbumController {
     private AlbumService albumService;
 
     @RequestMapping(value = "/create.do",method = RequestMethod.POST)
-    public Map<String,String> create(@RequestBody Map<String,Object> map, HttpServletRequest request)
+    public Map<String,String> create(@RequestBody Map<String,String> map, HttpServletRequest request)
     {
         Object user_id_object = request.getSession().getAttribute("user_id");
         int user_id = Integer.parseInt(user_id_object.toString());
         Map<String,String> map_return = new HashMap<>();
-        if(map.get("description") != null)
-            map_return.put("status",albumService.create(map.get("name").toString(),user_id,map.get("description").toString()));
-        else
-            map_return.put("status",albumService.create(map.get("name").toString(),user_id,null));
+        map_return.put("status",albumService.create(user_id,map.get("name"),map.get("description")));
+        return map_return;
+    }
+
+    @RequestMapping(value = "/edit.do",method = RequestMethod.POST)
+    public Map<String,String> edit(@RequestBody Map<String,Object> map)
+    {
+        Map<String,String> map_return = new HashMap<>();
+        map_return.put("status",albumService.edit(Integer.parseInt(map.get("album_id").toString()),map.get("name").toString(),Integer.parseInt(map.get("photo_id").toString()),map.get("description").toString()));
+        return map_return;
+    }
+
+    @RequestMapping(value = "/delete.do",method = RequestMethod.POST)
+    public Map<String,String> delete(@RequestBody Map<String,Object> map)
+    {
+        Map<String,String> map_return = new HashMap<>();
+        map_return.put("status",albumService.delete(Integer.parseInt(map.get("album_id").toString())));
         return map_return;
     }
 }

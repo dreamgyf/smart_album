@@ -30,9 +30,11 @@ public class Photo {
 
     private int height;
 
+    private Timestamp originalTime;
+
     private int inRecycleBin;
 
-    private Timestamp originalTime;
+    private Timestamp deleteTime;
 
     public int getPhotoId() {
         return photoId;
@@ -152,5 +154,13 @@ public class Photo {
 
     public void setOriginalTime(Timestamp originalTime) {
         this.originalTime = originalTime;
+    }
+
+    public Timestamp getDeleteTime() {
+        return deleteTime;
+    }
+
+    public void setDeleteTime(Timestamp deleteTime) {
+        this.deleteTime = deleteTime;
     }
 }

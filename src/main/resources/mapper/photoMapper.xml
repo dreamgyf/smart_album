@@ -14,4 +14,12 @@
         select photo_id,name,suffix,path,description,information,user_id,album_id,likes,is_public,size,width,height,in_recycle_bin,original_time
         from photo where photo_id=#{photoId}
     </select>
+
+    <select id="selectPhotoIdByAlbumId" resultType="INTEGER">
+        select photo_id from photo where album_id=#{albumId}
+    </select>
+    
+    <update id="updateAlbumIdByPhotoId">
+        update photo set album_id=#{albumId} where photo_id=#{photoId}
+    </update>
 </mapper>

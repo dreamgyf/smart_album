@@ -10,8 +10,12 @@
          VALUES (#{name},#{userId},#{cover},#{createTime},#{lastEditTime},#{description},#{isDefaultAlbum},#{photoAmount})
     </insert>
 
-    <select id="selectDefaultAlbumIdByUserId" resultType="com.newbee.smart_album.entity.Album">
+    <select id="selectDefaultAlbumIdByUserId" resultType="INTEGER">
         select album_id from album where user_id=#{userId} and name='default_album'
+    </select>
+
+    <select id="selectDefaultAlbumIdByAlbumId" resultType="INTEGER">
+        select album_id from album where user_id=(select user_id from album where album_id=#{albumId}) and name='default_album'
     </select>
 
     <update id="updatePhotoAmountById">
@@ -21,4 +25,12 @@
     <update id="updateLastEditTimeById">
         update album set last_edit_time=#{time} where album_id=#{albumId}
     </update>
+
+    <update id="editAlbumByAlbumId">
+        update album set name=#{name},cover=#{cover},description=#{description} where album_id=#{albumId}
+    </update>
+
+    <delete id="deleteById">
+        delete from album where album_id=#{albumId}
+    </delete>
 </mapper>

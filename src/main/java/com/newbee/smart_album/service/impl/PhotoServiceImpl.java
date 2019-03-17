@@ -9,7 +9,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.newbee.smart_album.dao.mapper.AlbumMapper;
 import com.newbee.smart_album.dao.mapper.PhotoMapper;
 import com.newbee.smart_album.dao.mapper.UserMapper;
-import com.newbee.smart_album.entity.Album;
 import com.newbee.smart_album.entity.Photo;
 import com.newbee.smart_album.service.PhotoService;
 import com.newbee.smart_album.tools.PhotoTool;
@@ -132,8 +131,8 @@ public class PhotoServiceImpl implements PhotoService {
         else
             photo.setDescription("");
         photo.setLikes(0);
-        Album album = albumMapper.selectDefaultAlbumIdByUserId(user_id);
-        photo.setAlbumId(album.getAlbumId());
+        int album_id = albumMapper.selectDefaultAlbumIdByUserId(user_id);
+        photo.setAlbumId(album_id);
         photo.setIsPublic(isPublic);
         photo.setInRecycleBin(0);
         photo.setPath(upload_path + "/" + uuid_name);
@@ -144,8 +143,8 @@ public class PhotoServiceImpl implements PhotoService {
         //更新用户照片数量
         userMapper.updatePhotoAmountById(user_id,1);
         //更新相册信息
-        albumMapper.updatePhotoAmountById(album.getAlbumId(),1);
-        albumMapper.updateLastEditTimeById(album.getAlbumId(),new Timestamp(System.currentTimeMillis()));
+        albumMapper.updatePhotoAmountById(album_id,1);
+        albumMapper.updateLastEditTimeById(album_id,new Timestamp(System.currentTimeMillis()));
         return "ok";//成功
     }
 
@@ -231,8 +230,8 @@ public class PhotoServiceImpl implements PhotoService {
             photo.setHeight(image.getHeight());
             photo.setUserId(user_id);
             photo.setLikes(0);
-            Album album = albumMapper.selectDefaultAlbumIdByUserId(user_id);
-            photo.setAlbumId(album.getAlbumId());
+            int album_id = albumMapper.selectDefaultAlbumIdByUserId(user_id);
+            photo.setAlbumId(album_id);
             photo.setInRecycleBin(0);
             photo.setPath(upload_path + "/" + user_id + "/" + uuid_name);
             photo.setDescription("");
@@ -243,8 +242,8 @@ public class PhotoServiceImpl implements PhotoService {
             //更新照片数量
             userMapper.updatePhotoAmountById(user_id,1);
             //更新相册信息
-            albumMapper.updatePhotoAmountById(album.getAlbumId(),1);
-            albumMapper.updateLastEditTimeById(album.getAlbumId(),new Timestamp(System.currentTimeMillis()));
+            albumMapper.updatePhotoAmountById(album_id,1);
+            albumMapper.updateLastEditTimeById(album_id,new Timestamp(System.currentTimeMillis()));
             success_count++;//成功
         }
         Map<String,Object> result = new HashMap<>();
