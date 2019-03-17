@@ -73,7 +73,7 @@ public class PhotoServiceImpl implements PhotoService {
         long fileSizeB = file.getSize();
         photo.setSize(fileSizeB);
         //创建上传路径
-        String uploadPath = photoTool.UPLOAD_DIR + userId;
+        String uploadPath = PhotoTool.UPLOAD_DIR + userId;
         //上传文件
         File uploadFile = new File(uploadPath,uuidName);
         if(!uploadFile.getParentFile().exists())
@@ -183,7 +183,7 @@ public class PhotoServiceImpl implements PhotoService {
             //给文件一个随机UUID作为文件在服务器保存的文件名
             String uuidName = UUID.randomUUID().toString() + '.' + suffix;
             //创建上传路径
-            String uploadPath = photoTool.UPLOAD_DIR + userId;
+            String uploadPath = PhotoTool.UPLOAD_DIR + userId;
             //上传文件
             File uploadFile = new File(uploadPath,uuidName);
             if(!uploadFile.getParentFile().exists())

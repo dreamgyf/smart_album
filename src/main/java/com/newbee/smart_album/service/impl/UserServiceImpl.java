@@ -6,7 +6,6 @@ import com.newbee.smart_album.entity.Album;
 import com.newbee.smart_album.entity.User;
 import com.newbee.smart_album.service.UserService;
 import com.newbee.smart_album.tools.PhotoTool;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
@@ -21,9 +20,6 @@ public class UserServiceImpl implements UserService {
 
     @Resource
     private AlbumMapper albumMapper;
-
-    @Autowired
-    private PhotoTool photoTool;
 
     @Override
     public String register(String username, String password, String email) {
@@ -40,7 +36,7 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordMd5);
         user.setEmail(email);
         user.setGender(0);
-        user.setAvatar(photoTool.DEFAULT_AVATAR_FILE);
+        user.setAvatar(PhotoTool.DEFAULT_AVATAR_FILE);
         user.setSignature("");
         user.setNickname(username);//默认用户名为昵称
         user.setStoreSpace((long)1024 * 1024 * 1024 * 5);//默认5GB可用空间
@@ -55,7 +51,7 @@ public class UserServiceImpl implements UserService {
         Album album = new Album();
         album.setUserId(userId);
         album.setName("default_album");
-        album.setCover(photoTool.DEFAULT_COVER_FILE);
+        album.setCover(PhotoTool.DEFAULT_COVER_FILE);
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         album.setCreateTime(timestamp);
         album.setLastEditTime(timestamp);

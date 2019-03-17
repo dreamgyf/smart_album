@@ -29,7 +29,7 @@ public class AlbumServiceImpl implements AlbumService {
         Album album = new Album();
         album.setName(name);
         album.setUserId(userId);
-        album.setCover(photoTool.DEFAULT_COVER_FILE);
+        album.setCover(PhotoTool.DEFAULT_COVER_FILE);
         album.setDescription(description);
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         album.setCreateTime(timestamp);
@@ -45,7 +45,7 @@ public class AlbumServiceImpl implements AlbumService {
         if(photoId != 0)
             albumMapper.editAlbumByAlbumId(albumId,name,photoMapper.selectAllByPhotoId(photoId).getPath(),description);
         else
-            albumMapper.editAlbumByAlbumId(albumId,name,photoTool.DEFAULT_COVER_FILE,description);
+            albumMapper.editAlbumByAlbumId(albumId,name,PhotoTool.DEFAULT_COVER_FILE,description);
         albumMapper.updateLastEditTimeByAlbumId(albumId,new Timestamp(System.currentTimeMillis()));
         return "ok";
     }
