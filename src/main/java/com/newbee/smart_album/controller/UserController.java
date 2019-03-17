@@ -21,7 +21,7 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @RequestMapping(value = "/register.do",method = RequestMethod.POST)
+    @RequestMapping(value = "/register",method = RequestMethod.POST)
     public Map<String, Object> register(@RequestBody Map<String,String> map)
     {
         Map<String,Object> map_return = new HashMap<>();
@@ -29,12 +29,11 @@ public class UserController {
         return map_return;
     }
 
-    @RequestMapping(value = "/login.do",method = RequestMethod.POST)
+    @RequestMapping(value = "/login",method = RequestMethod.POST)
     public Map<String, Object> login(@RequestBody Map<String,String> map, HttpServletRequest request, HttpServletResponse response)
     {
         String state = userService.login(map.get("username"),map.get("password"));
         Map<String,Object> map_return = new HashMap<>();
-        //1表示成功，-1表示密码错误，-2表示用户或邮箱不存在
         if(!state.equals("username or email does not exist") && !state.equals("wrong password"))
         {
             HttpSession session = request.getSession();

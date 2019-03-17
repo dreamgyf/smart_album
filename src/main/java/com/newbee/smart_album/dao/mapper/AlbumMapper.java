@@ -13,12 +13,12 @@ public interface AlbumMapper {
 
     Integer selectDefaultAlbumIdByAlbumId(@Param("albumId") int albumId);
 
-    void updatePhotoAmountById(@Param("albumId") int albumId,@Param("amount") int amount);
+    void updatePhotoAmountByAlbumId(@Param("albumId") int albumId, @Param("amount") int amount);
 
-    void updateLastEditTimeById(@Param("albumId") int albumId, @Param("time")Timestamp time);
+    void updateLastEditTimeByAlbumId(@Param("albumId") int albumId, @Param("time")Timestamp time);
 
     void editAlbumByAlbumId(@Param("albumId") int albumId,@Param("name") String name,@Param("cover") String cover,
                          @Param("description") String description);
 
-    void deleteById(@Param("albumId") int albumId);
+    void deleteByAlbumId(@Param("albumId") int albumId);
 }

@@ -15,4 +15,8 @@ public interface PhotoService {
     void download(int photo_id, HttpServletResponse response);
 
     void downloads(List<Map<String,Integer>> listmap,HttpServletResponse response);
+
+    String moveToRecycleBin(int userId,List<Integer> photos);
+
+    String edit(int photo_id,String name,String description,int album_id,int isPublic);
 }

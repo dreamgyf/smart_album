@@ -18,7 +18,7 @@ public class AlbumController {
     @Autowired
     private AlbumService albumService;
 
-    @RequestMapping(value = "/create.do",method = RequestMethod.POST)
+    @RequestMapping(value = "/create",method = RequestMethod.POST)
     public Map<String,String> create(@RequestBody Map<String,String> map, HttpServletRequest request)
     {
         Object user_id_object = request.getSession().getAttribute("user_id");
@@ -28,7 +28,7 @@ public class AlbumController {
         return map_return;
     }
 
-    @RequestMapping(value = "/edit.do",method = RequestMethod.POST)
+    @RequestMapping(value = "/edit",method = RequestMethod.POST)
     public Map<String,String> edit(@RequestBody Map<String,Object> map)
     {
         Map<String,String> map_return = new HashMap<>();
@@ -36,7 +36,7 @@ public class AlbumController {
         return map_return;
     }
 
-    @RequestMapping(value = "/delete.do",method = RequestMethod.POST)
+    @RequestMapping(value = "/delete",method = RequestMethod.POST)
     public Map<String,String> delete(@RequestBody Map<String,Object> map)
     {
         Map<String,String> map_return = new HashMap<>();

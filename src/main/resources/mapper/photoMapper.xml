@@ -22,4 +22,12 @@
     <update id="updateAlbumIdByPhotoId">
         update photo set album_id=#{albumId} where photo_id=#{photoId}
     </update>
+
+    <update id="moveToRecycleBinByPhotoId">
+        update photo set in_recycle_bin=1,delete_time=#{time} where photo_id=#{photoId}
+    </update>
+
+    <update id="updateByPhotoId">
+        update photo set name=#{name},description=#{description},album_id=#{albumId},is_public=#{isPublic} where photo_id=#{photoId}
+    </update>
 </mapper>

@@ -139,12 +139,12 @@ public class PhotoServiceImpl implements PhotoService {
         //将photo对象写入数据库
         photoMapper.insert(photo);
         //更新已用空间
-        userMapper.updateUsedSpaceById(user_id,file_size_B);
+        userMapper.updateUsedSpaceByUserId(user_id,file_size_B);
         //更新用户照片数量
-        userMapper.updatePhotoAmountById(user_id,1);
+        userMapper.updatePhotoAmountByUserId(user_id,1);
         //更新相册信息
-        albumMapper.updatePhotoAmountById(album_id,1);
-        albumMapper.updateLastEditTimeById(album_id,new Timestamp(System.currentTimeMillis()));
+        albumMapper.updatePhotoAmountByAlbumId(album_id,1);
+        albumMapper.updateLastEditTimeByAlbumId(album_id,new Timestamp(System.currentTimeMillis()));
         return "ok";//成功
     }
 
@@ -238,12 +238,12 @@ public class PhotoServiceImpl implements PhotoService {
             //将photo对象写入数据库
             photoMapper.insert(photo);
             //更新已用空间
-            userMapper.updateUsedSpaceById(user_id,file_size_B);
+            userMapper.updateUsedSpaceByUserId(user_id,file_size_B);
             //更新照片数量
-            userMapper.updatePhotoAmountById(user_id,1);
+            userMapper.updatePhotoAmountByUserId(user_id,1);
             //更新相册信息
-            albumMapper.updatePhotoAmountById(album_id,1);
-            albumMapper.updateLastEditTimeById(album_id,new Timestamp(System.currentTimeMillis()));
+            albumMapper.updatePhotoAmountByAlbumId(album_id,1);
+            albumMapper.updateLastEditTimeByAlbumId(album_id,new Timestamp(System.currentTimeMillis()));
             success_count++;//成功
         }
         Map<String,Object> result = new HashMap<>();
@@ -346,6 +346,27 @@ public class PhotoServiceImpl implements PhotoService {
                 }
             }
         }
+    }
+
+    @Override
+    public String moveToRecycleBin(int userId,List<Integer> photos) {
+        for(int photo_id : photos)
+        {
+            photoMapper.moveToRecycleBinByPhotoId(photo_id,new Timestamp(System.currentTimeMillis()));
+            //对user表和album表的photo_amount更新，对user表的photo_in_recycle_bin_amount更新
+            userMapper.updatePhotoAmountByUserId(userId,-1);
+            albumMapper.updatePhotoAmountByAlbumId(photoMapper.selectAllByPhotoId(photo_id).getAlbumId(),-1);
+            userMapper.updatePhotoInRecycleBinAmountByUserId(userId,1);
+        }
+        return "ok";
+    }
+
+    @Override
+    public String edit(int photo_id, String name, String description, int album_id, int isPublic) {
+        albumMapper.updatePhotoAmountByAlbumId(photoMapper.selectAllByPhotoId(photo_id).getAlbumId(),-1);
+        photoMapper.updateByPhotoId(photo_id,name,description,album_id,isPublic);
+        albumMapper.updatePhotoAmountByAlbumId(photoMapper.selectAllByPhotoId(photo_id).getAlbumId(),1);
+        return "ok";
     }
 }
 

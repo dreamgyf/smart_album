@@ -46,7 +46,7 @@ public class AlbumServiceImpl implements AlbumService {
             albumMapper.editAlbumByAlbumId(album_id,name,photoMapper.selectAllByPhotoId(photo_id).getPath(),description);
         else
             albumMapper.editAlbumByAlbumId(album_id,name,photoTool.default_cover_file,description);
-        albumMapper.updateLastEditTimeById(album_id,new Timestamp(System.currentTimeMillis()));
+        albumMapper.updateLastEditTimeByAlbumId(album_id,new Timestamp(System.currentTimeMillis()));
         return "ok";
     }
 
@@ -58,7 +58,7 @@ public class AlbumServiceImpl implements AlbumService {
         {
             photoMapper.updateAlbumIdByPhotoId(photo_id,default_album_id);
         }
-        albumMapper.deleteById(album_id);
+        albumMapper.deleteByAlbumId(album_id);
         return "ok";
     }
 }

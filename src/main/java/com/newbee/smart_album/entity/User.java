@@ -23,6 +23,8 @@ public class User {
 
     private int photoAmount;
 
+    private int photoInRecycleBinAmount;
+
     public int getUserId() {
         return userId;
     }
@@ -109,5 +111,13 @@ public class User {
 
     public void setPhotoAmount(int photoAmount) {
         this.photoAmount = photoAmount;
+    }
+
+    public int getPhotoInRecycleBinAmount() {
+        return photoInRecycleBinAmount;
+    }
+
+    public void setPhotoInRecycleBinAmount(int photoInRecycleBinAmount) {
+        this.photoInRecycleBinAmount = photoInRecycleBinAmount;
     }
 }

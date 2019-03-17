@@ -46,6 +46,7 @@ public class UserServiceImpl implements UserService {
         user.setStoreSpace((long)1024 * 1024 * 1024 * 5);//默认5GB可用空间
         user.setUsedSpace(0);
         user.setPhotoAmount(0);
+        user.setPhotoInRecycleBinAmount(0);
         //向数据库写入用户信息
         userMapper.insert(user);
         //获取用户ID

@@ -15,7 +15,9 @@ public interface UserMapper {
 
     Integer selectExistByEmail(@Param("email") String email);
 
-    void updateUsedSpaceById(@Param("userId") int userId,@Param("size") long size);
+    void updateUsedSpaceByUserId(@Param("userId") int userId, @Param("size") long size);
 
-    void updatePhotoAmountById(@Param("userId") int userId,@Param("amount") int amount);
+    void updatePhotoAmountByUserId(@Param("userId") int userId, @Param("amount") int amount);
+
+    void updatePhotoInRecycleBinAmountByUserId(@Param("userId") int userId, @Param("amount") int amount);
 }

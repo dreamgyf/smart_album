@@ -18,11 +18,11 @@
         select album_id from album where user_id=(select user_id from album where album_id=#{albumId}) and name='default_album'
     </select>
 
-    <update id="updatePhotoAmountById">
+    <update id="updatePhotoAmountByAlbumId">
         update album set photo_amount=photo_amount+#{amount} where album_id=#{albumId}
     </update>
 
-    <update id="updateLastEditTimeById">
+    <update id="updateLastEditTimeByAlbumId">
         update album set last_edit_time=#{time} where album_id=#{albumId}
     </update>
 
@@ -30,7 +30,7 @@
         update album set name=#{name},cover=#{cover},description=#{description} where album_id=#{albumId}
     </update>
 
-    <delete id="deleteById">
+    <delete id="deleteByAlbumId">
         delete from album where album_id=#{albumId}
     </delete>
 </mapper>
