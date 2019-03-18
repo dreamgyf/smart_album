@@ -1,5 +1,7 @@
 package com.newbee.smart_album.controller;
 
+import com.newbee.smart_album.dao.mapper.ChenMapper;
+import com.newbee.smart_album.entity.Album;
 import com.newbee.smart_album.service.AlbumService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -17,6 +20,9 @@ public class AlbumController {
 
     @Autowired
     private AlbumService albumService;
+
+    @Autowired
+    private ChenMapper chenMapper;
 
     @RequestMapping(value = "/create",method = RequestMethod.POST)
     public Map<String,String> create(@RequestBody Map<String,String> map, HttpServletRequest request)
@@ -47,5 +53,13 @@ public class AlbumController {
         Map<String,String> mapReturn = new HashMap<>();
         mapReturn.put("status",albumService.delete(userId,Integer.parseInt(map.get("albumId").toString())));
         return mapReturn;
+    }
+
+    @RequestMapping(value = "/", method = RequestMethod.GET)
+    public List<Album> listAlbums(HttpServletRequest request){
+        Object userIdObject = request.getSession().getAttribute("userId");
+        int userId = Integer.parseInt(userIdObject.toString());
+        List<Album> albums = chenMapper.listAlbum(userId);
+        return albums;
     }
 }
