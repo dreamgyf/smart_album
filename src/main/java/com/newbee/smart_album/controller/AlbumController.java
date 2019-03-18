@@ -1,6 +1,6 @@
 package com.newbee.smart_album.controller;
 
-import com.newbee.smart_album.exception.ForbiddenException;
+import com.newbee.smart_album.exception.ForbiddenAccessException;
 import com.newbee.smart_album.service.AlbumService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -58,7 +58,7 @@ public class AlbumController {
         int userId = Integer.parseInt(userIdObject.toString());
         List<Map<String,Object>> listMap = albumService.getAlbumPhoto(userId,Integer.parseInt(map.get("albumId").toString()));
         if(listMap == null)
-            throw new ForbiddenException();
+            throw new ForbiddenAccessException();
         else return listMap;
     }
 }
