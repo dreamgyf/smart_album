@@ -1,2 +1,1 @@
-# smart_album
-我的read.me
+# WEB端智能相册-后端
