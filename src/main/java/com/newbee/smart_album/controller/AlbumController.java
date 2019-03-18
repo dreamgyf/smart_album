@@ -1,5 +1,6 @@
 package com.newbee.smart_album.controller;
 
+import com.newbee.smart_album.exception.ForbiddenException;
 import com.newbee.smart_album.service.AlbumService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -47,5 +49,16 @@ public class AlbumController {
         Map<String,String> mapReturn = new HashMap<>();
         mapReturn.put("status",albumService.delete(userId,Integer.parseInt(map.get("albumId").toString())));
         return mapReturn;
+    }
+
+    @RequestMapping(value = "/getAlbumPhoto",method = RequestMethod.POST)
+    public List<Map<String,Object>> getAlbumPhoto(@RequestBody Map<String,Object> map,HttpServletRequest request)
+    {
+        Object userIdObject = request.getSession().getAttribute("userId");
+        int userId = Integer.parseInt(userIdObject.toString());
+        List<Map<String,Object>> listMap = albumService.getAlbumPhoto(userId,Integer.parseInt(map.get("albumId").toString()));
+        if(listMap == null)
+            throw new ForbiddenException();
+        else return listMap;
     }
 }

@@ -19,4 +19,6 @@ public interface PhotoService {
     String moveToRecycleBin(int userId,List<Integer> photos);
 
     String edit(int userId,int photoId,String name,String description,int albumId,int isPublic);
+
+    void show(int photoId,HttpServletResponse response);
 }
