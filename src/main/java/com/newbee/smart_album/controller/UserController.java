@@ -38,6 +38,7 @@ public class UserController {
         {
             HttpSession session = request.getSession();
             session.setAttribute("userId",Integer.parseInt(status));
+            session.setMaxInactiveInterval(5 * 60 * 60);
             mapReturn.put("status","ok");
             return mapReturn;
         }
