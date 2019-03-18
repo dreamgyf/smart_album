@@ -2,20 +2,32 @@ package com.newbee.smart_album.tools;
 
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.sql.Timestamp;
 
 @Component
 public class PhotoTool {
 
-    public static final String TEMP_DIR = "/Users/gaoyunfeng/smart_album/temp/";
+    public final String TEMP_DIR;
 
-    public static final String UPLOAD_DIR = "/Users/gaoyunfeng/smart_album/";
+    public final String UPLOAD_DIR;
 
-    public static final String DEFAULT_AVATAR_FILE = "/Users/gaoyunfeng/smart_album/avatar/default_avatar.png";
+    public final String DEFAULT_AVATAR_FILE;
 
-    public static final String DEFAULT_COVER_FILE = "/Users/gaoyunfeng/smart_album/cover/default_cover.png";
+    public final String DEFAULT_COVER_FILE;
 
-    private static final String[] ALLOW_SUFFIX = {"jpg","jpeg","png","bmp"};
+    private static final String[] ALLOW_SUFFIX = {"jpg","jpeg","png","bmp","tiff"};
+
+    public PhotoTool()
+    {
+        //生成相对路径
+        File file = new File(this.getClass().getResource("/").getPath());
+        String path = file.getParentFile().getParent();
+        TEMP_DIR = path + "/image/temp/";
+        UPLOAD_DIR = path + "/image/";
+        DEFAULT_AVATAR_FILE = path + "/image/avatar/default_avatar.png";
+        DEFAULT_COVER_FILE = path + "/image/cover/default_cover.png";
+    }
 
     public boolean checkSuffix(String suffix)
     {

@@ -57,6 +57,7 @@ public class PhotoServiceImpl implements PhotoService {
             return "wrong suffix";//文件没有后缀名
         if(!photoTool.checkSuffix(suffix))
             return "wrong suffix";//不支持的文件后缀
+        ImageIO.scanForPlugins();
         BufferedImage image = ImageIO.read(file.getInputStream());
         if(image == null)
             return "file is not an image";//文件不是图片
@@ -73,7 +74,7 @@ public class PhotoServiceImpl implements PhotoService {
         long fileSizeB = file.getSize();
         photo.setSize(fileSizeB);
         //创建上传路径
-        String uploadPath = PhotoTool.UPLOAD_DIR + userId;
+        String uploadPath = photoTool.UPLOAD_DIR + userId;
         //上传文件
         File uploadFile = new File(uploadPath,uuidName);
         if(!uploadFile.getParentFile().exists())
@@ -183,7 +184,7 @@ public class PhotoServiceImpl implements PhotoService {
             //给文件一个随机UUID作为文件在服务器保存的文件名
             String uuidName = UUID.randomUUID().toString() + '.' + suffix;
             //创建上传路径
-            String uploadPath = PhotoTool.UPLOAD_DIR + userId;
+            String uploadPath = photoTool.UPLOAD_DIR + userId;
             //上传文件
             File uploadFile = new File(uploadPath,uuidName);
             if(!uploadFile.getParentFile().exists())

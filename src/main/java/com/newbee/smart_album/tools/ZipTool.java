@@ -1,5 +1,6 @@
 package com.newbee.smart_album.tools;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.*;
@@ -11,8 +12,11 @@ import java.util.zip.ZipOutputStream;
 @Component
 public class ZipTool {
 
+    @Autowired
+    private PhotoTool photoTool;
+
     public String createZip(List<String> fileFullName,List<String> filePath) {
-        String zipPath = PhotoTool.TEMP_DIR + UUID.randomUUID() + ".zip";
+        String zipPath = photoTool.TEMP_DIR + UUID.randomUUID() + ".zip";
         File zipFile = new File(zipPath);
         InputStream inputStream = null;
         ZipOutputStream zipOutputStream = null;
