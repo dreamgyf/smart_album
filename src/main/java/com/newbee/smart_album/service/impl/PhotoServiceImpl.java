@@ -375,5 +375,26 @@ public class PhotoServiceImpl implements PhotoService {
         albumMapper.updatePhotoAmountByAlbumId(photoMapper.selectAllByPhotoId(photoId).getAlbumId(),1);
         return "ok";
     }
+
+    @Override
+    public void show(int photoId, HttpServletResponse response) {
+
+        response.reset();
+        try {
+            OutputStream outputStream = response.getOutputStream();
+            response.setContentType("image/jpeg");
+            File file = new File(photoMapper.selectAllByPhotoId(photoId).getPath());
+            InputStream inputStream = new FileInputStream(file);
+            int len;
+            byte[] buffer = new byte[1024];
+            while((len = inputStream.read(buffer)) > 0)
+            {
+                outputStream.write(buffer,0,len);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
 }
 

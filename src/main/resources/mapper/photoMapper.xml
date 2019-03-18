@@ -6,12 +6,12 @@
 <mapper namespace="com.newbee.smart_album.dao.mapper.PhotoMapper">
 
     <insert id="insert" parameterType="com.newbee.smart_album.entity.Photo">
-        insert into photo (name,suffix,path,description,information,user_id,album_id,likes,is_public,size,width,height,in_recycle_bin,original_time)
-         VALUES (#{name},#{suffix},#{path},#{description},#{information},#{userId},#{albumId},#{likes},#{isPublic},#{size},#{width},#{height},#{inRecycleBin},#{originalTime})
+        insert into photo (name,suffix,path,description,information,user_id,album_id,likes,is_public,size,width,height,in_recycle_bin,original_time,delete_time)
+         VALUES (#{name},#{suffix},#{path},#{description},#{information},#{userId},#{albumId},#{likes},#{isPublic},#{size},#{width},#{height},#{inRecycleBin},#{originalTime},#{deleteTime})
     </insert>
 
     <select id="selectAllByPhotoId" resultType="com.newbee.smart_album.entity.Photo">
-        select photo_id,name,suffix,path,description,information,user_id,album_id,likes,is_public,size,width,height,in_recycle_bin,original_time
+        select photo_id,name,suffix,path,description,information,user_id,album_id,likes,is_public,size,width,height,in_recycle_bin,original_time,delete_time
         from photo where photo_id=#{photoId}
     </select>
 
@@ -30,4 +30,9 @@
     <update id="updateByPhotoId">
         update photo set name=#{name},description=#{description},album_id=#{albumId},is_public=#{isPublic} where photo_id=#{photoId}
     </update>
+
+    <select id="selectAllPhotoByAlbumIdOrderByOriginalTimeDesc" resultType="com.newbee.smart_album.entity.Photo">
+        select photo_id,name,suffix,path,description,information,user_id,album_id,likes,is_public,size,width,height,in_recycle_bin,original_time,delete_time
+         from photo where album_id=#{albumId} and in_recycle_bin=0 order by original_time desc;
+    </select>
 </mapper>

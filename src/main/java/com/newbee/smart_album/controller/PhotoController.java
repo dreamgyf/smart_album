@@ -8,10 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/photo")
@@ -82,5 +79,11 @@ public class PhotoController {
                 map.get("name").toString(),map.get("description").toString(),Integer.parseInt(map.get("albumId").toString()),
                 Integer.parseInt(map.get("isPublic").toString())));
         return mapReturn;
+    }
+
+    @RequestMapping(value = "/show",method = RequestMethod.GET)
+    public void show(@RequestParam int photoId,HttpServletResponse response)
+    {
+        photoService.show(photoId,response);
     }
 }
