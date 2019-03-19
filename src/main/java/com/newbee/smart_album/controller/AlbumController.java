@@ -25,8 +25,9 @@ public class AlbumController {
     {
         Object userIdObject = request.getSession().getAttribute("userId");
         int userId = Integer.parseInt(userIdObject.toString());
+        albumService.create(userId,map.get("name"),map.get("description"));
         Map<String,String> mapReturn = new HashMap<>();
-        mapReturn.put("status",albumService.create(userId,map.get("name"),map.get("description")));
+        mapReturn.put("status","ok");
         return mapReturn;
     }
 
@@ -35,9 +36,10 @@ public class AlbumController {
     {
         Object userIdObject = request.getSession().getAttribute("userId");
         int userId = Integer.parseInt(userIdObject.toString());
+        albumService.edit(userId,Integer.parseInt(map.get("albumId").toString()),
+                map.get("name").toString(),Integer.parseInt(map.get("photoId").toString()),map.get("description").toString());
         Map<String,String> mapReturn = new HashMap<>();
-        mapReturn.put("status",albumService.edit(userId,Integer.parseInt(map.get("albumId").toString()),
-                map.get("name").toString(),Integer.parseInt(map.get("photoId").toString()),map.get("description").toString()));
+        mapReturn.put("status","ok");
         return mapReturn;
     }
 
@@ -46,8 +48,9 @@ public class AlbumController {
     {
         Object userIdObject = request.getSession().getAttribute("userId");
         int userId = Integer.parseInt(userIdObject.toString());
+        albumService.delete(userId,Integer.parseInt(map.get("albumId").toString()));
         Map<String,String> mapReturn = new HashMap<>();
-        mapReturn.put("status",albumService.delete(userId,Integer.parseInt(map.get("albumId").toString())));
+        mapReturn.put("status","ok");
         return mapReturn;
     }
 

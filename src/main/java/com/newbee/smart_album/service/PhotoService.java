@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface PhotoService {
-    String upload(int userId,MultipartFile file,String name,String description,int isPublic) throws IOException;
+    void upload(int userId,MultipartFile file,String name,String description,int isPublic) throws IOException;
 
     Map<String,Object> uploads(int userId, MultipartFile[] files) throws IOException;
 
@@ -16,9 +16,9 @@ public interface PhotoService {
 
     void downloads(List<Integer> photos,HttpServletResponse response);
 
-    String moveToRecycleBin(int userId,List<Integer> photos);
+    void moveToRecycleBin(int userId,List<Integer> photos);
 
-    String edit(int userId,int photoId,String name,String description,int albumId,int isPublic);
+    void edit(int userId,int photoId,String name,String description,int albumId,int isPublic);
 
-    void show(int photoId,HttpServletResponse response);
+    void show(int userId,int photoId,HttpServletResponse response);
 }

@@ -25,8 +25,9 @@ public class PhotoController {
                                       HttpServletRequest request) throws IOException {
         Object userIdObject = request.getSession().getAttribute("userId");
         int userId = Integer.parseInt(userIdObject.toString());
+        photoService.upload(userId,file,name,description,isPublic);
         Map<String,Object> mapReturn = new HashMap<>();
-        mapReturn.put("status",photoService.upload(userId,file,name,description,isPublic));
+        mapReturn.put("status","ok");
         return mapReturn;
     }
 
@@ -64,8 +65,9 @@ public class PhotoController {
         {
             photos.add(map.get("photoId"));
         }
+        photoService.moveToRecycleBin(userId,photos);
         Map<String,String> mapReturn = new HashMap<>();
-        mapReturn.put("status",photoService.moveToRecycleBin(userId,photos));
+        mapReturn.put("status","ok");
         return mapReturn;
     }
 
@@ -74,16 +76,19 @@ public class PhotoController {
     {
         Object userIdObject = request.getSession().getAttribute("userId");
         int userId = Integer.parseInt(userIdObject.toString());
-        Map<String,String> mapReturn = new HashMap<>();
-        mapReturn.put("status",photoService.edit(userId,Integer.parseInt(map.get("photoId").toString()),
+        photoService.edit(userId,Integer.parseInt(map.get("photoId").toString()),
                 map.get("name").toString(),map.get("description").toString(),Integer.parseInt(map.get("albumId").toString()),
-                Integer.parseInt(map.get("isPublic").toString())));
+                Integer.parseInt(map.get("isPublic").toString()));
+        Map<String,String> mapReturn = new HashMap<>();
+        mapReturn.put("status","ok");
         return mapReturn;
     }
 
     @RequestMapping(value = "/show",method = RequestMethod.GET)
-    public void show(@RequestParam int photoId,HttpServletResponse response)
+    public void show(@RequestParam int photoId,HttpServletRequest request,HttpServletResponse response)
     {
-        photoService.show(photoId,response);
+        Object userIdObject = request.getSession().getAttribute("userId");
+        int userId = Integer.parseInt(userIdObject.toString());
+        photoService.show(userId,photoId,response);
     }
 }
