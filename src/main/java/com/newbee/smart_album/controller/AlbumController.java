@@ -1,14 +1,13 @@
 package com.newbee.smart_album.controller;
 
+import com.newbee.smart_album.exception.ForbiddenAccessException;
 import com.newbee.smart_album.service.AlbumService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -23,8 +22,9 @@ public class AlbumController {
     {
         Object userIdObject = request.getSession().getAttribute("userId");
         int userId = Integer.parseInt(userIdObject.toString());
+        albumService.create(userId,map.get("name"),map.get("description"));
         Map<String,String> mapReturn = new HashMap<>();
-        mapReturn.put("status",albumService.create(userId,map.get("name"),map.get("description")));
+        mapReturn.put("status","ok");
         return mapReturn;
     }
 
@@ -33,9 +33,10 @@ public class AlbumController {
     {
         Object userIdObject = request.getSession().getAttribute("userId");
         int userId = Integer.parseInt(userIdObject.toString());
+        albumService.edit(userId,Integer.parseInt(map.get("albumId").toString()),
+                map.get("name").toString(),Integer.parseInt(map.get("photoId").toString()),map.get("description").toString());
         Map<String,String> mapReturn = new HashMap<>();
-        mapReturn.put("status",albumService.edit(userId,Integer.parseInt(map.get("albumId").toString()),
-                map.get("name").toString(),Integer.parseInt(map.get("photoId").toString()),map.get("description").toString()));
+        mapReturn.put("status","ok");
         return mapReturn;
     }
 
@@ -44,8 +45,20 @@ public class AlbumController {
     {
         Object userIdObject = request.getSession().getAttribute("userId");
         int userId = Integer.parseInt(userIdObject.toString());
+        albumService.delete(userId,Integer.parseInt(map.get("albumId").toString()));
         Map<String,String> mapReturn = new HashMap<>();
-        mapReturn.put("status",albumService.delete(userId,Integer.parseInt(map.get("albumId").toString())));
+        mapReturn.put("status","ok");
         return mapReturn;
+    }
+
+    @RequestMapping(value = "/getAlbumPhoto",method = RequestMethod.GET)
+    public List<Map<String,Object>> getAlbumPhoto(@RequestParam int albumId, HttpServletRequest request)
+    {
+        Object userIdObject = request.getSession().getAttribute("userId");
+        int userId = Integer.parseInt(userIdObject.toString());
+        List<Map<String,Object>> listMap = albumService.getAlbumPhoto(userId,albumId);
+        if(listMap == null)
+            throw new ForbiddenAccessException();
+        else return listMap;
     }
 }

@@ -10,6 +10,7 @@ import com.newbee.smart_album.dao.mapper.AlbumMapper;
 import com.newbee.smart_album.dao.mapper.PhotoMapper;
 import com.newbee.smart_album.dao.mapper.UserMapper;
 import com.newbee.smart_album.entity.Photo;
+import com.newbee.smart_album.exception.*;
 import com.newbee.smart_album.service.PhotoService;
 import com.newbee.smart_album.tools.PhotoTool;
 import com.newbee.smart_album.tools.ZipTool;
@@ -45,22 +46,22 @@ public class PhotoServiceImpl implements PhotoService {
     private UserMapper userMapper;
 
     @Override
-    public String upload(int userId, MultipartFile file, String name, String description, int isPublic) throws IOException {
+    public void upload(int userId, MultipartFile file, String name, String description, int isPublic) throws IOException {
         if(file == null)
-            return "empty file error";//上传空文件时返回-1
+            throw new EmptyFileException();//上传空文件时返回-1
         String fileName = file.getOriginalFilename();
         int dot = fileName.lastIndexOf(".");
         String suffix;
         if(dot != -1 && dot < fileName.length())
             suffix = fileName.substring(dot + 1);
         else
-            return "wrong suffix";//文件没有后缀名
+            throw new SuffixErrorException();//文件没有后缀名
         if(!photoTool.checkSuffix(suffix))
-            return "wrong suffix";//不支持的文件后缀
+            throw new SuffixErrorException();//不支持的文件后缀
         ImageIO.scanForPlugins();
         BufferedImage image = ImageIO.read(file.getInputStream());
         if(image == null)
-            return "file is not an image";//文件不是图片
+            throw new NotImageException();//文件不是图片
         //新建一个Photo对象用来保存照片信息并写入数据库
         Photo photo = new Photo();
         if(name != null)
@@ -76,11 +77,11 @@ public class PhotoServiceImpl implements PhotoService {
         //创建上传路径
         String uploadPath = photoTool.UPLOAD_DIR + userId;
         //上传文件
-        File uploadFile = new File(uploadPath,uuidName);
+        File uploadFile = new File(photoTool.LOCAL_DIR + uploadPath,uuidName);
         if(!uploadFile.getParentFile().exists())
         {
             if(!uploadFile.getParentFile().mkdirs())
-                return "upload failed";//上传失败,文件创建失败
+                throw new UploadFailedException();//上传失败,文件创建失败
         }
         file.transferTo(uploadFile);
         //如果是jpeg格式的图片，处理EXIF信息
@@ -146,7 +147,6 @@ public class PhotoServiceImpl implements PhotoService {
         //更新相册信息
         albumMapper.updatePhotoAmountByAlbumId(albumId,1);
         albumMapper.updateLastEditTimeByAlbumId(albumId,new Timestamp(System.currentTimeMillis()));
-        return "ok";//成功
     }
 
     @Override
@@ -186,7 +186,7 @@ public class PhotoServiceImpl implements PhotoService {
             //创建上传路径
             String uploadPath = photoTool.UPLOAD_DIR + userId;
             //上传文件
-            File uploadFile = new File(uploadPath,uuidName);
+            File uploadFile = new File(photoTool.LOCAL_DIR + uploadPath,uuidName);
             if(!uploadFile.getParentFile().exists())
             {
                 if(!uploadFile.getParentFile().mkdirs())
@@ -256,7 +256,7 @@ public class PhotoServiceImpl implements PhotoService {
     @Override
     public void download(int photoId, HttpServletResponse response) {
         Photo photo = photoMapper.selectAllByPhotoId(photoId);
-        File file = new File(photo.getPath());
+        File file = new File(photoTool.LOCAL_DIR + photo.getPath());
         String fileName = photo.getName() + "." + photo.getSuffix();
         //设置请求头
         response.reset();
@@ -350,30 +350,67 @@ public class PhotoServiceImpl implements PhotoService {
     }
 
     @Override
-    public String moveToRecycleBin(int userId,List<Integer> photos) {
+    public void moveToRecycleBin(int userId,List<Integer> photos) {
         for(int photoId : photos)
         {
             //对photo_id和user_id进行校验
             if(photoMapper.selectAllByPhotoId(photoId).getUserId() != userId)
-                return "forbid edit";
+                throw new ForbiddenEditException();
+            //不能对已经在回收站对照片重复删除
+            if(photoMapper.selectInRecycleBinByPhotoId(photoId) != null)
+                throw new ForbiddenEditException();
             photoMapper.moveToRecycleBinByPhotoId(photoId,new Timestamp(System.currentTimeMillis()));
             //对user表和album表的photo_amount更新，对user表的photo_in_recycle_bin_amount更新
             userMapper.updatePhotoAmountByUserId(userId,-1);
             albumMapper.updatePhotoAmountByAlbumId(photoMapper.selectAllByPhotoId(photoId).getAlbumId(),-1);
             userMapper.updatePhotoInRecycleBinAmountByUserId(userId,1);
         }
-        return "ok";
     }
 
     @Override
-    public String edit(int userId,int photoId, String name, String description, int albumId, int isPublic) {
+    public void edit(int userId,int photoId, String name, String description, int albumId, int isPublic) {
         //对photo_id和user_id进行校验
         if(photoMapper.selectAllByPhotoId(photoId).getUserId() != userId)
-            return "forbid edit";
+            throw new ForbiddenEditException();
+        //不能对在回收站对照片编辑
+        if(photoMapper.selectInRecycleBinByPhotoId(photoId) != null)
+            throw new ForbiddenEditException();
         albumMapper.updatePhotoAmountByAlbumId(photoMapper.selectAllByPhotoId(photoId).getAlbumId(),-1);
         photoMapper.updateByPhotoId(photoId,name,description, albumId,isPublic);
         albumMapper.updatePhotoAmountByAlbumId(photoMapper.selectAllByPhotoId(photoId).getAlbumId(),1);
-        return "ok";
+    }
+
+    @Override
+    public void show(int userId,int photoId, HttpServletResponse response) {
+        Photo photo = photoMapper.selectAllByPhotoId(photoId);
+        if(photo.getUserId() != userId && photo.getIsPublic() == 0)
+            throw new ForbiddenAccessException();
+        response.reset();
+        if(photoTool.isJpeg(photo.getSuffix()))
+            response.setContentType("image/jpeg");
+        else if(photoTool.isPng(photo.getSuffix()))
+            response.setContentType("image/png");
+        else if(photoTool.isBmp(photo.getSuffix()))
+            response.setContentType("application/x-bmp");
+        else if(photoTool.isTiff(photo.getSuffix()))
+            response.setContentType("image/tiff");
+        else
+        {
+
+        }
+        try {
+            OutputStream outputStream = response.getOutputStream();
+            File file = new File(photoTool.LOCAL_DIR + photo.getPath());
+            InputStream inputStream = new FileInputStream(file);
+            int len;
+            byte[] buffer = new byte[1024];
+            while((len = inputStream.read(buffer)) > 0)
+            {
+                outputStream.write(buffer,0,len);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
 
