@@ -4,6 +4,7 @@ import com.newbee.smart_album.dao.mapper.ChenMapper;
 import com.newbee.smart_album.entity.Album;
 import com.newbee.smart_album.exception.ForbiddenException;
 
+import com.newbee.smart_album.exception.ForbiddenAccessException;
 import com.newbee.smart_album.service.AlbumService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
