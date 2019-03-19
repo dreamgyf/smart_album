@@ -2,15 +2,10 @@ package com.newbee.smart_album.controller;
 
 import com.newbee.smart_album.dao.mapper.ChenMapper;
 import com.newbee.smart_album.entity.Album;
-import com.newbee.smart_album.exception.ForbiddenException;
-
 import com.newbee.smart_album.exception.ForbiddenAccessException;
 import com.newbee.smart_album.service.AlbumService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -64,14 +59,14 @@ public class AlbumController {
         List<Album> albums = chenMapper.listAlbum(userId);
         return albums;
         }
-    @RequestMapping(value = "/getAlbumPhoto",method = RequestMethod.POST)
-    public List<Map<String,Object>> getAlbumPhoto(@RequestBody Map<String,Object> map,HttpServletRequest request)
+    @RequestMapping(value = "/photos",method = RequestMethod.GET)
+    public List<Map<String,Object>> getAlbumPhoto(@RequestParam(value = "albumId")String albumId, HttpServletRequest request)
     {
         Object userIdObject = request.getSession().getAttribute("userId");
         int userId = Integer.parseInt(userIdObject.toString());
-        List<Map<String,Object>> listMap = albumService.getAlbumPhoto(userId,Integer.parseInt(map.get("albumId").toString()));
+        List<Map<String, Object>> listMap = albumService.getAlbumPhoto(userId, Integer.parseInt(albumId));
         if(listMap == null)
-            throw new ForbiddenException();
+            throw new ForbiddenAccessException();
         else return listMap;
     }
 }
