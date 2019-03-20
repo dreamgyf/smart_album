@@ -24,7 +24,7 @@ public class PhotoTool {
     {
         //生成相对路径
         File file = new File(this.getClass().getResource("/").getPath());
-        LOCAL_DIR = file.getParentFile().getParentFile().getParent();
+        LOCAL_DIR = file.getParentFile().getParent();
     }
 
     public boolean checkSuffix(String suffix)
