@@ -1,5 +1,6 @@
 package com.newbee.smart_album.controller;
 
+import com.newbee.smart_album.entity.Photo;
 import com.newbee.smart_album.service.PhotoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -8,7 +9,10 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/photo")
@@ -102,7 +106,7 @@ public class PhotoController {
     }
 
     @RequestMapping(value = "/getProperty",method = RequestMethod.GET)
-    public Map<String ,Object> getProperty(@RequestParam int photoId)
+    public Photo getProperty(@RequestParam int photoId)
     {
         return photoService.getProperty(photoId);
     }

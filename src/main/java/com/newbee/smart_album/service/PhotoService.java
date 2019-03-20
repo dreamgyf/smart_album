@@ -1,5 +1,6 @@
 package com.newbee.smart_album.service;
 
+import com.newbee.smart_album.entity.Photo;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -24,5 +25,5 @@ public interface PhotoService {
 
     List<Map<String,Object>> getRecycleBinPhotos(int userId);
 
-    Map<String,Object> getProperty(int photoId);
+    Photo getProperty(int photoId);
 }

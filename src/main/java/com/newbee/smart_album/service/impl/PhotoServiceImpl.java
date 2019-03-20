@@ -449,13 +449,8 @@ public class PhotoServiceImpl implements PhotoService {
     }
 
     @Override
-    public Map<String, Object> getProperty(int photoId) {
-        Photo photo = photoMapper.selectAllByPhotoId(photoId);
-        Map<String,Object> map = new HashMap<>();
-        map.put("name",photo.getName());
-        map.put("description",photo.getDescription());
-        map.put("isPublic",photo.getIsPublic());
-        return map;
+    public Photo getProperty(int photoId) {
+        return photoMapper.selectAllByPhotoId(photoId);
     }
 }
 
