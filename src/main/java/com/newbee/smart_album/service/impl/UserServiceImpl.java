@@ -59,7 +59,7 @@ public class UserServiceImpl implements UserService {
         Album album = new Album();
         album.setUserId(userId);
         album.setName("default_album");
-        album.setCover(photoTool.DEFAULT_COVER_FILE);
+        album.setCover(0);
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         album.setCreateTime(timestamp);
         album.setLastEditTime(timestamp);

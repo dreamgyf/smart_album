@@ -41,4 +41,9 @@
     <select id="selectIsDefaultAlbumByAlbumId" resultType="INTEGER">
         select 1 from album where album_id=#{albumId} and is_default_album=1
     </select>
+
+    <select id="selectAllByUserId" resultType="com.newbee.smart_album.entity.Album">
+        select album_id,name,user_id,cover,create_time,last_edit_time,description,is_default_album,photo_amount
+        from album where user_id=#{userId}
+    </select>
 </mapper>

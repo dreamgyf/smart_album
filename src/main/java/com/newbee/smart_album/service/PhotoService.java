@@ -23,7 +23,7 @@ public interface PhotoService {
 
     void show(int userId,int photoId,HttpServletResponse response);
 
-    List<Map<String,Object>> getRecycleBinPhotos(int userId);
+    List<Photo> getRecycleBinPhotos(int userId);
 
     Photo getProperty(int photoId);
 }

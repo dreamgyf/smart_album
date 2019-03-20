@@ -436,16 +436,8 @@ public class PhotoServiceImpl implements PhotoService {
     }
 
     @Override
-    public List<Map<String, Object>> getRecycleBinPhotos(int userId) {
-        List<Photo> photos = photoMapper.selectPhotoInRecycleBinByUserId(userId);
-        List<Map<String, Object>> listMap = new ArrayList<>();
-        for(Photo photo : photos)
-        {
-            Map<String,Object> map = new HashMap<>();
-            map.put("photoId",photo.getPhotoId());
-            listMap.add(map);
-        }
-        return listMap;
+    public List<Photo> getRecycleBinPhotos(int userId) {
+        return photoMapper.selectPhotoInRecycleBinByUserId(userId);
     }
 
     @Override

@@ -97,17 +97,16 @@ public class PhotoController {
     }
 
     @RequestMapping(value = "/getRecycleBinPhotos")
-    public List<Map<String,Object>> getRecycleBinPhotos (HttpServletRequest request)
+    public List<Photo> getRecycleBinPhotos (HttpServletRequest request)
     {
         Object userIdObject = request.getSession().getAttribute("userId");
         int userId = Integer.parseInt(userIdObject.toString());
-        List<Map<String,Object>> listMap = photoService.getRecycleBinPhotos(userId);
-        return listMap;
+        return photoService.getRecycleBinPhotos(userId);
     }
 
-    @RequestMapping(value = "/getProperty",method = RequestMethod.GET)
-    public Photo getProperty(@RequestParam int photoId)
-    {
-        return photoService.getProperty(photoId);
-    }
+//    @RequestMapping(value = "/getProperty",method = RequestMethod.GET)
+//    public Photo getProperty(@RequestParam int photoId)
+//    {
+//        return photoService.getProperty(photoId);
+//    }
 }

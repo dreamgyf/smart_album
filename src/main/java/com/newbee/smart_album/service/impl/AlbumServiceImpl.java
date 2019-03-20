@@ -13,10 +13,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class AlbumServiceImpl implements AlbumService {
@@ -35,7 +32,7 @@ public class AlbumServiceImpl implements AlbumService {
         Album album = new Album();
         album.setName(name);
         album.setUserId(userId);
-        album.setCover(photoTool.DEFAULT_COVER_FILE);
+        album.setCover(0);
         album.setDescription(description);
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         album.setCreateTime(timestamp);
@@ -61,10 +58,10 @@ public class AlbumServiceImpl implements AlbumService {
             //相册封面不能选在回收站里的照片
             if(photoMapper.selectInRecycleBinByPhotoId(photoId) != null)
                 throw new ForbiddenAccessException();
-            albumMapper.editAlbumByAlbumId(albumId,name,photoMapper.selectAllByPhotoId(photoId).getPath(),description);
+            albumMapper.editAlbumByAlbumId(albumId,name,photoId,description);
         }
         else
-            albumMapper.editAlbumByAlbumId(albumId,name,photoTool.DEFAULT_COVER_FILE,description);
+            albumMapper.editAlbumByAlbumId(albumId,name,0,description);
         albumMapper.updateLastEditTimeByAlbumId(albumId,new Timestamp(System.currentTimeMillis()));
     }
 
@@ -86,18 +83,15 @@ public class AlbumServiceImpl implements AlbumService {
     }
 
     @Override
-    public List<Map<String, Object>> getAlbumPhoto(int userId, int albumId) {
+    public List<Photo> getAlbumPhotos(int userId, int albumId) {
         //校验user_id和album_id
         if(albumMapper.selectUserIdByAlbumId(albumId) != userId)
-            return null;
-        List<Photo> photos = photoMapper.selectAllPhotoByAlbumIdOrderByOriginalTimeDesc(albumId);
-        List<Map<String, Object>> listMap = new ArrayList<>();
-        for(Photo photo : photos)
-        {
-            Map<String,Object> map = new HashMap<>();
-            map.put("photoId",photo.getPhotoId());
-            listMap.add(map);
-        }
-        return listMap;
+            throw new ForbiddenAccessException();
+        return photoMapper.selectAllPhotoByAlbumIdOrderByOriginalTimeDesc(albumId);
+    }
+
+    @Override
+    public List<Album> getAlbumList(int userId) {
+        return albumMapper.selectAllByUserId(userId);
     }
 }

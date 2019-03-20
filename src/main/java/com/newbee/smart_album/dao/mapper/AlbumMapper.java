@@ -4,6 +4,7 @@ import com.newbee.smart_album.entity.Album;
 import org.apache.ibatis.annotations.Param;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 public interface AlbumMapper {
 
@@ -17,7 +18,7 @@ public interface AlbumMapper {
 
     void updateLastEditTimeByAlbumId(@Param("albumId") int albumId, @Param("time")Timestamp time);
 
-    void editAlbumByAlbumId(@Param("albumId") int albumId,@Param("name") String name,@Param("cover") String cover,
+    void editAlbumByAlbumId(@Param("albumId") int albumId,@Param("name") String name,@Param("cover") int cover,
                          @Param("description") String description);
 
     void deleteByAlbumId(@Param("albumId") int albumId);
@@ -25,4 +26,6 @@ public interface AlbumMapper {
     Integer selectUserIdByAlbumId(@Param("albumId") int albumId);
 
     Integer selectIsDefaultAlbumByAlbumId(@Param("albumId") int albumId);
+
+    List<Album> selectAllByUserId(@Param("userId") int userId);
 }

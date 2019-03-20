@@ -10,7 +10,7 @@ public class Album {
 
     private Integer userId;
 
-    private String cover;
+    private int cover;
 
     private Timestamp createTime;
 
@@ -46,11 +46,11 @@ public class Album {
         this.userId = userId;
     }
 
-    public String getCover() {
+    public int getCover() {
         return cover;
     }
 
-    public void setCover(String cover) {
+    public void setCover(int cover) {
         this.cover = cover;
     }
 
