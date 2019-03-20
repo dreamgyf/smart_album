@@ -51,8 +51,8 @@ public class AlbumController {
         return mapReturn;
     }
 
-    @RequestMapping(value = "/getAlbumPhoto",method = RequestMethod.GET)
-    public List<Map<String,Object>> getAlbumPhoto(@RequestParam int albumId, HttpServletRequest request)
+    @RequestMapping(value = "/getAlbumPhotos",method = RequestMethod.GET)
+    public List<Map<String,Object>> getAlbumPhotos(@RequestParam int albumId, HttpServletRequest request)
     {
         Object userIdObject = request.getSession().getAttribute("userId");
         int userId = Integer.parseInt(userIdObject.toString());
