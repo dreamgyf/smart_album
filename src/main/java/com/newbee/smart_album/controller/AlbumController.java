@@ -61,4 +61,10 @@ public class AlbumController {
             throw new ForbiddenAccessException();
         else return listMap;
     }
+
+//    @RequestMapping(value = "/getAlbumList")
+//    public List<Map<String,Object>> getAlbumList(HttpServletRequest request)
+//    {
+//
+//    }
 }

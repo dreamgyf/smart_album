@@ -382,35 +382,57 @@ public class PhotoServiceImpl implements PhotoService {
 
     @Override
     public void show(int userId,int photoId, HttpServletResponse response) {
-        Photo photo = photoMapper.selectAllByPhotoId(photoId);
-        if(photo.getUserId() != userId && photo.getIsPublic() == 0)
-            throw new ForbiddenAccessException();
-        response.reset();
-        if(photoTool.isJpeg(photo.getSuffix()))
-            response.setContentType("image/jpeg");
-        else if(photoTool.isPng(photo.getSuffix()))
-            response.setContentType("image/png");
-        else if(photoTool.isBmp(photo.getSuffix()))
-            response.setContentType("application/x-bmp");
-        else if(photoTool.isTiff(photo.getSuffix()))
-            response.setContentType("image/tiff");
+        if(photoId == 0)
+        {
+            try {
+                response.reset();
+                response.setContentType("image/png");
+                OutputStream outputStream = response.getOutputStream();
+                File file = new File(photoTool.LOCAL_DIR + photoTool.DEFAULT_COVER_FILE);
+                InputStream inputStream = new FileInputStream(file);
+                int len;
+                byte[] buffer = new byte[1024];
+                while((len = inputStream.read(buffer)) > 0)
+                {
+                    outputStream.write(buffer,0,len);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         else
         {
-
-        }
-        try {
-            OutputStream outputStream = response.getOutputStream();
-            File file = new File(photoTool.LOCAL_DIR + photo.getPath());
-            InputStream inputStream = new FileInputStream(file);
-            int len;
-            byte[] buffer = new byte[1024];
-            while((len = inputStream.read(buffer)) > 0)
+            Photo photo = photoMapper.selectAllByPhotoId(photoId);
+            if(photo.getUserId() != userId && photo.getIsPublic() == 0)
+                throw new ForbiddenAccessException();
+            response.reset();
+            if(photoTool.isJpeg(photo.getSuffix()))
+                response.setContentType("image/jpeg");
+            else if(photoTool.isPng(photo.getSuffix()))
+                response.setContentType("image/png");
+            else if(photoTool.isBmp(photo.getSuffix()))
+                response.setContentType("application/x-bmp");
+            else if(photoTool.isTiff(photo.getSuffix()))
+                response.setContentType("image/tiff");
+            else
             {
-                outputStream.write(buffer,0,len);
+                throw new SuffixErrorException();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+            try {
+                OutputStream outputStream = response.getOutputStream();
+                File file = new File(photoTool.LOCAL_DIR + photo.getPath());
+                InputStream inputStream = new FileInputStream(file);
+                int len;
+                byte[] buffer = new byte[1024];
+                while((len = inputStream.read(buffer)) > 0)
+                {
+                    outputStream.write(buffer,0,len);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
+
     }
 
     @Override
