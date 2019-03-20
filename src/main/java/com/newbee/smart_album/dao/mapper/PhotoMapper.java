@@ -24,4 +24,6 @@ public interface PhotoMapper {
     List<Photo> selectAllPhotoByAlbumIdOrderByOriginalTimeDesc(@Param("albumId") int albumId);
 
     Integer selectInRecycleBinByPhotoId(@Param("photoId") int photoId);
+
+    List<Photo> selectPhotoInRecycleBinByUserId(@Param("userId") int userId);
 }

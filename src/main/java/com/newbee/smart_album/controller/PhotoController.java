@@ -91,4 +91,19 @@ public class PhotoController {
         int userId = Integer.parseInt(userIdObject.toString());
         photoService.show(userId,photoId,response);
     }
+
+    @RequestMapping(value = "/getRecycleBinPhotos")
+    public List<Map<String,Object>> getRecycleBinPhotos (HttpServletRequest request)
+    {
+        Object userIdObject = request.getSession().getAttribute("userId");
+        int userId = Integer.parseInt(userIdObject.toString());
+        List<Map<String,Object>> listMap = photoService.getRecycleBinPhotos(userId);
+        return listMap;
+    }
+
+    @RequestMapping(value = "/getProperty",method = RequestMethod.GET)
+    public Map<String ,Object> getProperty(@RequestParam int photoId)
+    {
+        return photoService.getProperty(photoId);
+    }
 }

@@ -21,4 +21,8 @@ public interface PhotoService {
     void edit(int userId,int photoId,String name,String description,int albumId,int isPublic);
 
     void show(int userId,int photoId,HttpServletResponse response);
+
+    List<Map<String,Object>> getRecycleBinPhotos(int userId);
+
+    Map<String,Object> getProperty(int photoId);
 }

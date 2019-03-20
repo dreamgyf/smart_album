@@ -39,4 +39,9 @@
     <select id="selectInRecycleBinByPhotoId" resultType="INTEGER">
         select 1 from photo where photo_id=#{photoId} and in_recycle_bin=1;
     </select>
+
+    <select id="selectPhotoInRecycleBinByUserId" resultType="com.newbee.smart_album.entity.Photo">
+        select photo_id,name,suffix,path,description,information,user_id,album_id,likes,is_public,size,width,height,in_recycle_bin,original_time,delete_time
+         from photo where user_id=#{userId} and in_recycle_bin=1
+    </select>
 </mapper>
