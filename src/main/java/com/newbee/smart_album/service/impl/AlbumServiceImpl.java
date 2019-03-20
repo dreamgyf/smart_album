@@ -96,6 +96,7 @@ public class AlbumServiceImpl implements AlbumService {
         {
             Map<String,Object> map = new HashMap<>();
             map.put("photoId",photo.getPhotoId());
+            map.put("path", "/api/photo/show?photoId=" + photo.getPhotoId());
             listMap.add(map);
         }
         return listMap;
