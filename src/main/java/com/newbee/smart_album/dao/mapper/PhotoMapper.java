@@ -19,9 +19,11 @@ public interface PhotoMapper {
     void moveToRecycleBinByPhotoId(@Param("photoId") int photoId, @Param("time") Timestamp time);
 
     void updateByPhotoId(@Param("photoId") int photoId, @Param("name") String name,@Param("description") String description,
-                         @Param("albumId") int albumId,@Param("isPublic") int isPublic);
+                         @Param("isPublic") int isPublic);
 
     List<Photo> selectAllPhotoByAlbumIdOrderByOriginalTimeDesc(@Param("albumId") int albumId);
 
     Integer selectInRecycleBinByPhotoId(@Param("photoId") int photoId);
+
+    List<Photo> selectPhotoInRecycleBinByUserId(@Param("userId") int userId);
 }

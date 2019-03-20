@@ -46,7 +46,7 @@ public class PhotoServiceImpl implements PhotoService {
     private UserMapper userMapper;
 
     @Override
-    public void upload(int userId, MultipartFile file, String name, String description, int isPublic) throws IOException {
+    public void upload(int userId, MultipartFile file, String name, String description,int albumId, int isPublic) throws IOException {
         if(file == null)
             throw new EmptyFileException();//上传空文件时返回-1
         String fileName = file.getOriginalFilename();
@@ -133,7 +133,6 @@ public class PhotoServiceImpl implements PhotoService {
         else
             photo.setDescription("");
         photo.setLikes(0);
-        int albumId = albumMapper.selectDefaultAlbumIdByUserId(userId);
         photo.setAlbumId(albumId);
         photo.setIsPublic(isPublic);
         photo.setInRecycleBin(0);
@@ -150,7 +149,7 @@ public class PhotoServiceImpl implements PhotoService {
     }
 
     @Override
-    public Map<String,Object> uploads(int userId, MultipartFile[] files) throws IOException {
+    public Map<String,Object> uploads(int userId,int albumId, MultipartFile[] files) throws IOException {
         int successCount = 0;
         int failedCount = 0;
         for(MultipartFile file : files)
@@ -231,10 +230,9 @@ public class PhotoServiceImpl implements PhotoService {
             photo.setHeight(image.getHeight());
             photo.setUserId(userId);
             photo.setLikes(0);
-            int albumId = albumMapper.selectDefaultAlbumIdByUserId(userId);
             photo.setAlbumId(albumId);
             photo.setInRecycleBin(0);
-            photo.setPath(uploadPath + "/" + userId + "/" + uuidName);
+            photo.setPath(uploadPath + "/" + uuidName);
             photo.setDescription("");
             //将photo对象写入数据库
             photoMapper.insert(photo);
@@ -368,49 +366,89 @@ public class PhotoServiceImpl implements PhotoService {
     }
 
     @Override
-    public void edit(int userId,int photoId, String name, String description, int albumId, int isPublic) {
+    public void edit(int userId,int photoId, String name, String description, int isPublic) {
         //对photo_id和user_id进行校验
         if(photoMapper.selectAllByPhotoId(photoId).getUserId() != userId)
             throw new ForbiddenEditException();
         //不能对在回收站对照片编辑
         if(photoMapper.selectInRecycleBinByPhotoId(photoId) != null)
             throw new ForbiddenEditException();
-        albumMapper.updatePhotoAmountByAlbumId(photoMapper.selectAllByPhotoId(photoId).getAlbumId(),-1);
-        photoMapper.updateByPhotoId(photoId,name,description, albumId,isPublic);
-        albumMapper.updatePhotoAmountByAlbumId(photoMapper.selectAllByPhotoId(photoId).getAlbumId(),1);
+        photoMapper.updateByPhotoId(photoId,name,description,isPublic);
     }
 
     @Override
     public void show(int userId,int photoId, HttpServletResponse response) {
-        Photo photo = photoMapper.selectAllByPhotoId(photoId);
-        if(photo.getUserId() != userId && photo.getIsPublic() == 0)
-            throw new ForbiddenAccessException();
-        response.reset();
-        if(photoTool.isJpeg(photo.getSuffix()))
-            response.setContentType("image/jpeg");
-        else if(photoTool.isPng(photo.getSuffix()))
-            response.setContentType("image/png");
-        else if(photoTool.isBmp(photo.getSuffix()))
-            response.setContentType("application/x-bmp");
-        else if(photoTool.isTiff(photo.getSuffix()))
-            response.setContentType("image/tiff");
+        if(photoId == 0)
+        {
+            try {
+                response.reset();
+                response.setContentType("image/png");
+                OutputStream outputStream = response.getOutputStream();
+                File file = new File(photoTool.LOCAL_DIR + photoTool.DEFAULT_COVER_FILE);
+                InputStream inputStream = new FileInputStream(file);
+                int len;
+                byte[] buffer = new byte[1024];
+                while((len = inputStream.read(buffer)) > 0)
+                {
+                    outputStream.write(buffer,0,len);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         else
         {
-
-        }
-        try {
-            OutputStream outputStream = response.getOutputStream();
-            File file = new File(photoTool.LOCAL_DIR + photo.getPath());
-            InputStream inputStream = new FileInputStream(file);
-            int len;
-            byte[] buffer = new byte[1024];
-            while((len = inputStream.read(buffer)) > 0)
+            Photo photo = photoMapper.selectAllByPhotoId(photoId);
+            if(photo.getUserId() != userId && photo.getIsPublic() == 0)
+                throw new ForbiddenAccessException();
+            response.reset();
+            if(photoTool.isJpeg(photo.getSuffix()))
+                response.setContentType("image/jpeg");
+            else if(photoTool.isPng(photo.getSuffix()))
+                response.setContentType("image/png");
+            else if(photoTool.isBmp(photo.getSuffix()))
+                response.setContentType("application/x-bmp");
+            else if(photoTool.isTiff(photo.getSuffix()))
+                response.setContentType("image/tiff");
+            else
             {
-                outputStream.write(buffer,0,len);
+                throw new SuffixErrorException();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+            try {
+                OutputStream outputStream = response.getOutputStream();
+                File file = new File(photoTool.LOCAL_DIR + photo.getPath());
+                InputStream inputStream = new FileInputStream(file);
+                int len;
+                byte[] buffer = new byte[1024];
+                while((len = inputStream.read(buffer)) > 0)
+                {
+                    outputStream.write(buffer,0,len);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
+
+    @Override
+    public List<Photo> getRecycleBinPhotos(int userId) {
+        return photoMapper.selectPhotoInRecycleBinByUserId(userId);
+    }
+
+    @Override
+    public void move(int userId, int photoId, int albumId) {
+        //对photo_id和user_id进行校验
+        if(photoMapper.selectAllByPhotoId(photoId).getUserId() != userId)
+            throw new ForbiddenEditException();
+        //相册内图片数量更新
+        albumMapper.updatePhotoAmountByAlbumId(photoMapper.selectAllByPhotoId(photoId).getAlbumId(),-1);
+        photoMapper.updateAlbumIdByPhotoId(photoId,albumId);
+        albumMapper.updatePhotoAmountByAlbumId(photoMapper.selectAllByPhotoId(photoId).getAlbumId(),1);
+    }
+
+//    @Override
+//    public Photo getProperty(int photoId) {
+//        return photoMapper.selectAllByPhotoId(photoId);
+//    }
 }
 

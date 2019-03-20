@@ -1,6 +1,7 @@
 package com.newbee.smart_album.controller;
 
-import com.newbee.smart_album.exception.ForbiddenAccessException;
+import com.newbee.smart_album.entity.Album;
+import com.newbee.smart_album.entity.Photo;
 import com.newbee.smart_album.service.AlbumService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -51,14 +52,19 @@ public class AlbumController {
         return mapReturn;
     }
 
-    @RequestMapping(value = "/getAlbumPhoto",method = RequestMethod.GET)
-    public List<Map<String,Object>> getAlbumPhoto(@RequestParam int albumId, HttpServletRequest request)
+    @RequestMapping(value = "/getAlbumPhotos",method = RequestMethod.GET)
+    public List<Photo> getAlbumPhotos(@RequestParam int albumId, HttpServletRequest request)
     {
         Object userIdObject = request.getSession().getAttribute("userId");
         int userId = Integer.parseInt(userIdObject.toString());
-        List<Map<String,Object>> listMap = albumService.getAlbumPhoto(userId,albumId);
-        if(listMap == null)
-            throw new ForbiddenAccessException();
-        else return listMap;
+        return albumService.getAlbumPhotos(userId,albumId);
+    }
+
+    @RequestMapping(value = "/getAlbumList")
+    public List<Album> getAlbumList(HttpServletRequest request)
+    {
+        Object userIdObject = request.getSession().getAttribute("userId");
+        int userId = Integer.parseInt(userIdObject.toString());
+        return albumService.getAlbumList(userId);
     }
 }
