@@ -25,11 +25,12 @@ public class PhotoController {
     public Map<String, Object> upload(@RequestParam MultipartFile file,
                                       @RequestParam(required = false) String name,
                                       @RequestParam(required = false) String description,
+                                      @RequestParam int albumId,
                                       @RequestParam int isPublic,
                                       HttpServletRequest request) throws IOException {
         Object userIdObject = request.getSession().getAttribute("userId");
         int userId = Integer.parseInt(userIdObject.toString());
-        photoService.upload(userId,file,name,description,isPublic);
+        photoService.upload(userId,file,name,description,albumId,isPublic);
         Map<String,Object> mapReturn = new HashMap<>();
         mapReturn.put("status","ok");
         return mapReturn;
@@ -37,10 +38,11 @@ public class PhotoController {
 
     @RequestMapping(value = "/uploads",method = RequestMethod.POST)
     public Map<String, Object> uploads(@RequestParam MultipartFile[] files,
+                                       @RequestParam int albumId,
                                       HttpServletRequest request) throws IOException {
         Object userIdObject = request.getSession().getAttribute("userId");
         int userId = Integer.parseInt(userIdObject.toString());
-        return photoService.uploads(userId,files);
+        return photoService.uploads(userId,albumId,files);
     }
 
     @RequestMapping(value = "/downloads",method = RequestMethod.POST)

@@ -9,9 +9,9 @@ import java.util.List;
 import java.util.Map;
 
 public interface PhotoService {
-    void upload(int userId,MultipartFile file,String name,String description,int isPublic) throws IOException;
+    void upload(int userId,MultipartFile file,String name,String description,int albumId,int isPublic) throws IOException;
 
-    Map<String,Object> uploads(int userId, MultipartFile[] files) throws IOException;
+    Map<String,Object> uploads(int userId,int albumId, MultipartFile[] files) throws IOException;
 
     void download(int photoId, HttpServletResponse response);
 
@@ -27,5 +27,5 @@ public interface PhotoService {
 
     void move(int userId,int photoId,int albumId);
 
-    Photo getProperty(int photoId);
+//    Photo getProperty(int photoId);
 }

@@ -46,7 +46,7 @@ public class PhotoServiceImpl implements PhotoService {
     private UserMapper userMapper;
 
     @Override
-    public void upload(int userId, MultipartFile file, String name, String description, int isPublic) throws IOException {
+    public void upload(int userId, MultipartFile file, String name, String description,int albumId, int isPublic) throws IOException {
         if(file == null)
             throw new EmptyFileException();//上传空文件时返回-1
         String fileName = file.getOriginalFilename();
@@ -133,7 +133,6 @@ public class PhotoServiceImpl implements PhotoService {
         else
             photo.setDescription("");
         photo.setLikes(0);
-        int albumId = albumMapper.selectDefaultAlbumIdByUserId(userId);
         photo.setAlbumId(albumId);
         photo.setIsPublic(isPublic);
         photo.setInRecycleBin(0);
@@ -150,7 +149,7 @@ public class PhotoServiceImpl implements PhotoService {
     }
 
     @Override
-    public Map<String,Object> uploads(int userId, MultipartFile[] files) throws IOException {
+    public Map<String,Object> uploads(int userId,int albumId, MultipartFile[] files) throws IOException {
         int successCount = 0;
         int failedCount = 0;
         for(MultipartFile file : files)
@@ -231,7 +230,6 @@ public class PhotoServiceImpl implements PhotoService {
             photo.setHeight(image.getHeight());
             photo.setUserId(userId);
             photo.setLikes(0);
-            int albumId = albumMapper.selectDefaultAlbumIdByUserId(userId);
             photo.setAlbumId(albumId);
             photo.setInRecycleBin(0);
             photo.setPath(uploadPath + "/" + uuidName);
@@ -448,9 +446,9 @@ public class PhotoServiceImpl implements PhotoService {
         albumMapper.updatePhotoAmountByAlbumId(photoMapper.selectAllByPhotoId(photoId).getAlbumId(),1);
     }
 
-    @Override
-    public Photo getProperty(int photoId) {
-        return photoMapper.selectAllByPhotoId(photoId);
-    }
+//    @Override
+//    public Photo getProperty(int photoId) {
+//        return photoMapper.selectAllByPhotoId(photoId);
+//    }
 }
 
