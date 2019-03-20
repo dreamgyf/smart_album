@@ -234,7 +234,7 @@ public class PhotoServiceImpl implements PhotoService {
             int albumId = albumMapper.selectDefaultAlbumIdByUserId(userId);
             photo.setAlbumId(albumId);
             photo.setInRecycleBin(0);
-            photo.setPath(uploadPath + "/" + userId + "/" + uuidName);
+            photo.setPath(uploadPath + "/" + uuidName);
             photo.setDescription("");
             //将photo对象写入数据库
             photoMapper.insert(photo);
