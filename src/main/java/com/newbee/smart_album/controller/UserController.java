@@ -24,29 +24,22 @@ public class UserController {
     @RequestMapping(value = "/register",method = RequestMethod.POST)
     public Map<String, Object> register(@RequestBody Map<String,String> map)
     {
+        userService.register(map.get("username"),map.get("password"),map.get("email"));
         Map<String,Object> mapReturn = new HashMap<>();
-        mapReturn.put("status",userService.register(map.get("username"),map.get("password"),map.get("email")));
+        mapReturn.put("status","ok");
         return mapReturn;
     }
 
     @RequestMapping(value = "/login",method = RequestMethod.POST)
     public Map<String, Object> login(@RequestBody Map<String,String> map, HttpServletRequest request, HttpServletResponse response)
     {
-        String status = userService.login(map.get("username"),map.get("password"));
+        int userId = userService.login(map.get("username"),map.get("password"));
+        HttpSession session = request.getSession();
+        session.setAttribute("userId",userId);
+        session.setMaxInactiveInterval(5 * 60 * 60);
         Map<String,Object> mapReturn = new HashMap<>();
-        if(!status.equals("username or email does not exist") && !status.equals("wrong password"))
-        {
-            HttpSession session = request.getSession();
-            session.setAttribute("userId",Integer.parseInt(status));
-            session.setMaxInactiveInterval(5 * 60 * 60);
-            mapReturn.put("status","ok");
-            return mapReturn;
-        }
-        else
-        {
-            mapReturn.put("status",status);
-            return mapReturn;
-        }
+        mapReturn.put("status","ok");
+        return mapReturn;
     }
 
     @RequestMapping(value = "/home")

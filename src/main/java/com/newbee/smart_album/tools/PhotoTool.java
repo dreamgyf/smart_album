@@ -8,25 +8,23 @@ import java.sql.Timestamp;
 @Component
 public class PhotoTool {
 
-    public final String TEMP_DIR;
+    public final String LOCAL_DIR;
 
-    public final String UPLOAD_DIR;
+    public final String TEMP_DIR = "/image/temp/";
 
-    public final String DEFAULT_AVATAR_FILE;
+    public final String UPLOAD_DIR = "/image/";
 
-    public final String DEFAULT_COVER_FILE;
+    public final String DEFAULT_AVATAR_FILE = "/image/avatar/default_avatar.png";
 
-    private static final String[] ALLOW_SUFFIX = {"jpg","jpeg","png","bmp","tiff"};
+    public final String DEFAULT_COVER_FILE = "/image/cover/default_cover.png";
+
+    private static final String[] ALLOW_SUFFIX = {"jpg","jpeg","png","bmp","tiff","tif"};
 
     public PhotoTool()
     {
         //生成相对路径
         File file = new File(this.getClass().getResource("/").getPath());
-        String path = file.getParentFile().getParent();
-        TEMP_DIR = path + "/image/temp/";
-        UPLOAD_DIR = path + "/image/";
-        DEFAULT_AVATAR_FILE = path + "/image/avatar/default_avatar.png";
-        DEFAULT_COVER_FILE = path + "/image/cover/default_cover.png";
+        LOCAL_DIR = file.getParentFile().getParent();
     }
 
     public boolean checkSuffix(String suffix)
@@ -44,11 +42,20 @@ public class PhotoTool {
         return ("jpeg".equals(suffix.toLowerCase()) || "jpg".equals(suffix.toLowerCase()));
     }
 
-//    public boolean is_png(String suffix)
-//    {
-//        return "png".equals(suffix.toLowerCase());
-//    }
+    public boolean isPng(String suffix)
+    {
+        return "png".equals(suffix.toLowerCase());
+    }
 
+    public boolean isBmp(String suffix)
+    {
+        return "bmp".equals(suffix.toLowerCase());
+    }
+
+    public boolean isTiff(String suffix)
+    {
+        return "tif".equals(suffix.toLowerCase()) || "tiff".equals(suffix.toLowerCase());
+    }
     public Timestamp exifTimeToTimestamp(String exifTime)
     {
         int tag = exifTime.indexOf(" ");

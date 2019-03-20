@@ -22,4 +22,6 @@ public interface PhotoMapper {
                          @Param("albumId") int albumId,@Param("isPublic") int isPublic);
 
     List<Photo> selectAllPhotoByAlbumIdOrderByOriginalTimeDesc(@Param("albumId") int albumId);
+
+    Integer selectInRecycleBinByPhotoId(@Param("photoId") int photoId);
 }

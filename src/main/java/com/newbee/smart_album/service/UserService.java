@@ -4,9 +4,9 @@ import com.newbee.smart_album.entity.User;
 
 public interface UserService {
 
-    String register(String username,String password,String email);
+    void register(String username,String password,String email);
 
-    String login(String username,String password);
+    int login(String username,String password);
 
     User getUserDataByUserId(int userId);
 
