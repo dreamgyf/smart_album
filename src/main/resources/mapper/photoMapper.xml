@@ -28,7 +28,7 @@
     </update>
 
     <update id="updateByPhotoId">
-        update photo set name=#{name},description=#{description},album_id=#{albumId},is_public=#{isPublic} where photo_id=#{photoId}
+        update photo set name=#{name},description=#{description},is_public=#{isPublic} where photo_id=#{photoId}
     </update>
 
     <select id="selectAllPhotoByAlbumIdOrderByOriginalTimeDesc" resultType="com.newbee.smart_album.entity.Photo">

@@ -368,16 +368,14 @@ public class PhotoServiceImpl implements PhotoService {
     }
 
     @Override
-    public void edit(int userId,int photoId, String name, String description, int albumId, int isPublic) {
+    public void edit(int userId,int photoId, String name, String description, int isPublic) {
         //对photo_id和user_id进行校验
         if(photoMapper.selectAllByPhotoId(photoId).getUserId() != userId)
             throw new ForbiddenEditException();
         //不能对在回收站对照片编辑
         if(photoMapper.selectInRecycleBinByPhotoId(photoId) != null)
             throw new ForbiddenEditException();
-        albumMapper.updatePhotoAmountByAlbumId(photoMapper.selectAllByPhotoId(photoId).getAlbumId(),-1);
-        photoMapper.updateByPhotoId(photoId,name,description, albumId,isPublic);
-        albumMapper.updatePhotoAmountByAlbumId(photoMapper.selectAllByPhotoId(photoId).getAlbumId(),1);
+        photoMapper.updateByPhotoId(photoId,name,description,isPublic);
     }
 
     @Override
@@ -432,12 +430,22 @@ public class PhotoServiceImpl implements PhotoService {
                 e.printStackTrace();
             }
         }
-
     }
 
     @Override
     public List<Photo> getRecycleBinPhotos(int userId) {
         return photoMapper.selectPhotoInRecycleBinByUserId(userId);
+    }
+
+    @Override
+    public void move(int userId, int photoId, int albumId) {
+        //对photo_id和user_id进行校验
+        if(photoMapper.selectAllByPhotoId(photoId).getUserId() != userId)
+            throw new ForbiddenEditException();
+        //相册内图片数量更新
+        albumMapper.updatePhotoAmountByAlbumId(photoMapper.selectAllByPhotoId(photoId).getAlbumId(),-1);
+        photoMapper.updateAlbumIdByPhotoId(photoId,albumId);
+        albumMapper.updatePhotoAmountByAlbumId(photoMapper.selectAllByPhotoId(photoId).getAlbumId(),1);
     }
 
     @Override

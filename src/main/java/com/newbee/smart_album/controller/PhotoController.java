@@ -81,7 +81,7 @@ public class PhotoController {
         Object userIdObject = request.getSession().getAttribute("userId");
         int userId = Integer.parseInt(userIdObject.toString());
         photoService.edit(userId,Integer.parseInt(map.get("photoId").toString()),
-                map.get("name").toString(),map.get("description").toString(),Integer.parseInt(map.get("albumId").toString()),
+                map.get("name").toString(),map.get("description").toString(),
                 Integer.parseInt(map.get("isPublic").toString()));
         Map<String,String> mapReturn = new HashMap<>();
         mapReturn.put("status","ok");
@@ -102,6 +102,17 @@ public class PhotoController {
         Object userIdObject = request.getSession().getAttribute("userId");
         int userId = Integer.parseInt(userIdObject.toString());
         return photoService.getRecycleBinPhotos(userId);
+    }
+
+    @RequestMapping(value = "/move",method = RequestMethod.GET)
+    public Map<String,String> move(@RequestParam int photoId,@RequestParam int albumId,HttpServletRequest request)
+    {
+        Object userIdObject = request.getSession().getAttribute("userId");
+        int userId = Integer.parseInt(userIdObject.toString());
+        photoService.move(userId,photoId,albumId);
+        Map<String,String> mapReturn = new HashMap<>();
+        mapReturn.put("status","ok");
+        return mapReturn;
     }
 
 //    @RequestMapping(value = "/getProperty",method = RequestMethod.GET)

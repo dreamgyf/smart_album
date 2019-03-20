@@ -19,11 +19,13 @@ public interface PhotoService {
 
     void moveToRecycleBin(int userId,List<Integer> photos);
 
-    void edit(int userId,int photoId,String name,String description,int albumId,int isPublic);
+    void edit(int userId,int photoId,String name,String description,int isPublic);
 
     void show(int userId,int photoId,HttpServletResponse response);
 
     List<Photo> getRecycleBinPhotos(int userId);
+
+    void move(int userId,int photoId,int albumId);
 
     Photo getProperty(int photoId);
 }
