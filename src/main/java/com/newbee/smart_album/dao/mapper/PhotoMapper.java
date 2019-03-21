@@ -26,4 +26,6 @@ public interface PhotoMapper {
     Integer selectInRecycleBinByPhotoId(@Param("photoId") int photoId);
 
     List<Photo> selectPhotoInRecycleBinByUserId(@Param("userId") int userId);
+
+    void moveOutRecycleBinByPhotoId(@Param("photoId") int photoId);
 }

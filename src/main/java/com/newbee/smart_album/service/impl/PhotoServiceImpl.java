@@ -451,7 +451,27 @@ public class PhotoServiceImpl implements PhotoService {
         albumMapper.updateLastEditTimeByAlbumId(albumId,new Timestamp(System.currentTimeMillis()));
     }
 
-//    @Override
+    @Override
+    public void moveOutRecycleBin(int userId, List<Integer> photos) {
+        for(int photoId : photos)
+        {
+            //对photo_id和user_id进行校验
+            if(photoMapper.selectAllByPhotoId(photoId).getUserId() != userId)
+                throw new ForbiddenEditException();
+            //不能对不在回收站的照片移出
+            if(photoMapper.selectInRecycleBinByPhotoId(photoId) == null)
+                throw new ForbiddenEditException();
+            photoMapper.moveOutRecycleBinByPhotoId(photoId);
+            //对user表和album表的photo_amount更新，对user表的photo_in_recycle_bin_amount更新
+            int albumId = photoMapper.selectAllByPhotoId(photoId).getAlbumId();
+            userMapper.updatePhotoAmountByUserId(userId,1);
+            albumMapper.updatePhotoAmountByAlbumId(albumId,1);
+            albumMapper.updateLastEditTimeByAlbumId(albumId,new Timestamp(System.currentTimeMillis()));
+            userMapper.updatePhotoInRecycleBinAmountByUserId(userId,-1);
+        }
+    }
+
+    //    @Override
 //    public Photo getProperty(int photoId) {
 //        return photoMapper.selectAllByPhotoId(photoId);
 //    }

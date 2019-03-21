@@ -117,6 +117,22 @@ public class PhotoController {
         return mapReturn;
     }
 
+    @RequestMapping(value = "/moveOutRecycleBin",method = RequestMethod.POST)
+    public Map<String,String> moveOutRecycleBin(@RequestBody List<Map<String, Integer>> listMap,HttpServletRequest request)
+    {
+        Object userIdObject = request.getSession().getAttribute("userId");
+        int userId = Integer.parseInt(userIdObject.toString());
+        List<Integer> photos = new ArrayList<>();
+        for(Map<String, Integer> map : listMap)
+        {
+            photos.add(map.get("photoId"));
+        }
+        photoService.moveOutRecycleBin(userId,photos);
+        Map<String,String> mapReturn = new HashMap<>();
+        mapReturn.put("status","ok");
+        return mapReturn;
+    }
+
 //    @RequestMapping(value = "/getProperty",method = RequestMethod.GET)
 //    public Photo getProperty(@RequestParam int photoId)
 //    {

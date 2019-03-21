@@ -27,5 +27,7 @@ public interface PhotoService {
 
     void move(int userId,int photoId,int albumId);
 
+    void moveOutRecycleBin(int userId,List<Integer> photos);
+
 //    Photo getProperty(int photoId);
 }
