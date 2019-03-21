@@ -43,6 +43,15 @@ public class UserController {
         return mapReturn;
     }
 
+    @RequestMapping(value = "logout")
+    public Map<String, Object> logout(HttpServletRequest request)
+    {
+        request.getSession().removeAttribute("userId");
+        Map<String,Object> mapReturn = new HashMap<>();
+        mapReturn.put("status","ok");
+        return mapReturn;
+    }
+
     @RequestMapping(value = "/changePassword")
     public Map<String,String> changePassword(@RequestParam String prePassword,@RequestParam String newPassword,HttpServletRequest request)
     {
