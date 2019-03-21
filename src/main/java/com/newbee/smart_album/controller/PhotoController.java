@@ -23,8 +23,8 @@ public class PhotoController {
 
     @RequestMapping(value = "/upload",method = RequestMethod.POST)
     public Map<String, Object> upload(@RequestParam MultipartFile file,
-                                      @RequestParam(required = false) String name,
-                                      @RequestParam(required = false) String description,
+                                      @RequestParam String name,
+                                      @RequestParam String description,
                                       @RequestParam int albumId,
                                       @RequestParam int isPublic,
                                       HttpServletRequest request) throws IOException {

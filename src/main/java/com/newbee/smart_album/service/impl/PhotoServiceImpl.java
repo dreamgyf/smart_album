@@ -64,7 +64,7 @@ public class PhotoServiceImpl implements PhotoService {
             throw new NotImageException();//文件不是图片
         //新建一个Photo对象用来保存照片信息并写入数据库
         Photo photo = new Photo();
-        if(name != null)
+        if(!"".equals(name))
             photo.setName(name);
         else
             photo.setName(fileName.substring(0,dot));
@@ -128,10 +128,7 @@ public class PhotoServiceImpl implements PhotoService {
         photo.setWidth(image.getWidth());
         photo.setHeight(image.getHeight());
         photo.setUserId(userId);
-        if(description != null)
-            photo.setDescription(description);
-        else
-            photo.setDescription("");
+        photo.setDescription(description);
         photo.setLikes(0);
         photo.setAlbumId(albumId);
         photo.setIsPublic(isPublic);
