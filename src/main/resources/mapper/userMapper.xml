@@ -6,8 +6,8 @@
 <mapper namespace="com.newbee.smart_album.dao.mapper.UserMapper">
 
     <insert id="insert" parameterType="com.newbee.smart_album.entity.User">
-        insert into user (username,password,email,gender,avatar,signature,nickname,store_space,used_space,photo_amount,photo_in_recycle_bin_amount)
-        values (#{username},#{password},#{email},#{gender},#{avatar},#{signature},#{nickname},#{storeSpace},#{usedSpace},#{photoAmount},#{photoInRecycleBinAmount})
+        insert into user (username,password,email,gender,avatar,signature,nickname,store_space,used_space,photo_amount,photo_in_recycle_bin_amount,album_amount)
+        values (#{username},#{password},#{email},#{gender},#{avatar},#{signature},#{nickname},#{storeSpace},#{usedSpace},#{photoAmount},#{photoInRecycleBinAmount},#{albumAmount})
     </insert>
 
     <select id="selectBaseInfoByUsernameOrEmail" resultType="com.newbee.smart_album.entity.User">
@@ -15,7 +15,7 @@
     </select>
 
     <select id="selectAllByUserId" resultType="com.newbee.smart_album.entity.User">
-        select user_id,username,password,email,gender,avatar,signature,nickname,store_space,used_space
+        select user_id,username,password,email,gender,avatar,signature,nickname,store_space,used_space,photo_amount,photo_in_recycle_bin_amount,album_amount
         from user where user_id=#{userId}
     </select>
 
@@ -41,6 +41,10 @@
 
     <update id="updatePhotoInRecycleBinAmountByUserId">
         update user set photo_in_recycle_bin_amount=photo_in_recycle_bin_amount+#{amount} where user_id=#{userId}
+    </update>
+
+    <update id="updateAlbumAmountByUserId">
+        update user set album_amount=album_amount+#{amount} where user_id=#{userId}
     </update>
 
 </mapper>

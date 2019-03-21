@@ -16,6 +16,8 @@ import org.springframework.util.DigestUtils;
 
 import javax.annotation.Resource;
 import java.sql.Timestamp;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -51,6 +53,7 @@ public class UserServiceImpl implements UserService {
         user.setUsedSpace(0);
         user.setPhotoAmount(0);
         user.setPhotoInRecycleBinAmount(0);
+        user.setAlbumAmount(1);
         //向数据库写入用户信息
         userMapper.insert(user);
         //获取用户ID
@@ -91,7 +94,25 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-//    @Override
+    @Override
+    public Map<String, Object> getInfo(int userId) {
+        User user = userMapper.selectAllByUserId(userId);
+        Map<String,Object> map = new HashMap<>();
+        map.put("username",user.getUsername());
+        map.put("email",user.getEmail());
+        map.put("gender",user.getGender());
+        map.put("avatar",user.getAvatar());
+        map.put("signature",user.getSignature());
+        map.put("nickname",user.getNickname());
+        map.put("storeSpace",user.getStoreSpace());
+        map.put("usedSpace",user.getUsedSpace());
+        map.put("photoAmount",user.getPhotoAmount());
+        map.put("photoInRecycleBinAmount",user.getPhotoInRecycleBinAmount());
+        map.put("albumAmount",user.getAlbumAmount());
+        return map;
+    }
+
+    //    @Override
 //    public User getUserDataByUserId(int userId) {
 //        return userMapper.selectAllByUserId(userId);
 //    }

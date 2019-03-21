@@ -22,4 +22,6 @@ public interface UserMapper {
     void updatePhotoAmountByUserId(@Param("userId") int userId, @Param("amount") int amount);
 
     void updatePhotoInRecycleBinAmountByUserId(@Param("userId") int userId, @Param("amount") int amount);
+
+    void updateAlbumAmountByUserId(@Param("userId") int userId, @Param("amount") int amount);
 }

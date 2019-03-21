@@ -47,4 +47,12 @@ public class UserController {
         mapReturn.put("status","ok");
         return mapReturn;
     }
+
+    @RequestMapping(value = "/getInfo")
+    public Map<String,Object> getInfo(HttpServletRequest request)
+    {
+        Object userIdObject = request.getSession().getAttribute("userId");
+        int userId = Integer.parseInt(userIdObject.toString());
+        return userService.getInfo(userId);
+    }
 }
