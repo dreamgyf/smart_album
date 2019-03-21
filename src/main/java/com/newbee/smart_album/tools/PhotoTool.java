@@ -10,13 +10,13 @@ public class PhotoTool {
 
     public final String LOCAL_DIR;
 
-    public final String TEMP_DIR = "/image/temp/";
+    public final String TEMP_DIR = "/images/temp/";
 
-    public final String UPLOAD_DIR = "/image/";
+    public final String UPLOAD_DIR = "/images/";
 
-    public final String DEFAULT_AVATAR_FILE = "/image/avatar/default_avatar.png";
+    public final String DEFAULT_AVATAR_FILE = "/images/avatar/default_avatar.png";
 
-    public final String DEFAULT_COVER_FILE = "/image/cover/default_cover.png";
+    public final String DEFAULT_COVER_FILE = "/images/cover/default_cover.png";
 
     private static final String[] ALLOW_SUFFIX = {"jpg","jpeg","png","bmp","tiff","tif"};
 

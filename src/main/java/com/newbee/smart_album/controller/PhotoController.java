@@ -1,6 +1,7 @@
 package com.newbee.smart_album.controller;
 
 import com.newbee.smart_album.entity.Photo;
+import com.newbee.smart_album.exception.NotLogInException;
 import com.newbee.smart_album.service.PhotoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +30,8 @@ public class PhotoController {
                                       @RequestParam int isPublic,
                                       HttpServletRequest request) throws IOException {
         Object userIdObject = request.getSession().getAttribute("userId");
+        if(userIdObject == null)
+            throw new NotLogInException();
         int userId = Integer.parseInt(userIdObject.toString());
         photoService.upload(userId,file,name,description,albumId,isPublic);
         Map<String,Object> mapReturn = new HashMap<>();
@@ -41,6 +44,8 @@ public class PhotoController {
                                        @RequestParam int albumId,
                                       HttpServletRequest request) throws IOException {
         Object userIdObject = request.getSession().getAttribute("userId");
+        if(userIdObject == null)
+            throw new NotLogInException();
         int userId = Integer.parseInt(userIdObject.toString());
         return photoService.uploads(userId,albumId,files);
     }
@@ -65,6 +70,8 @@ public class PhotoController {
     public Map<String,String> moveToRecycleBin(@RequestBody List<Map<String, Integer>> listMap,HttpServletRequest request)
     {
         Object userIdObject = request.getSession().getAttribute("userId");
+        if(userIdObject == null)
+            throw new NotLogInException();
         int userId = Integer.parseInt(userIdObject.toString());
         List<Integer> photos = new ArrayList<>();
         for(Map<String, Integer> map : listMap)
@@ -81,6 +88,8 @@ public class PhotoController {
     public Map<String,String> edit(@RequestBody Map<String, Object> map,HttpServletRequest request)
     {
         Object userIdObject = request.getSession().getAttribute("userId");
+        if(userIdObject == null)
+            throw new NotLogInException();
         int userId = Integer.parseInt(userIdObject.toString());
         photoService.edit(userId,Integer.parseInt(map.get("photoId").toString()),
                 map.get("name").toString(),map.get("description").toString(),
@@ -94,14 +103,15 @@ public class PhotoController {
     public void show(@RequestParam int photoId,HttpServletRequest request,HttpServletResponse response)
     {
         Object userIdObject = request.getSession().getAttribute("userId");
-        int userId = Integer.parseInt(userIdObject.toString());
-        photoService.show(userId,photoId,response);
+        photoService.show(userIdObject,photoId,response);
     }
 
     @RequestMapping(value = "/getRecycleBinPhotos")
     public List<Photo> getRecycleBinPhotos (HttpServletRequest request)
     {
         Object userIdObject = request.getSession().getAttribute("userId");
+        if(userIdObject == null)
+            throw new NotLogInException();
         int userId = Integer.parseInt(userIdObject.toString());
         return photoService.getRecycleBinPhotos(userId);
     }
@@ -110,6 +120,8 @@ public class PhotoController {
     public Map<String,String> move(@RequestParam int photoId,@RequestParam int albumId,HttpServletRequest request)
     {
         Object userIdObject = request.getSession().getAttribute("userId");
+        if(userIdObject == null)
+            throw new NotLogInException();
         int userId = Integer.parseInt(userIdObject.toString());
         photoService.move(userId,photoId,albumId);
         Map<String,String> mapReturn = new HashMap<>();
@@ -121,6 +133,8 @@ public class PhotoController {
     public Map<String,String> moveOutRecycleBin(@RequestBody List<Map<String, Integer>> listMap,HttpServletRequest request)
     {
         Object userIdObject = request.getSession().getAttribute("userId");
+        if(userIdObject == null)
+            throw new NotLogInException();
         int userId = Integer.parseInt(userIdObject.toString());
         List<Integer> photos = new ArrayList<>();
         for(Map<String, Integer> map : listMap)

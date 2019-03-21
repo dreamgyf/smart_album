@@ -1,5 +1,7 @@
 package com.newbee.smart_album.controller;
 
+import com.newbee.smart_album.exception.AlreadyLogInException;
+import com.newbee.smart_album.exception.NotLogInException;
 import com.newbee.smart_album.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -18,8 +20,10 @@ public class UserController {
     private UserService userService;
 
     @RequestMapping(value = "/register",method = RequestMethod.POST)
-    public Map<String, Object> register(@RequestBody Map<String,String> map)
+    public Map<String, Object> register(@RequestBody Map<String,String> map,HttpServletRequest request)
     {
+        if(request.getSession().getAttribute("userId") != null)
+            throw new AlreadyLogInException();
         userService.register(map.get("username"),map.get("password"),map.get("email"));
         Map<String,Object> mapReturn = new HashMap<>();
         mapReturn.put("status","ok");
@@ -29,6 +33,8 @@ public class UserController {
     @RequestMapping(value = "/login",method = RequestMethod.POST)
     public Map<String, Object> login(@RequestBody Map<String,String> map, HttpServletRequest request, HttpServletResponse response)
     {
+        if(request.getSession().getAttribute("userId") != null)
+            throw new AlreadyLogInException();
         int userId = userService.login(map.get("username"),map.get("password"));
         HttpSession session = request.getSession();
         session.setAttribute("userId",userId);
@@ -41,6 +47,8 @@ public class UserController {
     public Map<String,String> changePassword(@RequestParam String prePassword,@RequestParam String newPassword,HttpServletRequest request)
     {
         Object userIdObject = request.getSession().getAttribute("userId");
+        if(userIdObject == null)
+            throw new NotLogInException();
         int userId = Integer.parseInt(userIdObject.toString());
         userService.changePassword(userId,prePassword,newPassword);
         Map<String,String> mapReturn = new HashMap<>();
@@ -52,6 +60,8 @@ public class UserController {
     public Map<String,Object> getInfo(HttpServletRequest request)
     {
         Object userIdObject = request.getSession().getAttribute("userId");
+        if(userIdObject == null)
+            throw new NotLogInException();
         int userId = Integer.parseInt(userIdObject.toString());
         return userService.getInfo(userId);
     }
