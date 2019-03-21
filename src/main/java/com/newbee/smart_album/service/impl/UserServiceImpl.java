@@ -83,7 +83,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUserDataByUserId(int userId) {
-        return userMapper.selectAllByUserId(userId);
+    public void changePassword(int userId, String prePassword, String newPassword) {
+        if(!userMapper.selectAllByUserId(userId).getPassword().equals(DigestUtils.md5DigestAsHex(prePassword.getBytes())))
+            throw new PasswordErrorException();
+        else {
+            userMapper.updatePasswordByUserId(userId,DigestUtils.md5DigestAsHex(newPassword.getBytes()));
+        }
     }
+
+//    @Override
+//    public User getUserDataByUserId(int userId) {
+//        return userMapper.selectAllByUserId(userId);
+//    }
 }

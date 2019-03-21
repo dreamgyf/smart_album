@@ -19,6 +19,10 @@
         from user where user_id=#{userId}
     </select>
 
+    <update id="updatePasswordByUserId">
+        update user set password=#{password} where user_id=#{userId}
+    </update>
+
     <select id="selectExistByUsername" resultType="INTEGER">
         select 1 from user where username=#{username} limit 1
     </select>

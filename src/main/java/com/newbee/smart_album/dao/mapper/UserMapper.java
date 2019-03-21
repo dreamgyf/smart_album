@@ -11,6 +11,8 @@ public interface UserMapper {
 
     User selectAllByUserId(@Param("userId") int userId);
 
+    void updatePasswordByUserId(@Param("userId") int userId,@Param("password") String password);
+
     Integer selectExistByUsername(@Param("username") String username);
 
     Integer selectExistByEmail(@Param("email") String email);
