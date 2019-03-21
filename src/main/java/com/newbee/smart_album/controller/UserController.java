@@ -1,6 +1,5 @@
 package com.newbee.smart_album.controller;
 
-import com.newbee.smart_album.entity.User;
 import com.newbee.smart_album.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,25 +39,5 @@ public class UserController {
         mapReturn.put("status","ok");
         return mapReturn;
     }
-
-    @RequestMapping(value = "/home")
-    public Map<String,Object> home(HttpServletRequest request)
-    {
-        Object userIdObject = request.getSession().getAttribute("userId");
-        if(userIdObject != null)
-        {
-            int userId = Integer.parseInt(userIdObject.toString());
-            User user = userService.getUserDataByUserId(userId);
-            Map<String,Object> map = new HashMap<>();
-            map.put("userId",user.getUserId());
-            map.put("username",user.getUsername());
-            map.put("email",user.getEmail());
-            map.put("gender",user.getGender());
-            return map;
-        }
-        else
-            return null;
-    }
-
 
 }

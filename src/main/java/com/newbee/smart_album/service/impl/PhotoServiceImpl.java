@@ -359,8 +359,10 @@ public class PhotoServiceImpl implements PhotoService {
                 throw new ForbiddenEditException();
             photoMapper.moveToRecycleBinByPhotoId(photoId,new Timestamp(System.currentTimeMillis()));
             //对user表和album表的photo_amount更新，对user表的photo_in_recycle_bin_amount更新
+            int albumId = photoMapper.selectAllByPhotoId(photoId).getAlbumId();
             userMapper.updatePhotoAmountByUserId(userId,-1);
-            albumMapper.updatePhotoAmountByAlbumId(photoMapper.selectAllByPhotoId(photoId).getAlbumId(),-1);
+            albumMapper.updatePhotoAmountByAlbumId(albumId,-1);
+            albumMapper.updateLastEditTimeByAlbumId(albumId,new Timestamp(System.currentTimeMillis()));
             userMapper.updatePhotoInRecycleBinAmountByUserId(userId,1);
         }
     }
@@ -441,12 +443,35 @@ public class PhotoServiceImpl implements PhotoService {
         if(photoMapper.selectAllByPhotoId(photoId).getUserId() != userId)
             throw new ForbiddenEditException();
         //相册内图片数量更新
-        albumMapper.updatePhotoAmountByAlbumId(photoMapper.selectAllByPhotoId(photoId).getAlbumId(),-1);
+        int albumIdBefore = photoMapper.selectAllByPhotoId(photoId).getAlbumId();
+        albumMapper.updatePhotoAmountByAlbumId(albumIdBefore,-1);
+        albumMapper.updateLastEditTimeByAlbumId(albumIdBefore,new Timestamp(System.currentTimeMillis()));
         photoMapper.updateAlbumIdByPhotoId(photoId,albumId);
-        albumMapper.updatePhotoAmountByAlbumId(photoMapper.selectAllByPhotoId(photoId).getAlbumId(),1);
+        albumMapper.updatePhotoAmountByAlbumId(albumId,1);
+        albumMapper.updateLastEditTimeByAlbumId(albumId,new Timestamp(System.currentTimeMillis()));
     }
 
-//    @Override
+    @Override
+    public void moveOutRecycleBin(int userId, List<Integer> photos) {
+        for(int photoId : photos)
+        {
+            //对photo_id和user_id进行校验
+            if(photoMapper.selectAllByPhotoId(photoId).getUserId() != userId)
+                throw new ForbiddenEditException();
+            //不能对不在回收站的照片移出
+            if(photoMapper.selectInRecycleBinByPhotoId(photoId) == null)
+                throw new ForbiddenEditException();
+            photoMapper.moveOutRecycleBinByPhotoId(photoId);
+            //对user表和album表的photo_amount更新，对user表的photo_in_recycle_bin_amount更新
+            int albumId = photoMapper.selectAllByPhotoId(photoId).getAlbumId();
+            userMapper.updatePhotoAmountByUserId(userId,1);
+            albumMapper.updatePhotoAmountByAlbumId(albumId,1);
+            albumMapper.updateLastEditTimeByAlbumId(albumId,new Timestamp(System.currentTimeMillis()));
+            userMapper.updatePhotoInRecycleBinAmountByUserId(userId,-1);
+        }
+    }
+
+    //    @Override
 //    public Photo getProperty(int photoId) {
 //        return photoMapper.selectAllByPhotoId(photoId);
 //    }
