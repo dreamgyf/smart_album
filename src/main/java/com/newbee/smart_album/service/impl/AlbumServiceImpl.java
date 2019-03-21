@@ -2,6 +2,7 @@ package com.newbee.smart_album.service.impl;
 
 import com.newbee.smart_album.dao.mapper.AlbumMapper;
 import com.newbee.smart_album.dao.mapper.PhotoMapper;
+import com.newbee.smart_album.dao.mapper.UserMapper;
 import com.newbee.smart_album.entity.Album;
 import com.newbee.smart_album.entity.Photo;
 import com.newbee.smart_album.exception.ForbiddenAccessException;
@@ -24,6 +25,9 @@ public class AlbumServiceImpl implements AlbumService {
     @Resource
     private PhotoMapper photoMapper;
 
+    @Resource
+    private UserMapper userMapper;
+
     @Autowired
     private PhotoTool photoTool;
 
@@ -40,6 +44,7 @@ public class AlbumServiceImpl implements AlbumService {
         album.setIsDefaultAlbum(0);
         album.setPhotoAmount(0);
         albumMapper.insert(album);
+        userMapper.updateAlbumAmountByUserId(userId,1);
     }
 
     @Override
@@ -80,6 +85,7 @@ public class AlbumServiceImpl implements AlbumService {
             photoMapper.updateAlbumIdByPhotoId(photoId,defaultAlbumId);
         }
         albumMapper.deleteByAlbumId(albumId);
+        userMapper.updateAlbumAmountByUserId(userId,-1);
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.newbee.smart_album.controller;
 
 import com.newbee.smart_album.entity.Album;
 import com.newbee.smart_album.entity.Photo;
+import com.newbee.smart_album.exception.NotLogInException;
 import com.newbee.smart_album.service.AlbumService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +23,8 @@ public class AlbumController {
     public Map<String,String> create(@RequestBody Map<String,String> map, HttpServletRequest request)
     {
         Object userIdObject = request.getSession().getAttribute("userId");
+        if(userIdObject == null)
+            throw new NotLogInException();
         int userId = Integer.parseInt(userIdObject.toString());
         albumService.create(userId,map.get("name"),map.get("description"));
         Map<String,String> mapReturn = new HashMap<>();
@@ -33,6 +36,8 @@ public class AlbumController {
     public Map<String,String> edit(@RequestBody Map<String,Object> map,HttpServletRequest request)
     {
         Object userIdObject = request.getSession().getAttribute("userId");
+        if(userIdObject == null)
+            throw new NotLogInException();
         int userId = Integer.parseInt(userIdObject.toString());
         albumService.edit(userId,Integer.parseInt(map.get("albumId").toString()),
                 map.get("name").toString(),Integer.parseInt(map.get("photoId").toString()),map.get("description").toString());
@@ -45,6 +50,8 @@ public class AlbumController {
     public Map<String,String> delete(@RequestBody Map<String,Object> map,HttpServletRequest request)
     {
         Object userIdObject = request.getSession().getAttribute("userId");
+        if(userIdObject == null)
+            throw new NotLogInException();
         int userId = Integer.parseInt(userIdObject.toString());
         albumService.delete(userId,Integer.parseInt(map.get("albumId").toString()));
         Map<String,String> mapReturn = new HashMap<>();
@@ -56,6 +63,8 @@ public class AlbumController {
     public List<Photo> getAlbumPhotos(@RequestParam int albumId, HttpServletRequest request)
     {
         Object userIdObject = request.getSession().getAttribute("userId");
+        if(userIdObject == null)
+            throw new NotLogInException();
         int userId = Integer.parseInt(userIdObject.toString());
         return albumService.getAlbumPhotos(userId,albumId);
     }
@@ -64,6 +73,8 @@ public class AlbumController {
     public List<Album> getAlbumList(HttpServletRequest request)
     {
         Object userIdObject = request.getSession().getAttribute("userId");
+        if(userIdObject == null)
+            throw new NotLogInException();
         int userId = Integer.parseInt(userIdObject.toString());
         return albumService.getAlbumList(userId);
     }

@@ -372,11 +372,14 @@ public class PhotoServiceImpl implements PhotoService {
         //不能对在回收站对照片编辑
         if(photoMapper.selectInRecycleBinByPhotoId(photoId) != null)
             throw new ForbiddenEditException();
-        photoMapper.updateByPhotoId(photoId,name,description,isPublic);
+        if(!"".equals(name))
+            photoMapper.updateByPhotoId(photoId,name,description,isPublic);
+        else
+            photoMapper.updateByPhotoId(photoId,photoMapper.selectAllByPhotoId(photoId).getName(),description,isPublic);
     }
 
     @Override
-    public void show(int userId,int photoId, HttpServletResponse response) {
+    public void show(Object userIdObject,int photoId, HttpServletResponse response) {
         if(photoId == 0)
         {
             try {
@@ -398,8 +401,14 @@ public class PhotoServiceImpl implements PhotoService {
         else
         {
             Photo photo = photoMapper.selectAllByPhotoId(photoId);
-            if(photo.getUserId() != userId && photo.getIsPublic() == 0)
-                throw new ForbiddenAccessException();
+            //判断用户是否有访问权限
+            if(photo.getIsPublic() == 0)
+            {
+                if(userIdObject == null)
+                    throw new ForbiddenAccessException();
+                else if(Integer.parseInt(userIdObject.toString()) != photo.getUserId())
+                    throw new ForbiddenAccessException();
+            }
             response.reset();
             if(photoTool.isJpeg(photo.getSuffix()))
                 response.setContentType("image/jpeg");
