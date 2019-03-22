@@ -48,7 +48,7 @@ public class PhotoServiceImpl implements PhotoService {
     @Override
     public void upload(int userId, MultipartFile file, String name, String description,int albumId, int isPublic) throws IOException {
         if(file == null)
-            throw new EmptyFileException();//上传空文件时返回-1
+            throw new EmptyFileException();//上传空文件
         String fileName = file.getOriginalFilename();
         int dot = fileName.lastIndexOf(".");
         String suffix;
