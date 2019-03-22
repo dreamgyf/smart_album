@@ -309,7 +309,7 @@ public class PhotoServiceImpl implements PhotoService {
         }
         //创建ZIP文件并返回文件路径
         String zipPath = zipTool.createZip(fileFullName,filePath);
-        File file = new File(zipPath);
+        File file = new File(photoTool.LOCAL_DIR + zipPath);
         response.reset();
         response.setHeader("content-type","application/octet-stream");
         response.setContentType("application/octet-stream");
