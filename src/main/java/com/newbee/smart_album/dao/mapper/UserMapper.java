@@ -24,4 +24,8 @@ public interface UserMapper {
     void updatePhotoInRecycleBinAmountByUserId(@Param("userId") int userId, @Param("amount") int amount);
 
     void updateAlbumAmountByUserId(@Param("userId") int userId, @Param("amount") int amount);
+
+    void updateAvatarByUserId(@Param("userId") int userId,@Param("avatar") String avatar);
+
+    void updateUserInfoByUserId(@Param("userId") int userId,@Param("nickname") String nickname,@Param("gender") int gender,@Param("signature") String signature);
 }

@@ -48,7 +48,7 @@ public class PhotoServiceImpl implements PhotoService {
     @Override
     public void upload(int userId, MultipartFile file, String name, String description,int albumId, int isPublic) throws IOException {
         if(file == null)
-            throw new EmptyFileException();//上传空文件时返回-1
+            throw new EmptyFileException();//上传空文件
         String fileName = file.getOriginalFilename();
         int dot = fileName.lastIndexOf(".");
         String suffix;
@@ -309,7 +309,7 @@ public class PhotoServiceImpl implements PhotoService {
         }
         //创建ZIP文件并返回文件路径
         String zipPath = zipTool.createZip(fileFullName,filePath);
-        File file = new File(zipPath);
+        File file = new File(photoTool.LOCAL_DIR + zipPath);
         response.reset();
         response.setHeader("content-type","application/octet-stream");
         response.setContentType("application/octet-stream");

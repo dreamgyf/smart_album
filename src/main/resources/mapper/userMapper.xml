@@ -47,5 +47,13 @@
         update user set album_amount=album_amount+#{amount} where user_id=#{userId}
     </update>
 
+    <update id="updateAvatarByUserId">
+        update user set avatar=#{avatar} where user_id=#{userId}
+    </update>
+
+    <update id="updateUserInfoByUserId">
+        update user set nickname=#{nickname},gender=#{gender},signature=#{signature} where user_id=#{userId}
+    </update>
+
 </mapper>
 

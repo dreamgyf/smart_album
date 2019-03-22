@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.newbee.smart_album.dao.mapper.TempFileMapper">
+
+    <insert id="insert">
+        insert into temp_file (path,create_time) values (#{path},#{time})
+    </insert>
+
+    <select id="selectTempFileIdWhereExpired" resultType="INTEGER">
+        SELECT temp_file_id FROM temp_file WHERE create_time &lt;= (SELECT DATE_SUB(now(),interval 1 day));
+    </select>
+
+    <select id="selectPathByTempFileId" resultType="String">
+        select path from temp_file where temp_file_id=#{tempFileId}
+    </select>
+
+    <delete id="deleteByTempFileId">
+        delete from temp_file where temp_file_id=#{tempFileId}
+    </delete>
+</mapper>

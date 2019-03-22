@@ -4,20 +4,23 @@ import com.newbee.smart_album.dao.mapper.AlbumMapper;
 import com.newbee.smart_album.dao.mapper.UserMapper;
 import com.newbee.smart_album.entity.Album;
 import com.newbee.smart_album.entity.User;
-import com.newbee.smart_album.exception.EmailExistException;
-import com.newbee.smart_album.exception.PasswordErrorException;
-import com.newbee.smart_album.exception.UsernameExistException;
-import com.newbee.smart_album.exception.UsernameOrEmailNotExistException;
+import com.newbee.smart_album.exception.*;
 import com.newbee.smart_album.service.UserService;
 import com.newbee.smart_album.tools.PhotoTool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -110,6 +113,50 @@ public class UserServiceImpl implements UserService {
         map.put("photoInRecycleBinAmount",user.getPhotoInRecycleBinAmount());
         map.put("albumAmount",user.getAlbumAmount());
         return map;
+    }
+
+    @Override
+    public void editInfo(int userId, MultipartFile avatar, String nickname, int gender, String signature) {
+        if(avatar != null)
+        {
+            String fileName = avatar.getOriginalFilename();
+            int dot = fileName.lastIndexOf(".");
+            String suffix;
+            if(dot != -1 && dot < fileName.length())
+                suffix = fileName.substring(dot + 1);
+            else
+                throw new SuffixErrorException();//文件没有后缀名
+            if(!photoTool.checkSuffix(suffix))
+                throw new SuffixErrorException();//不支持的文件后缀
+            try {
+                ImageIO.scanForPlugins();
+                BufferedImage image = null;
+                image = ImageIO.read(avatar.getInputStream());
+                if(image == null)
+                    throw new NotImageException();//文件不是图片
+                //给文件一个随机UUID作为文件在服务器保存的文件名
+                String uuidName = UUID.randomUUID().toString() + '.' + suffix;
+                //上传文件
+                String newAvatarPath = "/images/avatar/" + userId + "/" + uuidName;
+                File uploadFile = new File(photoTool.LOCAL_DIR + "/resources/static" + newAvatarPath);
+                if(!uploadFile.getParentFile().exists())
+                {
+                    if(!uploadFile.getParentFile().mkdirs())
+                        throw new UploadFailedException();//上传失败,文件创建失败
+                }
+                avatar.transferTo(uploadFile);
+                String preAvatarPath = userMapper.selectAllByUserId(userId).getAvatar();
+                userMapper.updateAvatarByUserId(userId,newAvatarPath);
+                if(!preAvatarPath.equals(photoTool.DEFAULT_AVATAR_FILE))
+                {
+                    File preAvatar = new File(photoTool.LOCAL_DIR + preAvatarPath);
+                    preAvatar.delete();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        userMapper.updateUserInfoByUserId(userId,nickname,gender,signature);
     }
 
     //    @Override

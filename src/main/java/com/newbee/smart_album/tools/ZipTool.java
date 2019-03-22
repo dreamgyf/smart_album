@@ -1,9 +1,13 @@
 package com.newbee.smart_album.tools;
 
+import com.newbee.smart_album.dao.mapper.TempFileMapper;
+import com.newbee.smart_album.exception.UploadFailedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.io.*;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
@@ -15,9 +19,17 @@ public class ZipTool {
     @Autowired
     private PhotoTool photoTool;
 
+    @Resource
+    private TempFileMapper tempFileMapper;
+
     public String createZip(List<String> fileFullName,List<String> filePath) {
-        String zipPath = photoTool.LOCAL_DIR + photoTool.TEMP_DIR + UUID.randomUUID() + ".zip";
-        File zipFile = new File(zipPath);
+        String zipPath = photoTool.TEMP_DIR + UUID.randomUUID() + ".zip";
+        File zipFile = new File(photoTool.LOCAL_DIR + zipPath);
+        if(!zipFile.getParentFile().exists())
+        {
+            if(!zipFile.getParentFile().mkdirs())
+                throw new UploadFailedException();//上传失败,文件创建失败
+        }
         InputStream inputStream = null;
         ZipOutputStream zipOutputStream = null;
         try {
@@ -54,6 +66,7 @@ public class ZipTool {
                     e.printStackTrace();
                 }
             }
+            tempFileMapper.insert(zipPath,new Timestamp(System.currentTimeMillis()));
         }
         return zipPath;
     }

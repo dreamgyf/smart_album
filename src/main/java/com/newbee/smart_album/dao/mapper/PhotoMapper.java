@@ -28,4 +28,8 @@ public interface PhotoMapper {
     List<Photo> selectPhotoInRecycleBinByUserId(@Param("userId") int userId);
 
     void moveOutRecycleBinByPhotoId(@Param("photoId") int photoId);
+
+    List<Integer> selectPhotoIdWhereExpired();
+
+    void deleteByPhotoId(@Param("photoId") int photoId);
 }

@@ -5,6 +5,7 @@ import com.newbee.smart_album.exception.NotLogInException;
 import com.newbee.smart_album.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -73,5 +74,22 @@ public class UserController {
             throw new NotLogInException();
         int userId = Integer.parseInt(userIdObject.toString());
         return userService.getInfo(userId);
+    }
+
+    @RequestMapping(value = "/editInfo",method = RequestMethod.POST)
+    public Map<String,String> editInfo(@RequestParam(required = false) MultipartFile avatar,
+                                       @RequestParam String nickname,
+                                       @RequestParam int gender,
+                                       @RequestParam String signature,
+                                       HttpServletRequest request)
+    {
+        Object userIdObject = request.getSession().getAttribute("userId");
+        if(userIdObject == null)
+            throw new NotLogInException();
+        int userId = Integer.parseInt(userIdObject.toString());
+        userService.editInfo(userId,avatar,nickname,gender,signature);
+        Map<String,String> mapReturn = new HashMap<>();
+        mapReturn.put("status","ok");
+        return mapReturn;
     }
 }

@@ -48,4 +48,12 @@
     <update id="moveOutRecycleBinByPhotoId">
         update photo set in_recycle_bin=0,delete_time=null where photo_id=#{photoId}
     </update>
+
+    <select id="selectPhotoIdWhereExpired" resultType="INTEGER">
+        SELECT photo_id FROM photo WHERE delete_time &lt;= (SELECT DATE_SUB(now(),interval 30 day));
+    </select>
+
+    <delete id="deleteByPhotoId">
+        delete from photo where photo_id=#{photoId}
+    </delete>
 </mapper>
