@@ -74,6 +74,8 @@ public class PhotoServiceImpl implements PhotoService {
         //计算文件大小，保存在数据库中
         long fileSizeB = file.getSize();
         photo.setSize(fileSizeB);
+        if(userMapper.selectAvailableSpaceByUserId(userId) < fileSizeB)
+            throw new SpaceAlreadyFullException();//可用空间不足
         //创建上传路径
         String uploadPath = photoTool.UPLOAD_DIR + userId;
         //上传文件
@@ -199,6 +201,11 @@ public class PhotoServiceImpl implements PhotoService {
             //计算文件大小，保存在数据库中
             long fileSizeB = file.getSize();
             photo.setSize(fileSizeB);
+            if(userMapper.selectAvailableSpaceByUserId(userId) < fileSizeB)
+            {
+                failedCount++;//可用空间不足
+                continue;
+            }
             //如果是jpeg格式的图片，处理EXIF信息
             if(photoTool.isJpeg(suffix))
             {

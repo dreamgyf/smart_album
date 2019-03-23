@@ -28,4 +28,6 @@ public interface UserMapper {
     void updateAvatarByUserId(@Param("userId") int userId,@Param("avatar") String avatar);
 
     void updateUserInfoByUserId(@Param("userId") int userId,@Param("nickname") String nickname,@Param("gender") int gender,@Param("signature") String signature);
+
+    long selectAvailableSpaceByUserId(@Param("userId") int userId);
 }

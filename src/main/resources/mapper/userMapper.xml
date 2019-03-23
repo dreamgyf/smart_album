@@ -55,5 +55,9 @@
         update user set nickname=#{nickname},gender=#{gender},signature=#{signature} where user_id=#{userId}
     </update>
 
+    <select id="selectAvailableSpaceByUserId" resultType="long">
+        select store_space-used_space from user where user_id=#{userId}
+    </select>
+
 </mapper>
 
