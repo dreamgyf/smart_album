@@ -78,4 +78,22 @@ public class AlbumController {
         int userId = Integer.parseInt(userIdObject.toString());
         return albumService.getAlbumList(userId);
     }
+
+    /*
+     * 相册合并功能
+     * 从firstAlbum合并到secondAlbum
+     * 沿用secondAlbum的名字和描述
+     */
+    @RequestMapping(value = "/merge")
+    public Map<String,String> merge(@RequestParam int firstAlbumId,@RequestParam int secondAlbumId,HttpServletRequest request)
+    {
+        Object userIdObject = request.getSession().getAttribute("userId");
+        if(userIdObject == null)
+            throw new NotLogInException();
+        int userId = Integer.parseInt(userIdObject.toString());
+        albumService.merge(userId,firstAlbumId,secondAlbumId);
+        Map<String,String> mapReturn = new HashMap<>();
+        mapReturn.put("status","ok");
+        return mapReturn;
+    }
 }

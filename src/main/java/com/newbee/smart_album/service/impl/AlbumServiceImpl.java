@@ -93,11 +93,32 @@ public class AlbumServiceImpl implements AlbumService {
         //校验user_id和album_id
         if(albumMapper.selectUserIdByAlbumId(albumId) != userId)
             throw new ForbiddenAccessException();
-        return photoMapper.selectAllPhotoByAlbumIdOrderByOriginalTimeDesc(albumId);
+        return photoMapper.selectAllPhotoNotInRecycleBinByAlbumIdOrderByOriginalTimeDesc(albumId);
     }
 
     @Override
     public List<Album> getAlbumList(int userId) {
-        return albumMapper.selectAllByUserId(userId);
+        return albumMapper.selectAllAlbumByUserId(userId);
+    }
+
+    @Override
+    public void merge(int userId, int firstAlbumId, int secondAlbumId) {
+        Album firstAlbum = albumMapper.selectAllByAlbumId(firstAlbumId);
+        Album secondAlbum = albumMapper.selectAllByAlbumId(secondAlbumId);
+        if(!(firstAlbum.getUserId() == userId && secondAlbum.getUserId() == userId))
+            throw new ForbiddenEditException();
+        else if(firstAlbum.getIsDefaultAlbum() == 1)
+            throw new ForbiddenEditException();
+        else
+        {
+            List<Integer> photoIds = photoMapper.selectPhotoIdByAlbumId(firstAlbumId);
+            for(int photoId : photoIds)
+            {
+                photoMapper.updateAlbumIdByPhotoId(photoId,secondAlbumId);
+            }
+            albumMapper.updatePhotoAmountByAlbumId(secondAlbumId,firstAlbum.getPhotoAmount());
+            albumMapper.updateLastEditTimeByAlbumId(secondAlbumId,new Timestamp(System.currentTimeMillis()));
+            albumMapper.deleteByAlbumId(firstAlbumId);
+        }
     }
 }
