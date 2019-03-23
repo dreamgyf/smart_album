@@ -56,4 +56,9 @@
     <delete id="deleteByPhotoId">
         delete from photo where photo_id=#{photoId}
     </delete>
+
+    <select id="selectAllPhotoNotInRecycleBinByUserId" resultType="com.newbee.smart_album.entity.Photo">
+        select photo_id,name,suffix,path,description,information,user_id,album_id,likes,is_public,size,width,height,in_recycle_bin,original_time,delete_time
+        from photo where user_id=#{userId} and in_recycle_bin=0
+    </select>
 </mapper>

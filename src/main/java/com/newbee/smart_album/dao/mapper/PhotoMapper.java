@@ -32,4 +32,6 @@ public interface PhotoMapper {
     List<Integer> selectPhotoIdWhereExpired();
 
     void deleteByPhotoId(@Param("photoId") int photoId);
+
+    List<Photo> selectAllPhotoNotInRecycleBinByUserId(@Param("userId") int userId);
 }

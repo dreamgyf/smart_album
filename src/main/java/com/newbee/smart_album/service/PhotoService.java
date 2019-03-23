@@ -31,5 +31,7 @@ public interface PhotoService {
 
     void completelyDelete(int userId,int photoId);
 
+    List<Map<String,Object>> getPhotos(int userId);
+
 //    Photo getProperty(int photoId);
 }

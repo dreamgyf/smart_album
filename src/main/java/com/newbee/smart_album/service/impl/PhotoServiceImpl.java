@@ -506,6 +506,28 @@ public class PhotoServiceImpl implements PhotoService {
         file.delete();
     }
 
+    @Override
+    public List<Map<String, Object>> getPhotos(int userId) {
+        List<Map<String, Object>> listMap = new ArrayList<>();
+        List<Photo> photos = photoMapper.selectAllPhotoNotInRecycleBinByUserId(userId);
+        for(Photo photo : photos)
+        {
+            Map<String, Object> map = new HashMap<>();
+            map.put("photoId",photo.getPhotoId());
+            map.put("name",photo.getName());
+            map.put("description",photo.getDescription());
+            map.put("albumId",photo.getAlbumId());
+            map.put("likes",photo.getLikes());
+            map.put("isPublic",photo.getIsPublic());
+            map.put("size",photo.getSize());
+            map.put("width",photo.getWidth());
+            map.put("height",photo.getHeight());
+            map.put("originalTime",photo.getOriginalTime());
+            listMap.add(map);
+        }
+        return listMap;
+    }
+
     //    @Override
 //    public Photo getProperty(int photoId) {
 //        return photoMapper.selectAllByPhotoId(photoId);
