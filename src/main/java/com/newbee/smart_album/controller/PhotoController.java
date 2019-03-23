@@ -147,6 +147,19 @@ public class PhotoController {
         return mapReturn;
     }
 
+    @RequestMapping(value = "/completelyDelete",method = RequestMethod.POST)
+    public Map<String,String> completelyDelete(@RequestParam int photoId, HttpServletRequest request)
+    {
+        Object userIdObject = request.getSession().getAttribute("userId");
+        if(userIdObject == null)
+            throw new NotLogInException();
+        int userId = Integer.parseInt(userIdObject.toString());
+        photoService.completelyDelete(userId,photoId);
+        Map<String,String> mapReturn = new HashMap<>();
+        mapReturn.put("status","ok");
+        return mapReturn;
+    }
+
 //    @RequestMapping(value = "/getProperty",method = RequestMethod.GET)
 //    public Photo getProperty(@RequestParam int photoId)
 //    {

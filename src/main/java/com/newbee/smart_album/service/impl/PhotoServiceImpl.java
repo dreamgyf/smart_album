@@ -477,6 +477,28 @@ public class PhotoServiceImpl implements PhotoService {
         }
     }
 
+    @Override
+    public void completelyDelete(int userId, int photoId) {
+        Photo photo = photoMapper.selectAllByPhotoId(photoId);
+        //对photo_id和user_id进行校验
+        if(photo.getUserId() != userId)
+            throw new ForbiddenEditException();
+        photoMapper.deleteByPhotoId(photoId);
+        if(photo.getInRecycleBin() == 1)
+        {
+            userMapper.updatePhotoInRecycleBinAmountByUserId(userId,-1);
+        }
+        else
+        {
+            userMapper.updatePhotoAmountByUserId(userId,-1);
+            albumMapper.updatePhotoAmountByAlbumId(photo.getAlbumId(),-1);
+            albumMapper.updateLastEditTimeByAlbumId(photo.getAlbumId(),new Timestamp(System.currentTimeMillis()));
+        }
+        userMapper.updateUsedSpaceByUserId(userId,0 - photo.getSize());
+        File file = new File(photoTool.LOCAL_DIR + photo.getPath());
+        file.delete();
+    }
+
     //    @Override
 //    public Photo getProperty(int photoId) {
 //        return photoMapper.selectAllByPhotoId(photoId);
