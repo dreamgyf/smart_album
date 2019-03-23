@@ -16,4 +16,6 @@ public interface AlbumService {
     List<Photo> getAlbumPhotos(int userId, int albumId);
 
     List<Album> getAlbumList(int userId);
+
+    void merge(int userId,int firstAlbumId,int secondAlbumId);
 }

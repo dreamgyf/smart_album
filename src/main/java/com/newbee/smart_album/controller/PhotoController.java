@@ -147,6 +147,30 @@ public class PhotoController {
         return mapReturn;
     }
 
+    @RequestMapping(value = "/completelyDelete",method = RequestMethod.POST)
+    public Map<String,String> completelyDelete(@RequestParam int photoId, HttpServletRequest request)
+    {
+        Object userIdObject = request.getSession().getAttribute("userId");
+        if(userIdObject == null)
+            throw new NotLogInException();
+        int userId = Integer.parseInt(userIdObject.toString());
+        photoService.completelyDelete(userId,photoId);
+        Map<String,String> mapReturn = new HashMap<>();
+        mapReturn.put("status","ok");
+        return mapReturn;
+    }
+
+    //获取用户所有照片
+    @RequestMapping(value = "/getPhotos")
+    public List<Map<String,Object>> getPhotos(HttpServletRequest request)
+    {
+        Object userIdObject = request.getSession().getAttribute("userId");
+        if(userIdObject == null)
+            throw new NotLogInException();
+        int userId = Integer.parseInt(userIdObject.toString());
+        return photoService.getPhotos(userId);
+    }
+
 //    @RequestMapping(value = "/getProperty",method = RequestMethod.GET)
 //    public Photo getProperty(@RequestParam int photoId)
 //    {

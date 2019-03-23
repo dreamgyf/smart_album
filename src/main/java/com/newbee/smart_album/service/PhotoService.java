@@ -29,5 +29,9 @@ public interface PhotoService {
 
     void moveOutRecycleBin(int userId,List<Integer> photos);
 
+    void completelyDelete(int userId,int photoId);
+
+    List<Map<String,Object>> getPhotos(int userId);
+
 //    Photo getProperty(int photoId);
 }

@@ -74,6 +74,8 @@ public class PhotoServiceImpl implements PhotoService {
         //计算文件大小，保存在数据库中
         long fileSizeB = file.getSize();
         photo.setSize(fileSizeB);
+        if(userMapper.selectAvailableSpaceByUserId(userId) < fileSizeB)
+            throw new SpaceAlreadyFullException();//可用空间不足
         //创建上传路径
         String uploadPath = photoTool.UPLOAD_DIR + userId;
         //上传文件
@@ -199,6 +201,11 @@ public class PhotoServiceImpl implements PhotoService {
             //计算文件大小，保存在数据库中
             long fileSizeB = file.getSize();
             photo.setSize(fileSizeB);
+            if(userMapper.selectAvailableSpaceByUserId(userId) < fileSizeB)
+            {
+                failedCount++;//可用空间不足
+                continue;
+            }
             //如果是jpeg格式的图片，处理EXIF信息
             if(photoTool.isJpeg(suffix))
             {
@@ -475,6 +482,50 @@ public class PhotoServiceImpl implements PhotoService {
             albumMapper.updateLastEditTimeByAlbumId(albumId,new Timestamp(System.currentTimeMillis()));
             userMapper.updatePhotoInRecycleBinAmountByUserId(userId,-1);
         }
+    }
+
+    @Override
+    public void completelyDelete(int userId, int photoId) {
+        Photo photo = photoMapper.selectAllByPhotoId(photoId);
+        //对photo_id和user_id进行校验
+        if(photo.getUserId() != userId)
+            throw new ForbiddenEditException();
+        photoMapper.deleteByPhotoId(photoId);
+        if(photo.getInRecycleBin() == 1)
+        {
+            userMapper.updatePhotoInRecycleBinAmountByUserId(userId,-1);
+        }
+        else
+        {
+            userMapper.updatePhotoAmountByUserId(userId,-1);
+            albumMapper.updatePhotoAmountByAlbumId(photo.getAlbumId(),-1);
+            albumMapper.updateLastEditTimeByAlbumId(photo.getAlbumId(),new Timestamp(System.currentTimeMillis()));
+        }
+        userMapper.updateUsedSpaceByUserId(userId,0 - photo.getSize());
+        File file = new File(photoTool.LOCAL_DIR + photo.getPath());
+        file.delete();
+    }
+
+    @Override
+    public List<Map<String, Object>> getPhotos(int userId) {
+        List<Map<String, Object>> listMap = new ArrayList<>();
+        List<Photo> photos = photoMapper.selectAllPhotoNotInRecycleBinByUserId(userId);
+        for(Photo photo : photos)
+        {
+            Map<String, Object> map = new HashMap<>();
+            map.put("photoId",photo.getPhotoId());
+            map.put("name",photo.getName());
+            map.put("description",photo.getDescription());
+            map.put("albumId",photo.getAlbumId());
+            map.put("likes",photo.getLikes());
+            map.put("isPublic",photo.getIsPublic());
+            map.put("size",photo.getSize());
+            map.put("width",photo.getWidth());
+            map.put("height",photo.getHeight());
+            map.put("originalTime",photo.getOriginalTime());
+            listMap.add(map);
+        }
+        return listMap;
     }
 
     //    @Override

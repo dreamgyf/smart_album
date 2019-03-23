@@ -27,5 +27,7 @@ public interface AlbumMapper {
 
     Integer selectIsDefaultAlbumByAlbumId(@Param("albumId") int albumId);
 
-    List<Album> selectAllByUserId(@Param("userId") int userId);
+    List<Album> selectAllAlbumByUserId(@Param("userId") int userId);
+
+    Album selectAllByAlbumId(@Param("albumId") int albumId);
 }

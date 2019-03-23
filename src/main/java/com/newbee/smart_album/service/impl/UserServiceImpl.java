@@ -161,6 +161,6 @@ public class UserServiceImpl implements UserService {
 
     //    @Override
 //    public User getUserDataByUserId(int userId) {
-//        return userMapper.selectAllByUserId(userId);
+//        return userMapper.selectAllAlbumByUserId(userId);
 //    }
 }
