@@ -12,6 +12,8 @@ public class Photo {
 
     private String path;
 
+    private String thumbnailPath;
+
     private String description;
 
     private String information;
@@ -66,6 +68,14 @@ public class Photo {
 
     public void setPath(String path) {
         this.path = path;
+    }
+
+    public String getThumbnailPath() {
+        return thumbnailPath;
+    }
+
+    public void setThumbnailPath(String thumbnailPath) {
+        this.thumbnailPath = thumbnailPath;
     }
 
     public String getDescription() {

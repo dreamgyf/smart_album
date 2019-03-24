@@ -1,9 +1,9 @@
 package com.newbee.smart_album.service;
 
 import com.newbee.smart_album.entity.Album;
-import com.newbee.smart_album.entity.Photo;
 
 import java.util.List;
+import java.util.Map;
 
 public interface AlbumService {
 
@@ -13,7 +13,7 @@ public interface AlbumService {
 
     void delete(int userId,int albumId);
 
-    List<Photo> getAlbumPhotos(int userId, int albumId);
+    List<Map<String, Object>> getAlbumPhotos(int userId, int albumId);
 
     List<Album> getAlbumList(int userId);
 

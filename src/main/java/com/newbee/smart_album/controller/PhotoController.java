@@ -106,6 +106,13 @@ public class PhotoController {
         photoService.show(userIdObject,photoId,response);
     }
 
+    @RequestMapping(value = "/showThumbnail",method = RequestMethod.GET)
+    public void showThumbnail(@RequestParam int photoId,HttpServletRequest request,HttpServletResponse response)
+    {
+        Object userIdObject = request.getSession().getAttribute("userId");
+        photoService.showThumbnail(userIdObject,photoId,response);
+    }
+
     @RequestMapping(value = "/getRecycleBinPhotos")
     public List<Photo> getRecycleBinPhotos (HttpServletRequest request)
     {

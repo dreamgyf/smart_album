@@ -6,14 +6,15 @@ import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.Tag;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.newbee.smart_album.dao.mapper.AlbumMapper;
-import com.newbee.smart_album.dao.mapper.PhotoMapper;
-import com.newbee.smart_album.dao.mapper.UserMapper;
+import com.newbee.smart_album.dao.mapper.*;
 import com.newbee.smart_album.entity.Photo;
 import com.newbee.smart_album.exception.*;
+import com.newbee.smart_album.externalAPI.Baidu;
+import com.newbee.smart_album.externalAPI.Tencent;
 import com.newbee.smart_album.service.PhotoService;
 import com.newbee.smart_album.tools.PhotoTool;
 import com.newbee.smart_album.tools.ZipTool;
+import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,6 +37,12 @@ public class PhotoServiceImpl implements PhotoService {
     @Autowired
     private ZipTool zipTool;
 
+    @Autowired
+    private Tencent tencent;
+
+    @Autowired
+    private Baidu baidu;
+
     @Resource
     private AlbumMapper albumMapper;
 
@@ -44,6 +51,12 @@ public class PhotoServiceImpl implements PhotoService {
 
     @Resource
     private UserMapper userMapper;
+
+    @Resource
+    private TagMapper tagMapper;
+
+    @Resource
+    private PhotoTagRelationMapper photoTagRelationMapper;
 
     @Override
     public void upload(int userId, MultipartFile file, String name, String description,int albumId, int isPublic) throws IOException {
@@ -77,15 +90,25 @@ public class PhotoServiceImpl implements PhotoService {
         if(userMapper.selectAvailableSpaceByUserId(userId) < fileSizeB)
             throw new SpaceAlreadyFullException();//可用空间不足
         //创建上传路径
-        String uploadPath = photoTool.UPLOAD_DIR + userId;
+        String uploadPath = photoTool.UPLOAD_DIR + userId + "/" + uuidName;
         //上传文件
-        File uploadFile = new File(photoTool.LOCAL_DIR + uploadPath,uuidName);
+        File uploadFile = new File(photoTool.LOCAL_DIR + uploadPath);
         if(!uploadFile.getParentFile().exists())
         {
             if(!uploadFile.getParentFile().mkdirs())
                 throw new UploadFailedException();//上传失败,文件创建失败
         }
         file.transferTo(uploadFile);
+        //压缩并保存
+        String thumbnailPath = photoTool.THUMBNAIL_DIR + userId + "/" + UUID.randomUUID() + "." + suffix;
+        File thumbnailFile = new File(photoTool.LOCAL_DIR + thumbnailPath);
+        if(!thumbnailFile.getParentFile().exists())
+        {
+            if(!thumbnailFile.getParentFile().mkdirs())
+                throw new UploadFailedException();//上传失败,文件创建失败
+        }
+        Thumbnails.of(uploadFile).scale(0.5).outputQuality(0.5).toFile(thumbnailFile);
+        photo.setThumbnailPath(thumbnailPath);
         //如果是jpeg格式的图片，处理EXIF信息
         if(photoTool.isJpeg(suffix))
         {
@@ -135,7 +158,7 @@ public class PhotoServiceImpl implements PhotoService {
         photo.setAlbumId(albumId);
         photo.setIsPublic(isPublic);
         photo.setInRecycleBin(0);
-        photo.setPath(uploadPath + "/" + uuidName);
+        photo.setPath(uploadPath);
         //将photo对象写入数据库
         photoMapper.insert(photo);
         //更新已用空间
@@ -145,6 +168,27 @@ public class PhotoServiceImpl implements PhotoService {
         //更新相册信息
         albumMapper.updatePhotoAmountByAlbumId(albumId,1);
         albumMapper.updateLastEditTimeByAlbumId(albumId,new Timestamp(System.currentTimeMillis()));
+        //图片AI智能识别标签
+//        String tagJsonString = tencent.photoTagIdentification(thumbnailFile,suffix);
+//        List<String> tagList = tencent.photoTag(tagJsonString);
+//        for(String tag : tagList)
+//        {
+//            if(tagMapper.selectExistByName(tag) == null)
+//                tagMapper.insert(tag);
+//            int photoId = photoMapper.selectPhotoIdByPath(uploadPath);
+//            int tagId = tagMapper.selectTagIdByName(tag);
+//            photoTagRelationMapper.insert(photoId,tagId);
+//        }
+        String tagJsonString = baidu.photoTagIdentification(thumbnailFile,suffix);
+        List<String> tagList = baidu.photoTag(tagJsonString);
+        for(String tag : tagList)
+        {
+            if(tagMapper.selectExistByName(tag) == null)
+                tagMapper.insert(tag);
+            int photoId = photoMapper.selectPhotoIdByPath(uploadPath);
+            int tagId = tagMapper.selectTagIdByName(tag);
+            photoTagRelationMapper.insert(photoId,tagId);
+        }
     }
 
     @Override
@@ -182,9 +226,9 @@ public class PhotoServiceImpl implements PhotoService {
             //给文件一个随机UUID作为文件在服务器保存的文件名
             String uuidName = UUID.randomUUID().toString() + '.' + suffix;
             //创建上传路径
-            String uploadPath = photoTool.UPLOAD_DIR + userId;
+            String uploadPath = photoTool.UPLOAD_DIR + userId + "/" + uuidName;
             //上传文件
-            File uploadFile = new File(photoTool.LOCAL_DIR + uploadPath,uuidName);
+            File uploadFile = new File(photoTool.LOCAL_DIR + uploadPath);
             if(!uploadFile.getParentFile().exists())
             {
                 if(!uploadFile.getParentFile().mkdirs())
@@ -198,6 +242,18 @@ public class PhotoServiceImpl implements PhotoService {
             Photo photo = new Photo();
             photo.setName(fileName.substring(0,dot));
             photo.setSuffix(suffix);
+            //压缩并保存
+            String thumbnailPath = photoTool.THUMBNAIL_DIR + userId + "/" + UUID.randomUUID() + "." + suffix;
+            File thumbnailFile = new File(photoTool.LOCAL_DIR + thumbnailPath);
+            if(!thumbnailFile.getParentFile().exists())
+            {
+                if(!thumbnailFile.getParentFile().mkdirs())
+                    throw new UploadFailedException();//上传失败,文件创建失败
+            }
+            Thumbnails.of(uploadFile).scale(0.5).outputQuality(0.5).toFile(thumbnailFile);
+            photo.setThumbnailPath(thumbnailPath);
+            //图片AI智能识别标签
+            String tagJson = tencent.photoTagIdentification(uploadFile,suffix);
             //计算文件大小，保存在数据库中
             long fileSizeB = file.getSize();
             photo.setSize(fileSizeB);
@@ -236,7 +292,7 @@ public class PhotoServiceImpl implements PhotoService {
             photo.setLikes(0);
             photo.setAlbumId(albumId);
             photo.setInRecycleBin(0);
-            photo.setPath(uploadPath + "/" + uuidName);
+            photo.setPath(uploadPath);
             photo.setDescription("");
             //将photo对象写入数据库
             photoMapper.insert(photo);
@@ -247,6 +303,27 @@ public class PhotoServiceImpl implements PhotoService {
             //更新相册信息
             albumMapper.updatePhotoAmountByAlbumId(albumId,1);
             albumMapper.updateLastEditTimeByAlbumId(albumId,new Timestamp(System.currentTimeMillis()));
+            //图片AI智能识别标签
+//        String tagJsonString = tencent.photoTagIdentification(thumbnailFile,suffix);
+//        List<String> tagList = tencent.photoTag(tagJsonString);
+//        for(String tag : tagList)
+//        {
+//            if(tagMapper.selectExistByName(tag) == null)
+//                tagMapper.insert(tag);
+//            int photoId = photoMapper.selectPhotoIdByPath(uploadPath);
+//            int tagId = tagMapper.selectTagIdByName(tag);
+//            photoTagRelationMapper.insert(photoId,tagId);
+//        }
+            String tagJsonString = baidu.photoTagIdentification(thumbnailFile,suffix);
+            List<String> tagList = baidu.photoTag(tagJsonString);
+            for(String tag : tagList)
+            {
+                if(tagMapper.selectExistByName(tag) == null)
+                    tagMapper.insert(tag);
+                int photoId = photoMapper.selectPhotoIdByPath(uploadPath);
+                int tagId = tagMapper.selectTagIdByName(tag);
+                photoTagRelationMapper.insert(photoId,tagId);
+            }
             successCount++;//成功
         }
         Map<String,Object> result = new HashMap<>();
@@ -432,6 +509,66 @@ public class PhotoServiceImpl implements PhotoService {
             try {
                 OutputStream outputStream = response.getOutputStream();
                 File file = new File(photoTool.LOCAL_DIR + photo.getPath());
+                InputStream inputStream = new FileInputStream(file);
+                int len;
+                byte[] buffer = new byte[1024];
+                while((len = inputStream.read(buffer)) > 0)
+                {
+                    outputStream.write(buffer,0,len);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public void showThumbnail(Object userIdObject, int photoId, HttpServletResponse response) {
+        if(photoId == 0)
+        {
+            try {
+                response.reset();
+                response.setContentType("image/png");
+                OutputStream outputStream = response.getOutputStream();
+                File file = new File(photoTool.LOCAL_DIR + photoTool.DEFAULT_COVER_FILE);
+                InputStream inputStream = new FileInputStream(file);
+                int len;
+                byte[] buffer = new byte[1024];
+                while((len = inputStream.read(buffer)) > 0)
+                {
+                    outputStream.write(buffer,0,len);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        else
+        {
+            Photo photo = photoMapper.selectAllByPhotoId(photoId);
+            //判断用户是否有访问权限
+            if(photo.getIsPublic() == 0)
+            {
+                if(userIdObject == null)
+                    throw new ForbiddenAccessException();
+                else if(Integer.parseInt(userIdObject.toString()) != photo.getUserId())
+                    throw new ForbiddenAccessException();
+            }
+            response.reset();
+            if(photoTool.isJpeg(photo.getSuffix()))
+                response.setContentType("image/jpeg");
+            else if(photoTool.isPng(photo.getSuffix()))
+                response.setContentType("image/png");
+            else if(photoTool.isBmp(photo.getSuffix()))
+                response.setContentType("application/x-bmp");
+            else if(photoTool.isTiff(photo.getSuffix()))
+                response.setContentType("image/tiff");
+            else
+            {
+                throw new SuffixErrorException();
+            }
+            try {
+                OutputStream outputStream = response.getOutputStream();
+                File file = new File(photoTool.LOCAL_DIR + photo.getThumbnailPath());
                 InputStream inputStream = new FileInputStream(file);
                 int len;
                 byte[] buffer = new byte[1024];

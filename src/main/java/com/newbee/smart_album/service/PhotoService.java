@@ -23,6 +23,8 @@ public interface PhotoService {
 
     void show(Object userIdObject,int photoId,HttpServletResponse response);
 
+    void showThumbnail(Object userIdObject,int photoId,HttpServletResponse response);
+
     List<Photo> getRecycleBinPhotos(int userId);
 
     void move(int userId,int photoId,int albumId);

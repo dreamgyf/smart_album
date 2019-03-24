@@ -34,4 +34,6 @@ public interface PhotoMapper {
     void deleteByPhotoId(@Param("photoId") int photoId);
 
     List<Photo> selectAllPhotoNotInRecycleBinByUserId(@Param("userId") int userId);
+
+    Integer selectPhotoIdByPath(@Param("path") String path);
 }
