@@ -1,8 +1,14 @@
 package com.newbee.smart_album.tools;
 
+import org.apache.commons.codec.binary.Base64;
 import org.springframework.stereotype.Component;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.sql.Timestamp;
 
 @Component
@@ -13,6 +19,8 @@ public class PhotoTool {
     public final String TEMP_DIR = "/images/temp/";
 
     public final String UPLOAD_DIR = "/images/";
+
+    public final String THUMBNAIL_DIR = "/images/thumbnail/";
 
     public final String DEFAULT_AVATAR_FILE = "/images/avatar/default_avatar.png";
 
@@ -63,6 +71,20 @@ public class PhotoTool {
         String time = exifTime.substring(tag + 1);
         date = date.replace(":","-");
         return Timestamp.valueOf(date + " " + time);
+    }
+
+    public String encodeImageToBase64(File imageFile,String suffix) {// 将图片文件转化为字节数组字符串，并对其进行Base64编码处理
+        ByteArrayOutputStream outputStream = null;
+        try {
+            BufferedImage bufferedImage = ImageIO.read(imageFile);
+            outputStream = new ByteArrayOutputStream();
+            ImageIO.write(bufferedImage, suffix.toLowerCase(), outputStream);
+        } catch (MalformedURLException e1) {
+            e1.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return Base64.encodeBase64String(outputStream.toByteArray());
     }
 
 //    public Timestamp pngTimeToTimestamp(String png_time)

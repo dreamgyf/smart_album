@@ -14,7 +14,10 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class AlbumServiceImpl implements AlbumService {
@@ -63,6 +66,10 @@ public class AlbumServiceImpl implements AlbumService {
             //相册封面不能选在回收站里的照片
             if(photoMapper.selectInRecycleBinByPhotoId(photoId) != null)
                 throw new ForbiddenAccessException();
+            if(photoId == -1)
+            {
+                photoId = albumMapper.selectAllByAlbumId(albumId).getCover();
+            }
             albumMapper.editAlbumByAlbumId(albumId,name,photoId,description);
         }
         else
@@ -89,11 +96,28 @@ public class AlbumServiceImpl implements AlbumService {
     }
 
     @Override
-    public List<Photo> getAlbumPhotos(int userId, int albumId) {
+    public List<Map<String, Object>> getAlbumPhotos(int userId, int albumId) {
         //校验user_id和album_id
         if(albumMapper.selectUserIdByAlbumId(albumId) != userId)
             throw new ForbiddenAccessException();
-        return photoMapper.selectAllPhotoNotInRecycleBinByAlbumIdOrderByOriginalTimeDesc(albumId);
+        List<Photo> photos = photoMapper.selectAllPhotoNotInRecycleBinByAlbumIdOrderByOriginalTimeDesc(albumId);
+        List<Map<String, Object>> listMap = new ArrayList<>();
+        for(Photo photo : photos)
+        {
+            Map<String, Object> map = new HashMap<>();
+            map.put("photoId",photo.getPhotoId());
+            map.put("name",photo.getName());
+            map.put("description",photo.getDescription());
+            map.put("albumId",photo.getAlbumId());
+            map.put("likes",photo.getLikes());
+            map.put("isPublic",photo.getIsPublic());
+            map.put("size",photo.getSize());
+            map.put("width",photo.getWidth());
+            map.put("height",photo.getHeight());
+            map.put("originalTime",photo.getOriginalTime());
+            listMap.add(map);
+        }
+        return listMap;
     }
 
     @Override

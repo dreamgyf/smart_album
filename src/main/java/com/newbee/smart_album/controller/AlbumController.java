@@ -1,7 +1,6 @@
 package com.newbee.smart_album.controller;
 
 import com.newbee.smart_album.entity.Album;
-import com.newbee.smart_album.entity.Photo;
 import com.newbee.smart_album.exception.NotLogInException;
 import com.newbee.smart_album.service.AlbumService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,7 +59,7 @@ public class AlbumController {
     }
 
     @RequestMapping(value = "/getAlbumPhotos",method = RequestMethod.GET)
-    public List<Photo> getAlbumPhotos(@RequestParam int albumId, HttpServletRequest request)
+    public List<Map<String, Object>> getAlbumPhotos(@RequestParam int albumId, HttpServletRequest request)
     {
         Object userIdObject = request.getSession().getAttribute("userId");
         if(userIdObject == null)

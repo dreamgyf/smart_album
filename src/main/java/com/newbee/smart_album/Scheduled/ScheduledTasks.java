@@ -4,6 +4,7 @@ import com.newbee.smart_album.dao.mapper.PhotoMapper;
 import com.newbee.smart_album.dao.mapper.TempFileMapper;
 import com.newbee.smart_album.dao.mapper.UserMapper;
 import com.newbee.smart_album.entity.Photo;
+import com.newbee.smart_album.externalAPI.Baidu;
 import com.newbee.smart_album.tools.PhotoTool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -18,6 +19,9 @@ public class ScheduledTasks {
 
     @Autowired
     private PhotoTool photoTool;
+
+    @Autowired
+    private Baidu baidu;
 
     @Resource
     private TempFileMapper tempFileMapper;
@@ -56,5 +60,12 @@ public class ScheduledTasks {
             file.delete();
             tempFileMapper.deleteByTempFileId(id);
         }
+    }
+
+    //每25天更新一次baidu的access_token
+    @Scheduled(fixedRate = 1000L * 60 * 60 * 24 * 25)
+    public void updateBaiduAccessToken()
+    {
+        baidu.updateAccessToken();
     }
 }
