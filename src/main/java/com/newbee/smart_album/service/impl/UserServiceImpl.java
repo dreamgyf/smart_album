@@ -138,7 +138,7 @@ public class UserServiceImpl implements UserService {
                 String uuidName = UUID.randomUUID().toString() + '.' + suffix;
                 //上传文件
                 String newAvatarPath = "/images/avatar/" + userId + "/" + uuidName;
-                File uploadFile = new File(photoTool.LOCAL_DIR + "/resources/static" + newAvatarPath);
+                File uploadFile = new File(photoTool.LOCAL_DIR + "/src/main/resources/static" + newAvatarPath);
                 if(!uploadFile.getParentFile().exists())
                 {
                     if(!uploadFile.getParentFile().mkdirs())
