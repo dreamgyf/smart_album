@@ -183,15 +183,11 @@ public class PhotoServiceImpl implements PhotoService {
         List<Map<String,Object>> tagList = baidu.photoTag(tagJsonString);
         for(Map<String,Object> tag : tagList)
         {
-            if(tagMapper.selectExistByName(tag.get("root").toString()) == null)
-                tagMapper.insert(tag.get("root").toString());
             if(tagMapper.selectExistByName(tag.get("keyword").toString()) == null)
                 tagMapper.insert(tag.get("keyword").toString());
             int photoId = photoMapper.selectPhotoIdByPath(uploadPath);
-            int tagId1 = tagMapper.selectTagIdByName(tag.get("root").toString());
-            int tagId2 = tagMapper.selectTagIdByName(tag.get("keyword").toString());
-            photoTagRelationMapper.insert(photoId,tagId1,Double.parseDouble(tag.get("score").toString()));
-            photoTagRelationMapper.insert(photoId,tagId2,Double.parseDouble(tag.get("score").toString()));
+            int tagId = tagMapper.selectTagIdByName(tag.get("keyword").toString());
+            photoTagRelationMapper.insert(photoId,tagId,Double.parseDouble(tag.get("score").toString()));
         }
     }
 

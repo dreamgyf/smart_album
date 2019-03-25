@@ -107,11 +107,30 @@ public class Baidu {
         while(resultList.hasNext())
         {
             JsonNode finalResult = resultList.next();
-            Map<String,Object> map = new HashMap<>();
-            map.put("root",finalResult.get("root").asText());
-            map.put("keyword",finalResult.get("keyword").asText());
-            map.put("score",finalResult.get("score").asDouble());
-            tagListReturn.add(map);
+            if(tagListReturn.size() == 0)
+            {
+                Map<String,Object> map1 = new HashMap<>();
+                map1.put("keyword",finalResult.get("root").asText());
+                map1.put("score",finalResult.get("score").asDouble());
+                tagListReturn.add(map1);
+            }
+            for(int i = 0;i < tagListReturn.size();i++)
+            {
+                Map<String ,Object> tempMap = tagListReturn.get(i);
+                if(tempMap.get("keyword").toString().equals(finalResult.get("root").asText()))
+                    break;
+                if(i == tagListReturn.size() - 1)
+                {
+                    Map<String,Object> map1 = new HashMap<>();
+                    map1.put("keyword",finalResult.get("root").asText());
+                    map1.put("score",finalResult.get("score").asDouble());
+                    tagListReturn.add(map1);
+                }
+            }
+            Map<String,Object> map2 = new HashMap<>();
+            map2.put("keyword",finalResult.get("keyword").asText());
+            map2.put("score",finalResult.get("score").asDouble());
+            tagListReturn.add(map2);
         }
         return tagListReturn;
     }
