@@ -12,6 +12,8 @@ public interface PhotoMapper {
 
     Photo selectAllByPhotoId(@Param("photoId") int photoId);
 
+    Photo selectAllByPhotoIdWhereIsPublic(@Param("photoId") int photoId);
+
     List<Integer> selectPhotoIdByAlbumId(@Param("albumId") int albumId);
 
     void updateAlbumIdByPhotoId(@Param("photoId") int photoId,@Param("albumId") int albumId);

@@ -665,6 +665,39 @@ public class PhotoServiceImpl implements PhotoService {
         return listMap;
     }
 
+    @Override
+    public List<Map<String, Object>> globalSearch(String keyword) {
+        List<Map<String, Object>> listMap = new ArrayList<>();
+        List<Integer> photoIdList = new ArrayList<>();
+        List<Integer> tagIdList = tagMapper.selectTagIdLikeName("%" + keyword + "%");
+        for(int tagId : tagIdList)
+        {
+            photoIdList.addAll(photoTagRelationMapper.selectPhotoIdByTagId(tagId));
+        }
+        //去重
+        LinkedHashSet<Integer> hashSet = new LinkedHashSet<>();
+        hashSet.addAll(photoIdList);
+        photoIdList.clear();
+        photoIdList.addAll(hashSet);
+        for(int photoId : photoIdList)
+        {
+            Photo photo = photoMapper.selectAllByPhotoIdWhereIsPublic(photoId);
+            Map<String,Object> map = new HashMap<>();
+            map.put("photoId",photo.getPhotoId());
+            map.put("name",photo.getName());
+            map.put("description",photo.getDescription());
+            map.put("albumId",photo.getAlbumId());
+            map.put("likes",photo.getLikes());
+            map.put("isPublic",photo.getIsPublic());
+            map.put("size",photo.getSize());
+            map.put("width",photo.getWidth());
+            map.put("height",photo.getHeight());
+            map.put("originalTime",photo.getOriginalTime());
+            listMap.add(map);
+        }
+        return listMap;
+    }
+
     //    @Override
 //    public Photo getProperty(int photoId) {
 //        return photoMapper.selectAllByPhotoId(photoId);

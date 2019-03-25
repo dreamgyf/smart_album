@@ -3,6 +3,7 @@ package com.newbee.smart_album.controller;
 import com.newbee.smart_album.entity.Photo;
 import com.newbee.smart_album.exception.NotLogInException;
 import com.newbee.smart_album.service.PhotoService;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -178,6 +179,11 @@ public class PhotoController {
         return photoService.getPhotos(userId);
     }
 
+    @RequestMapping(value = "/globalSearch",method = RequestMethod.GET)
+    public List<Map<String,Object>> globalSearch(@Param("keyword") String keyword)
+    {
+        return photoService.globalSearch(keyword);
+    }
 //    @RequestMapping(value = "/getProperty",method = RequestMethod.GET)
 //    public Photo getProperty(@RequestParam int photoId)
 //    {

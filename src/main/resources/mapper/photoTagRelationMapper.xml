@@ -9,4 +9,7 @@
         insert into photo_tag_relation (photo_id,tag_id) values (#{photoId},#{tagId})
     </insert>
 
+    <select id="selectPhotoIdByTagId" resultType="INTEGER">
+        select photo_id from photo_tag_relation where tag_id=#{tagId}
+    </select>
 </mapper>

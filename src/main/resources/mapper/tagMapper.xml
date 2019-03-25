@@ -17,4 +17,7 @@
         select tag_id from tag where name=#{name}
     </select>
 
+    <select id="selectTagIdLikeName" resultType="INTEGER">
+        select tag_id from tag where name like #{keyword}
+    </select>
 </mapper>
