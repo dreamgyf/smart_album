@@ -19,10 +19,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Component
 public class Baidu {
@@ -102,16 +99,19 @@ public class Baidu {
         return null;
     }
 
-    public List<String> photoTag(String tagJsonString) throws IOException {
+    public List<Map<String ,Object>> photoTag(String tagJsonString) throws IOException {
         JsonNode json = new ObjectMapper().readValue(tagJsonString, JsonNode.class);
         JsonNode result = json.path("result");
         Iterator<JsonNode> resultList = result.elements();
-        List<String> tagListReturn = new ArrayList<>();
+        List<Map<String ,Object>> tagListReturn = new ArrayList<>();
         while(resultList.hasNext())
         {
             JsonNode finalResult = resultList.next();
-            tagListReturn.add(finalResult.get("root").asText());
-            tagListReturn.add(finalResult.get("keyword").asText());
+            Map<String,Object> map = new HashMap<>();
+            map.put("root",finalResult.get("root").asText());
+            map.put("keyword",finalResult.get("keyword").asText());
+            map.put("score",finalResult.get("score").asDouble());
+            tagListReturn.add(map);
         }
         return tagListReturn;
     }

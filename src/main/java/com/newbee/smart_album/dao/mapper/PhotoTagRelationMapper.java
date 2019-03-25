@@ -6,8 +6,8 @@ import java.util.List;
 
 public interface PhotoTagRelationMapper {
 
-    void insert(@Param("photoId") int photoId,@Param("tagId") int tagId);
+    void insert(@Param("photoId") int photoId,@Param("tagId") int tagId,@Param("score") double score);
 
-    List<Integer> selectPhotoIdByTagId(@Param("tagId") int tagId);
+    List<Integer> selectPhotoIdByTagIdOrderByScoreDesc(List<Integer> list);
 
 }

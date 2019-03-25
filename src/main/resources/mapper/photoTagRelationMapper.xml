@@ -6,10 +6,14 @@
 <mapper namespace="com.newbee.smart_album.dao.mapper.PhotoTagRelationMapper">
 
     <insert id="insert">
-        insert into photo_tag_relation (photo_id,tag_id) values (#{photoId},#{tagId})
+        insert into photo_tag_relation (photo_id,tag_id,score) values (#{photoId},#{tagId},#{score})
     </insert>
 
-    <select id="selectPhotoIdByTagId" resultType="INTEGER">
-        select photo_id from photo_tag_relation where tag_id=#{tagId}
+    <select id="selectPhotoIdByTagIdOrderByScoreDesc" resultType="INTEGER" parameterType="java.util.List">
+        select photo_id from photo_tag_relation where tag_id in
+        <foreach collection="list" item="tagId" open="(" close=")" separator=",">
+            #{tagId}
+        </foreach>
+        order by score desc
     </select>
 </mapper>

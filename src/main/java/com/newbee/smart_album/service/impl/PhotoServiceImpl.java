@@ -180,14 +180,18 @@ public class PhotoServiceImpl implements PhotoService {
 //            photoTagRelationMapper.insert(photoId,tagId);
 //        }
         String tagJsonString = baidu.photoTagIdentification(thumbnailFile,suffix);
-        List<String> tagList = baidu.photoTag(tagJsonString);
-        for(String tag : tagList)
+        List<Map<String,Object>> tagList = baidu.photoTag(tagJsonString);
+        for(Map<String,Object> tag : tagList)
         {
-            if(tagMapper.selectExistByName(tag) == null)
-                tagMapper.insert(tag);
+            if(tagMapper.selectExistByName(tag.get("root").toString()) == null)
+                tagMapper.insert(tag.get("root").toString());
+            if(tagMapper.selectExistByName(tag.get("keyword").toString()) == null)
+                tagMapper.insert(tag.get("keyword").toString());
             int photoId = photoMapper.selectPhotoIdByPath(uploadPath);
-            int tagId = tagMapper.selectTagIdByName(tag);
-            photoTagRelationMapper.insert(photoId,tagId);
+            int tagId1 = tagMapper.selectTagIdByName(tag.get("root").toString());
+            int tagId2 = tagMapper.selectTagIdByName(tag.get("keyword").toString());
+            photoTagRelationMapper.insert(photoId,tagId1,Double.parseDouble(tag.get("score").toString()));
+            photoTagRelationMapper.insert(photoId,tagId2,Double.parseDouble(tag.get("score").toString()));
         }
     }
 
@@ -315,14 +319,18 @@ public class PhotoServiceImpl implements PhotoService {
 //            photoTagRelationMapper.insert(photoId,tagId);
 //        }
             String tagJsonString = baidu.photoTagIdentification(thumbnailFile,suffix);
-            List<String> tagList = baidu.photoTag(tagJsonString);
-            for(String tag : tagList)
+            List<Map<String,Object>> tagList = baidu.photoTag(tagJsonString);
+            for(Map<String,Object> tag : tagList)
             {
-                if(tagMapper.selectExistByName(tag) == null)
-                    tagMapper.insert(tag);
+                if(tagMapper.selectExistByName(tag.get("root").toString()) == null)
+                    tagMapper.insert(tag.get("root").toString());
+                if(tagMapper.selectExistByName(tag.get("keyword").toString()) == null)
+                    tagMapper.insert(tag.get("keyword").toString());
                 int photoId = photoMapper.selectPhotoIdByPath(uploadPath);
-                int tagId = tagMapper.selectTagIdByName(tag);
-                photoTagRelationMapper.insert(photoId,tagId);
+                int tagId1 = tagMapper.selectTagIdByName(tag.get("root").toString());
+                int tagId2 = tagMapper.selectTagIdByName(tag.get("keyword").toString());
+                photoTagRelationMapper.insert(photoId,tagId1,Double.parseDouble(tag.get("score").toString()));
+                photoTagRelationMapper.insert(photoId,tagId2,Double.parseDouble(tag.get("score").toString()));
             }
             successCount++;//成功
         }
@@ -668,12 +676,8 @@ public class PhotoServiceImpl implements PhotoService {
     @Override
     public List<Map<String, Object>> globalSearch(String keyword) {
         List<Map<String, Object>> listMap = new ArrayList<>();
-        List<Integer> photoIdList = new ArrayList<>();
         List<Integer> tagIdList = tagMapper.selectTagIdLikeName("%" + keyword + "%");
-        for(int tagId : tagIdList)
-        {
-            photoIdList.addAll(photoTagRelationMapper.selectPhotoIdByTagId(tagId));
-        }
+        List<Integer> photoIdList = photoTagRelationMapper.selectPhotoIdByTagIdOrderByScoreDesc(tagIdList);
         //去重
         LinkedHashSet<Integer> hashSet = new LinkedHashSet<>();
         hashSet.addAll(photoIdList);
@@ -688,7 +692,6 @@ public class PhotoServiceImpl implements PhotoService {
             map.put("description",photo.getDescription());
             map.put("albumId",photo.getAlbumId());
             map.put("likes",photo.getLikes());
-            map.put("isPublic",photo.getIsPublic());
             map.put("size",photo.getSize());
             map.put("width",photo.getWidth());
             map.put("height",photo.getHeight());
