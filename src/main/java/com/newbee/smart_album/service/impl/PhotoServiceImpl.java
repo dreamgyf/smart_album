@@ -432,12 +432,16 @@ public class PhotoServiceImpl implements PhotoService {
     public void moveToRecycleBin(int userId,List<Integer> photos) {
         for(int photoId : photos)
         {
+            Photo photo = photoMapper.selectAllByPhotoId(photoId);
             //对photo_id和user_id进行校验
-            if(photoMapper.selectAllByPhotoId(photoId).getUserId() != userId)
+            if(photo.getUserId() != userId)
                 throw new ForbiddenEditException();
             //不能对已经在回收站对照片重复删除
-            if(photoMapper.selectInRecycleBinByPhotoId(photoId) != null)
+            if(photo.getInRecycleBin() == 1)
                 throw new ForbiddenEditException();
+            //如果该照片是其相册的封面，将相册封面设为默认封面
+            if(albumMapper.selectAllByAlbumId(photo.getAlbumId()).getCover() == photoId)
+                albumMapper.updateCoverByAlbumId(photo.getAlbumId(),0);
             photoMapper.moveToRecycleBinByPhotoId(photoId,new Timestamp(System.currentTimeMillis()));
             //对user表和album表的photo_amount更新，对user表的photo_in_recycle_bin_amount更新
             int albumId = photoMapper.selectAllByPhotoId(photoId).getAlbumId();
@@ -583,8 +587,25 @@ public class PhotoServiceImpl implements PhotoService {
     }
 
     @Override
-    public List<Photo> getRecycleBinPhotos(int userId) {
-        return photoMapper.selectPhotoInRecycleBinByUserId(userId);
+    public List<Map<String, Object>> getRecycleBinPhotos(int userId) {
+        List<Map<String, Object>> listMap = new ArrayList<>();
+        List<Photo> photos = photoMapper.selectPhotoInRecycleBinByUserId(userId);
+        for(Photo photo : photos)
+        {
+            Map<String, Object> map = new HashMap<>();
+            map.put("photoId",photo.getPhotoId());
+            map.put("name",photo.getName());
+            map.put("description",photo.getDescription());
+            map.put("albumId",photo.getAlbumId());
+            map.put("likes",photo.getLikes());
+            map.put("isPublic",photo.getIsPublic());
+            map.put("size",photo.getSize());
+            map.put("width",photo.getWidth());
+            map.put("height",photo.getHeight());
+            map.put("originalTime",photo.getOriginalTime());
+            listMap.add(map);
+        }
+        return listMap;
     }
 
     @Override
@@ -634,6 +655,9 @@ public class PhotoServiceImpl implements PhotoService {
         }
         else
         {
+            //如果该照片是其相册的封面，将相册封面设为默认封面
+            if(albumMapper.selectAllByAlbumId(photo.getAlbumId()).getCover() == photoId)
+                albumMapper.updateCoverByAlbumId(photo.getAlbumId(),0);
             userMapper.updatePhotoAmountByUserId(userId,-1);
             albumMapper.updatePhotoAmountByAlbumId(photo.getAlbumId(),-1);
             albumMapper.updateLastEditTimeByAlbumId(photo.getAlbumId(),new Timestamp(System.currentTimeMillis()));

@@ -1,6 +1,5 @@
 package com.newbee.smart_album.service;
 
-import com.newbee.smart_album.entity.Photo;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -25,7 +24,7 @@ public interface PhotoService {
 
     void showThumbnail(Object userIdObject,int photoId,HttpServletResponse response);
 
-    List<Photo> getRecycleBinPhotos(int userId);
+    List<Map<String, Object>> getRecycleBinPhotos(int userId);
 
     void move(int userId,int photoId,int albumId);
 

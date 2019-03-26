@@ -1,6 +1,5 @@
 package com.newbee.smart_album.controller;
 
-import com.newbee.smart_album.entity.Photo;
 import com.newbee.smart_album.exception.NotLogInException;
 import com.newbee.smart_album.service.PhotoService;
 import org.apache.ibatis.annotations.Param;
@@ -115,7 +114,7 @@ public class PhotoController {
     }
 
     @RequestMapping(value = "/getRecycleBinPhotos")
-    public List<Photo> getRecycleBinPhotos (HttpServletRequest request)
+    public List<Map<String, Object>> getRecycleBinPhotos (HttpServletRequest request)
     {
         Object userIdObject = request.getSession().getAttribute("userId");
         if(userIdObject == null)

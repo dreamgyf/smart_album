@@ -30,4 +30,6 @@ public interface AlbumMapper {
     List<Album> selectAllAlbumByUserId(@Param("userId") int userId);
 
     Album selectAllByAlbumId(@Param("albumId") int albumId);
+
+    void updateCoverByAlbumId(@Param("albumId") int albumId,@Param("photoId") int photoId);
 }
