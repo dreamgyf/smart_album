@@ -92,4 +92,32 @@ public class UserController {
         mapReturn.put("status","ok");
         return mapReturn;
     }
+
+    @RequestMapping(value = "/retrievePasswordByEmail",method = RequestMethod.GET)
+    public Map<String,String> retrievePasswordByEmail(@RequestParam String email)
+    {
+        userService.retrievePasswordByEmail(email);
+        Map<String,String> mapReturn = new HashMap<>();
+        mapReturn.put("status","ok");
+        return mapReturn;
+    }
+
+    @RequestMapping(value = "/verifySid",method = RequestMethod.GET)
+    public Map<String,Object> verifySid(@RequestParam String sid)
+    {
+        int userId = userService.verifySid(sid);
+        Map<String,Object> mapReturn = new HashMap<>();
+        mapReturn.put("status","ok");
+        mapReturn.put("userId",userId);
+        return mapReturn;
+    }
+
+    @RequestMapping(value = "/retrievePassword",method = RequestMethod.POST)
+    public Map<String,String> retrievePassword(@RequestParam String sid,@RequestParam int userId,@RequestParam String newPassword)
+    {
+        userService.retrievePassword(sid,userId,newPassword);
+        Map<String,String> mapReturn = new HashMap<>();
+        mapReturn.put("status","ok");
+        return mapReturn;
+    }
 }

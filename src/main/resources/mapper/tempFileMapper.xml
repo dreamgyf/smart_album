@@ -10,7 +10,7 @@
     </insert>
 
     <select id="selectTempFileIdWhereExpired" resultType="INTEGER">
-        SELECT temp_file_id FROM temp_file WHERE create_time &lt;= (SELECT DATE_SUB(now(),interval 1 day));
+        SELECT temp_file_id FROM temp_file WHERE create_time &lt;= (SELECT DATE_SUB(now(),interval 1 day))
     </select>
 
     <select id="selectPathByTempFileId" resultType="String">

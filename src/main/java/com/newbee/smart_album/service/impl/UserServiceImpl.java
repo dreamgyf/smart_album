@@ -1,7 +1,9 @@
 package com.newbee.smart_album.service.impl;
 
 import com.newbee.smart_album.dao.mapper.AlbumMapper;
+import com.newbee.smart_album.dao.mapper.RetrievePasswordMapper;
 import com.newbee.smart_album.dao.mapper.UserMapper;
+import com.newbee.smart_album.email.SendEmailToRetrievePassword;
 import com.newbee.smart_album.entity.Album;
 import com.newbee.smart_album.entity.User;
 import com.newbee.smart_album.exception.*;
@@ -14,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.imageio.ImageIO;
+import javax.mail.MessagingException;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -31,8 +34,14 @@ public class UserServiceImpl implements UserService {
     @Resource
     private AlbumMapper albumMapper;
 
+    @Resource
+    private RetrievePasswordMapper retrievePasswordMapper;
+
     @Autowired
     private PhotoTool photoTool;
+
+    @Autowired
+    private SendEmailToRetrievePassword sendEmailToRetrievePassword;
 
     @Override
     public void register(String username, String password, String email) {
@@ -159,8 +168,36 @@ public class UserServiceImpl implements UserService {
         userMapper.updateUserInfoByUserId(userId,nickname,gender,signature);
     }
 
-    //    @Override
-//    public User getUserDataByUserId(int userId) {
-//        return userMapper.selectAllAlbumByUserId(userId);
-//    }
+    @Override
+    public void retrievePasswordByEmail(String email) {
+        User user = userMapper.selectAllByEmail(email);
+        if(user == null)
+            throw new EmailNotExistException();
+        String temp = user.getUserId() + user.getUsername() + user.getEmail() + user.getPassword() + System.currentTimeMillis();
+        String sid = DigestUtils.md5DigestAsHex(temp.getBytes());
+        retrievePasswordMapper.insert(user.getUserId(),sid,new Timestamp(System.currentTimeMillis()));
+        try {
+            sendEmailToRetrievePassword.send(email,sid);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public int verifySid(String sid) {
+        Integer userId = retrievePasswordMapper.selectUserIdBySid(sid);
+        if(userId == null)
+            throw new SidErrorException();
+        return userId;
+    }
+
+    @Override
+    public void retrievePassword(String sid,int userId,String newPassword) {
+        Integer userIdGet = retrievePasswordMapper.selectUserIdBySid(sid);
+        if(userIdGet == null)
+            throw new SidErrorException();
+        if(userIdGet != userId)
+            throw new ForbiddenEditException();
+        userMapper.updatePasswordByUserId(userId,DigestUtils.md5DigestAsHex(newPassword.getBytes()));
+    }
 }

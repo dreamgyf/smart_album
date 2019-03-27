@@ -13,25 +13,28 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.DigestUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.WebApplicationContext;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.spring5.SpringTemplateEngine;
 
 import javax.annotation.Resource;
 import javax.imageio.ImageIO;
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -48,6 +51,12 @@ public class SmartAlbumApplicationTests {
 
     @Resource
     private TagMapper tagMapper;
+
+    @Autowired
+    private JavaMailSender mailSender;
+
+    @Autowired
+    private SpringTemplateEngine templateEngine;
 
     @Test
     public void testAI() throws MalformedURLException, IOException {
@@ -154,5 +163,25 @@ public class SmartAlbumApplicationTests {
             e.printStackTrace(System.err);
         }
 
+    }
+
+    @Test
+    public void testEmail() throws MessagingException {
+        MimeMessage mailMessage = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(mailMessage,true);
+        helper.setFrom("497163175@qq.com");
+        helper.setTo("g2409197994@gmail.com");
+        helper.setSubject("test");
+
+        Context context = new Context();
+        //context.setVariable("url","test");
+        Map<String,Object> map = new HashMap<>();
+        map.put("url","test");
+        context.setVariables(map);
+
+        String text = templateEngine.process("retrievePasswordEmail",context);
+        helper.setText(text,true);
+
+        mailSender.send(mailMessage);
     }
 }

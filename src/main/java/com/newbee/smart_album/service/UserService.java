@@ -10,11 +10,15 @@ public interface UserService {
 
     int login(String username,String password);
 
-//    User getUserDataByUserId(int userId);
-
     void changePassword(int userId,String prePassword,String newPassword);
 
     Map<String,Object> getInfo(int userId);
 
     void editInfo(int userId, MultipartFile avatar,String nickname,int gender,String signature);
+
+    void retrievePasswordByEmail(String email);
+
+    int verifySid(String sid);
+
+    void retrievePassword(String sid,int userId,String newPassword);
 }

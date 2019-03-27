@@ -59,5 +59,10 @@
         select store_space-used_space from user where user_id=#{userId}
     </select>
 
+    <select id="selectAllByEmail" resultType="com.newbee.smart_album.entity.User">
+        select user_id,username,password,email,gender,avatar,signature,nickname,store_space,used_space,photo_amount,photo_in_recycle_bin_amount,album_amount
+        from user where email=#{email}
+    </select>
+
 </mapper>
 
