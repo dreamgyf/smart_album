@@ -23,6 +23,8 @@ public interface PhotoMapper {
     void updateByPhotoId(@Param("photoId") int photoId, @Param("name") String name,@Param("description") String description,
                          @Param("isPublic") int isPublic);
 
+    void updateIsPublicByPhotoId(@Param("photoId") int photoId,@Param("isPublic") int isPublic);
+
     List<Photo> selectAllPhotoNotInRecycleBinByAlbumIdOrderByOriginalTimeDesc(@Param("albumId") int albumId);
 
     Integer selectInRecycleBinByPhotoId(@Param("photoId") int photoId);

@@ -36,6 +36,10 @@
         update photo set name=#{name},description=#{description},is_public=#{isPublic} where photo_id=#{photoId}
     </update>
 
+    <update id="updateIsPublicByPhotoId">
+        update photo set is_public=#{isPublic} where photo_id=#{photoId}
+    </update>
+
     <select id="selectAllPhotoNotInRecycleBinByAlbumIdOrderByOriginalTimeDesc" resultType="com.newbee.smart_album.entity.Photo">
         select photo_id,name,suffix,path,description,information,user_id,album_id,likes,is_public,size,width,height,in_recycle_bin,original_time,delete_time
          from photo where album_id=#{albumId} and in_recycle_bin=0 order by original_time desc;

@@ -40,7 +40,8 @@ public class AlbumController {
             throw new NotLogInException();
         int userId = Integer.parseInt(userIdObject.toString());
         albumService.edit(userId,Integer.parseInt(map.get("albumId").toString()),
-                map.get("name").toString(),Integer.parseInt(map.get("photoId").toString()),map.get("description").toString());
+                map.get("name").toString(),Integer.parseInt(map.get("photoId").toString()),
+                map.get("description").toString());
         Map<String,String> mapReturn = new HashMap<>();
         mapReturn.put("status","ok");
         return mapReturn;
@@ -62,7 +63,7 @@ public class AlbumController {
     @RequestMapping(value = "/download",method = RequestMethod.POST)
     public void download(@RequestParam int albumId, HttpServletResponse response)
     {
-
+        albumService.download(albumId,response);
     }
 
     @RequestMapping(value = "/getAlbumPhotos",method = RequestMethod.GET)

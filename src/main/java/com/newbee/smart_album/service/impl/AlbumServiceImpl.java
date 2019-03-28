@@ -9,10 +9,14 @@ import com.newbee.smart_album.exception.ForbiddenAccessException;
 import com.newbee.smart_album.exception.ForbiddenEditException;
 import com.newbee.smart_album.service.AlbumService;
 import com.newbee.smart_album.tools.PhotoTool;
+import com.newbee.smart_album.tools.ZipTool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.net.URLEncoder;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,6 +37,9 @@ public class AlbumServiceImpl implements AlbumService {
 
     @Autowired
     private PhotoTool photoTool;
+
+    @Autowired
+    private ZipTool zipTool;
 
     @Override
     public void create(int userId, String name, String description) {
@@ -93,6 +100,60 @@ public class AlbumServiceImpl implements AlbumService {
         }
         albumMapper.deleteByAlbumId(albumId);
         userMapper.updateAlbumAmountByUserId(userId,-1);
+    }
+
+    @Override
+    public void download(int albumId, HttpServletResponse response) {
+        List<String> fileFullName = new ArrayList<>();
+        List<String> filePath = new ArrayList<>();
+        List<Photo> photos = photoMapper.selectAllPhotoNotInRecycleBinByAlbumIdOrderByOriginalTimeDesc(albumId);
+        for(Photo photo : photos)
+        {
+            if(!fileFullName.contains(photo.getName() + "." + photo.getSuffix()))
+                fileFullName.add(photo.getName() + "." + photo.getSuffix());
+            else {
+                int count = 2;
+                while(fileFullName.contains(photo.getName() + "_" + count + "." + photo.getSuffix()))
+                    count++;
+                fileFullName.add(photo.getName() + "_" + count + "." + photo.getSuffix());
+            }
+            filePath.add(photo.getPath());
+        }
+        //创建ZIP文件并返回文件路径
+        String zipPath = zipTool.createZip(fileFullName,filePath);
+        File file = new File(photoTool.LOCAL_DIR + zipPath);
+        response.reset();
+        response.setHeader("content-type","application/octet-stream");
+        response.setContentType("application/octet-stream");
+        try {
+            response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(albumMapper.selectAllByAlbumId(albumId).getName() + ".zip", "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        //设置输入输出流和缓冲区
+        InputStream inputStream = null;
+        OutputStream outputStream = null;
+        byte[] buffer = new byte[1024];
+        int len = 0;
+        try {
+            inputStream = new FileInputStream(file.getPath());
+            outputStream = response.getOutputStream();
+            while((len = inputStream.read(buffer)) > 0)
+            {
+                outputStream.write(buffer,0,len);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if(inputStream != null)
+            {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     @Override
