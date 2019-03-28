@@ -25,7 +25,8 @@ public class UserController {
     {
         if(request.getSession().getAttribute("userId") != null)
             throw new AlreadyLogInException();
-        userService.register(map.get("username"),map.get("password"),map.get("email"));
+        int userId = userService.register(map.get("username"),map.get("password"),map.get("email"));
+        request.getSession().setAttribute("userId",userId);
         Map<String,Object> mapReturn = new HashMap<>();
         mapReturn.put("status","ok");
         return mapReturn;

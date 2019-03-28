@@ -6,7 +6,7 @@ import java.util.Map;
 
 public interface UserService {
 
-    void register(String username,String password,String email);
+    int register(String username,String password,String email);
 
     int login(String username,String password);
 

@@ -44,7 +44,7 @@ public class UserServiceImpl implements UserService {
     private SendEmailToRetrievePassword sendEmailToRetrievePassword;
 
     @Override
-    public void register(String username, String password, String email) {
+    public int register(String username, String password, String email) {
         //判断用户名邮箱是否已被注册
         if(userMapper.selectExistByUsername(username) != null)
             throw new UsernameExistException();//用户名已被注册
@@ -83,6 +83,7 @@ public class UserServiceImpl implements UserService {
         album.setPhotoAmount(0);
         //向数据库写入默认相册信息
         albumMapper.insert(album);
+        return userMapper.selectAllByEmail(email).getUserId();
     }
 
     @Override
