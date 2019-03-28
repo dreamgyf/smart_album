@@ -113,9 +113,10 @@ public class UserController {
     }
 
     @RequestMapping(value = "/retrievePassword",method = RequestMethod.POST)
-    public Map<String,String> retrievePassword(@RequestParam String sid,@RequestParam int userId,@RequestParam String newPassword)
+    public Map<String,String> retrievePassword(@RequestParam String sid,@RequestParam int userId,@RequestParam String newPassword,HttpServletRequest request)
     {
         userService.retrievePassword(sid,userId,newPassword);
+        request.getSession().removeAttribute("userId");
         Map<String,String> mapReturn = new HashMap<>();
         mapReturn.put("status","ok");
         return mapReturn;
