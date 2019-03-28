@@ -643,28 +643,31 @@ public class PhotoServiceImpl implements PhotoService {
     }
 
     @Override
-    public void completelyDelete(int userId, int photoId) {
-        Photo photo = photoMapper.selectAllByPhotoId(photoId);
-        //对photo_id和user_id进行校验
-        if(photo.getUserId() != userId)
-            throw new ForbiddenEditException();
-        photoMapper.deleteByPhotoId(photoId);
-        if(photo.getInRecycleBin() == 1)
+    public void completelyDelete(int userId, List<Integer> photos) {
+        for(int photoId : photos)
         {
-            userMapper.updatePhotoInRecycleBinAmountByUserId(userId,-1);
+            Photo photo = photoMapper.selectAllByPhotoId(photoId);
+            //对photo_id和user_id进行校验
+            if(photo.getUserId() != userId)
+                throw new ForbiddenEditException();
+            photoMapper.deleteByPhotoId(photoId);
+            if(photo.getInRecycleBin() == 1)
+            {
+                userMapper.updatePhotoInRecycleBinAmountByUserId(userId,-1);
+            }
+            else
+            {
+                //如果该照片是其相册的封面，将相册封面设为默认封面
+                if(albumMapper.selectAllByAlbumId(photo.getAlbumId()).getCover() == photoId)
+                    albumMapper.updateCoverByAlbumId(photo.getAlbumId(),0);
+                userMapper.updatePhotoAmountByUserId(userId,-1);
+                albumMapper.updatePhotoAmountByAlbumId(photo.getAlbumId(),-1);
+                albumMapper.updateLastEditTimeByAlbumId(photo.getAlbumId(),new Timestamp(System.currentTimeMillis()));
+            }
+            userMapper.updateUsedSpaceByUserId(userId,0 - photo.getSize());
+            File file = new File(photoTool.LOCAL_DIR + photo.getPath());
+            file.delete();
         }
-        else
-        {
-            //如果该照片是其相册的封面，将相册封面设为默认封面
-            if(albumMapper.selectAllByAlbumId(photo.getAlbumId()).getCover() == photoId)
-                albumMapper.updateCoverByAlbumId(photo.getAlbumId(),0);
-            userMapper.updatePhotoAmountByUserId(userId,-1);
-            albumMapper.updatePhotoAmountByAlbumId(photo.getAlbumId(),-1);
-            albumMapper.updateLastEditTimeByAlbumId(photo.getAlbumId(),new Timestamp(System.currentTimeMillis()));
-        }
-        userMapper.updateUsedSpaceByUserId(userId,0 - photo.getSize());
-        File file = new File(photoTool.LOCAL_DIR + photo.getPath());
-        file.delete();
     }
 
     @Override

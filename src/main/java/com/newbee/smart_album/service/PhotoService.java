@@ -30,7 +30,7 @@ public interface PhotoService {
 
     void moveOutRecycleBin(int userId,List<Integer> photos);
 
-    void completelyDelete(int userId,int photoId);
+    void completelyDelete(int userId,List<Integer> photos);
 
     List<Map<String,Object>> getPhotos(int userId);
 

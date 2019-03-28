@@ -155,13 +155,18 @@ public class PhotoController {
     }
 
     @RequestMapping(value = "/completelyDelete",method = RequestMethod.POST)
-    public Map<String,String> completelyDelete(@RequestParam int photoId, HttpServletRequest request)
+    public Map<String,String> completelyDelete(@RequestBody List<Map<String, Integer>> listMap, HttpServletRequest request)
     {
         Object userIdObject = request.getSession().getAttribute("userId");
         if(userIdObject == null)
             throw new NotLogInException();
         int userId = Integer.parseInt(userIdObject.toString());
-        photoService.completelyDelete(userId,photoId);
+        List<Integer> photos = new ArrayList<>();
+        for(Map<String, Integer> map : listMap)
+        {
+            photos.add(map.get("photoId"));
+        }
+        photoService.completelyDelete(userId,photos);
         Map<String,String> mapReturn = new HashMap<>();
         mapReturn.put("status","ok");
         return mapReturn;

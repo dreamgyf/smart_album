@@ -184,4 +184,10 @@ public class SmartAlbumApplicationTests {
 
         mailSender.send(mailMessage);
     }
+
+    @Test
+    public void testRedis()
+    {
+
+    }
 }
