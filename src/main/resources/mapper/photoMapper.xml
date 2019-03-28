@@ -70,4 +70,8 @@
     <select id="selectPhotoIdByPath" resultType="INTEGER">
         select photo_id from photo where path=#{path}
     </select>
+
+    <update id="updateLikesByPhotoId">
+        update photo set likes=likes+#{amount} where photo_id=#{photoId}
+    </update>
 </mapper>

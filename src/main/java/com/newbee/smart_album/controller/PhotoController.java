@@ -184,13 +184,22 @@ public class PhotoController {
     }
 
     @RequestMapping(value = "/globalSearch",method = RequestMethod.GET)
-    public List<Map<String,Object>> globalSearch(@Param("keyword") String keyword)
+    public List<Map<String,Object>> globalSearch(@Param("keyword") String keyword,HttpServletRequest request)
     {
-        return photoService.globalSearch(keyword);
+        Object userIdObject = request.getSession().getAttribute("userId");
+        return photoService.globalSearch(userIdObject,keyword);
     }
-//    @RequestMapping(value = "/getProperty",method = RequestMethod.GET)
-//    public Photo getProperty(@RequestParam int photoId)
-//    {
-//        return photoService.getProperty(photoId);
-//    }
+
+    @RequestMapping(value = "/like",method = RequestMethod.GET)
+    public Map<String,String> like(@RequestParam int photoId,HttpServletRequest request)
+    {
+        Object userIdObject = request.getSession().getAttribute("userId");
+        if(userIdObject == null)
+            throw new NotLogInException();
+        int userId = Integer.parseInt(userIdObject.toString());
+        photoService.like(userId,photoId);
+        Map<String,String> mapReturn = new HashMap<>();
+        mapReturn.put("status","ok");
+        return mapReturn;
+    }
 }

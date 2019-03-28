@@ -58,6 +58,9 @@ public class PhotoServiceImpl implements PhotoService {
     @Resource
     private PhotoTagRelationMapper photoTagRelationMapper;
 
+    @Resource
+    private UserLikePhotoMapper userLikePhotoMapper;
+
     @Override
     public void upload(int userId, MultipartFile file, String name, String description,int albumId, int isPublic) throws IOException {
         if(file == null)
@@ -252,8 +255,6 @@ public class PhotoServiceImpl implements PhotoService {
             }
             Thumbnails.of(uploadFile).scale(0.5).outputQuality(0.5).toFile(thumbnailFile);
             photo.setThumbnailPath(thumbnailPath);
-            //图片AI智能识别标签
-            String tagJson = tencent.photoTagIdentification(uploadFile,suffix);
             //计算文件大小，保存在数据库中
             long fileSizeB = file.getSize();
             photo.setSize(fileSizeB);
@@ -693,7 +694,7 @@ public class PhotoServiceImpl implements PhotoService {
     }
 
     @Override
-    public List<Map<String, Object>> globalSearch(String keyword) {
+    public List<Map<String, Object>> globalSearch(Object userIdObject,String keyword) {
         List<Map<String, Object>> listMap = new ArrayList<>();
         List<Integer> tagIdList = tagMapper.selectTagIdLikeName("%" + keyword + "%");
         List<Integer> photoIdList = photoTagRelationMapper.selectPhotoIdByTagIdOrderByScoreDesc(tagIdList);
@@ -705,6 +706,8 @@ public class PhotoServiceImpl implements PhotoService {
         for(int photoId : photoIdList)
         {
             Photo photo = photoMapper.selectAllByPhotoIdWhereIsPublic(photoId);
+            if(photo == null)
+                continue;
             Map<String,Object> map = new HashMap<>();
             map.put("photoId",photo.getPhotoId());
             map.put("name",photo.getName());
@@ -715,14 +718,30 @@ public class PhotoServiceImpl implements PhotoService {
             map.put("width",photo.getWidth());
             map.put("height",photo.getHeight());
             map.put("originalTime",photo.getOriginalTime());
+            if(userIdObject == null)
+                map.put("userLike",0);
+            else
+            {
+                map.put("userLike",(userLikePhotoMapper.selectUserLikePhotoIdByUserIdAndPhotoId(Integer.parseInt(userIdObject.toString()),photoId) == null) ? 0 : 1);
+            }
             listMap.add(map);
         }
         return listMap;
     }
 
-    //    @Override
-//    public Photo getProperty(int photoId) {
-//        return photoMapper.selectAllByPhotoId(photoId);
-//    }
+    @Override
+    public void like(int userId, int photoId) {
+        Long userLikePhotoId = userLikePhotoMapper.selectUserLikePhotoIdByUserIdAndPhotoId(userId,photoId);
+        if(userLikePhotoId == null)
+        {
+            userLikePhotoMapper.insert(userId,photoId);
+            photoMapper.updateLikesByPhotoId(photoId,1);
+        }
+        else
+        {
+            userLikePhotoMapper.deleteByUserLikePhotoId(userLikePhotoId);
+            photoMapper.updateLikesByPhotoId(photoId,-1);
+        }
+    }
 }
 

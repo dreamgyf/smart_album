@@ -38,4 +38,6 @@ public interface PhotoMapper {
     List<Photo> selectAllPhotoNotInRecycleBinByUserId(@Param("userId") int userId);
 
     Integer selectPhotoIdByPath(@Param("path") String path);
+
+    void updateLikesByPhotoId(@Param("photoId") int photoId,@Param("amount") int amount);
 }

@@ -34,7 +34,7 @@ public interface PhotoService {
 
     List<Map<String,Object>> getPhotos(int userId);
 
-    List<Map<String,Object>> globalSearch(String keyword);
+    List<Map<String,Object>> globalSearch(Object userIdObject,String keyword);
 
-//    Photo getProperty(int photoId);
+    void like(int userId,int photoId);
 }

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.newbee.smart_album.dao.mapper.UserLikePhotoMapper">
+
+    <select id="selectUserLikePhotoIdByUserIdAndPhotoId" resultType="Long">
+        select user_like_photo_id from user_like_photo where user_id=#{userId} and photo_id=#{photoId} limit 1
+    </select>
+
+    <insert id="insert">
+        insert into user_like_photo (user_id,photo_id) values (#{userId},#{photoId})
+    </insert>
+
+    <delete id="deleteByUserLikePhotoId">
+        delete from user_like_photo where user_like_photo_id=#{id}
+    </delete>
+</mapper>
