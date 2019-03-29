@@ -604,6 +604,7 @@ public class PhotoServiceImpl implements PhotoService {
             map.put("width",photo.getWidth());
             map.put("height",photo.getHeight());
             map.put("originalTime",photo.getOriginalTime());
+            map.put("deleteTime",photo.getDeleteTime());
             listMap.add(map);
         }
         return listMap;
