@@ -16,4 +16,8 @@
     <delete id="deleteByUserLikePhotoId">
         delete from user_like_photo where user_like_photo_id=#{id}
     </delete>
+
+    <select id="selectAllUserLikePhotoIdByPhotoId" resultType="Long">
+        select user_like_photo_id from user_like_photo where photo_id=#{photoId}
+    </select>
 </mapper>

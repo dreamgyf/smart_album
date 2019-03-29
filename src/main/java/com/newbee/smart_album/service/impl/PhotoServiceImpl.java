@@ -651,6 +651,16 @@ public class PhotoServiceImpl implements PhotoService {
             //对photo_id和user_id进行校验
             if(photo.getUserId() != userId)
                 throw new ForbiddenEditException();
+            List<Long> relationIds = photoTagRelationMapper.selectAllRelationIdByPhotoId(photoId);
+            for(long relationId : relationIds)
+            {
+                photoTagRelationMapper.deleteByRelationId(relationId);
+            }
+            List<Long> userLikePhotoIds = userLikePhotoMapper.selectAllUserLikePhotoIdByPhotoId(photoId);
+            for(long userLikePhotoId : userLikePhotoIds)
+            {
+                userLikePhotoMapper.deleteByUserLikePhotoId(userLikePhotoId);
+            }
             photoMapper.deleteByPhotoId(photoId);
             if(photo.getInRecycleBin() == 1)
             {

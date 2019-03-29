@@ -16,4 +16,12 @@
         </foreach>
         order by score desc
     </select>
+
+    <select id="selectAllRelationIdByPhotoId" resultType="Long">
+        select relation_id from photo_tag_relation where photo_id=#{photoId}
+    </select>
+
+    <delete id="deleteByRelationId">
+        delete from photo_tag_relation where relation_id=#{relationId}
+    </delete>
 </mapper>

@@ -10,4 +10,8 @@ public interface PhotoTagRelationMapper {
 
     List<Integer> selectPhotoIdByTagIdOrderByScoreDesc(List<Integer> list);
 
+    List<Long> selectAllRelationIdByPhotoId(@Param("photoId") int photoId);
+
+    void deleteByRelationId(@Param("relationId") long relationId);
+
 }
