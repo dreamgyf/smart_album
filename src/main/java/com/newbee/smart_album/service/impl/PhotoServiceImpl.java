@@ -731,7 +731,7 @@ public class PhotoServiceImpl implements PhotoService {
         for(int photoId : photoIdList)
         {
             Photo photo = photoMapper.selectAllByPhotoIdWhereIsPublic(photoId);
-            if(photo == null)
+            if(photo == null || photo.getInRecycleBin() == 1)
                 continue;
             Map<String,Object> map = new HashMap<>();
             map.put("photoId",photo.getPhotoId());
@@ -800,7 +800,7 @@ public class PhotoServiceImpl implements PhotoService {
         for(int photoId : photoIdList)
         {
             Photo photo = photoMapper.selectAllByPhotoId(photoId);
-            if(photo.getUserId() != userId)
+            if(photo.getUserId() != userId || photo.getInRecycleBin() == 1)
                 continue;
             Map<String,Object> map = new HashMap<>();
             map.put("photoId",photo.getPhotoId());
