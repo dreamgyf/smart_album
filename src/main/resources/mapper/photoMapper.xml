@@ -78,4 +78,11 @@
     <update id="updateLikesByPhotoId">
         update photo set likes=likes+#{amount} where photo_id=#{photoId}
     </update>
+
+    <select id="selectPhotoIdLikeName" resultType="INTEGER" parameterType="java.util.List">
+        select photo_id from photo where
+        <foreach collection="list" item="keyword" separator=" or name like " open=" name like ">
+            #{keyword}
+        </foreach>
+    </select>
 </mapper>

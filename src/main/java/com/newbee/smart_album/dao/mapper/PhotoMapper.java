@@ -42,4 +42,6 @@ public interface PhotoMapper {
     Integer selectPhotoIdByPath(@Param("path") String path);
 
     void updateLikesByPhotoId(@Param("photoId") int photoId,@Param("amount") int amount);
+
+    List<Integer> selectPhotoIdLikeName(List<String> keyword);
 }

@@ -202,4 +202,14 @@ public class PhotoController {
         mapReturn.put("status","ok");
         return mapReturn;
     }
+
+    @RequestMapping(value = "/personalSearch",method = RequestMethod.GET)
+    public List<Map<String,Object>> personalSearch(@Param("keyword") String keyword,HttpServletRequest request)
+    {
+        Object userIdObject = request.getSession().getAttribute("userId");
+        if(userIdObject == null)
+            throw new NotLogInException();
+        int userId = Integer.parseInt(userIdObject.toString());
+        return photoService.personalSearch(userId,keyword);
+    }
 }

@@ -768,5 +768,53 @@ public class PhotoServiceImpl implements PhotoService {
             photoMapper.updateLikesByPhotoId(photoId,-1);
         }
     }
+
+    @Override
+    public List<Map<String, Object>> personalSearch(int userId, String keyword) {
+        //以空格分割关键字搜索
+        List<String> keywordList = new ArrayList<>();
+        int space = keyword.indexOf(" ");
+        while(space != -1)
+        {
+            keywordList.add("%" + keyword.substring(0,space) + "%");
+            keyword = keyword.substring(space + 1);
+            while(keyword.startsWith(" "))
+                keyword = keyword.substring(1);
+            space = keyword.indexOf(" ");
+        }
+        keywordList.add("%" + keyword + "%");
+        List<Map<String, Object>> listMap = new ArrayList<>();
+        List<Integer> tagIdList = tagMapper.selectTagIdLikeName(keywordList);
+        List<Integer> photoIdList = null;
+        if(tagIdList.size() == 0)
+            photoIdList = new ArrayList<>();
+        else
+            photoIdList = photoTagRelationMapper.selectPhotoIdByTagIdOrderByScoreDesc(tagIdList);
+        List<Integer> photoIdList2 = photoMapper.selectPhotoIdLikeName(keywordList);
+        photoIdList.addAll(photoIdList2);
+        //去重
+        LinkedHashSet<Integer> hashSet = new LinkedHashSet<>();
+        hashSet.addAll(photoIdList);
+        photoIdList.clear();
+        photoIdList.addAll(hashSet);
+        for(int photoId : photoIdList)
+        {
+            Photo photo = photoMapper.selectAllByPhotoId(photoId);
+            if(photo.getUserId() != userId)
+                continue;
+            Map<String,Object> map = new HashMap<>();
+            map.put("photoId",photo.getPhotoId());
+            map.put("name",photo.getName());
+            map.put("description",photo.getDescription());
+            map.put("albumId",photo.getAlbumId());
+            map.put("likes",photo.getLikes());
+            map.put("size",photo.getSize());
+            map.put("width",photo.getWidth());
+            map.put("height",photo.getHeight());
+            map.put("originalTime",photo.getOriginalTime());
+            listMap.add(map);
+        }
+        return listMap;
+    }
 }
 
