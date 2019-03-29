@@ -585,15 +585,13 @@ public class PhotoServiceImpl implements PhotoService {
             map.put("height",photo.getHeight());
             map.put("originalTime",photo.getOriginalTime());
             map.put("deleteTime",photo.getDeleteTime());
-            List<Map<String,String>> tagListMap = new ArrayList<>();
+            List<String> photoTagList = new ArrayList<>();
             List<Integer> photoTagIdList = photoTagRelationMapper.selectTagIdByPhotoId(photo.getPhotoId());
             for(int tagId : photoTagIdList)
             {
-                Map<String,String> temp = new HashMap<>();
-                temp.put("tag",tagMapper.selectNameByTagId(tagId));
-                tagListMap.add(temp);
+                photoTagList.add(tagMapper.selectNameByTagId(tagId));
             }
-            map.put("tags",tagListMap);
+            map.put("tags",photoTagList);
             listMap.add(map);
         }
         return listMap;
@@ -688,15 +686,13 @@ public class PhotoServiceImpl implements PhotoService {
             map.put("width",photo.getWidth());
             map.put("height",photo.getHeight());
             map.put("originalTime",photo.getOriginalTime());
-            List<Map<String,String>> tagListMap = new ArrayList<>();
+            List<String> photoTagList = new ArrayList<>();
             List<Integer> photoTagIdList = photoTagRelationMapper.selectTagIdByPhotoId(photo.getPhotoId());
             for(int tagId : photoTagIdList)
             {
-                Map<String,String> temp = new HashMap<>();
-                temp.put("tag",tagMapper.selectNameByTagId(tagId));
-                tagListMap.add(temp);
+                photoTagList.add(tagMapper.selectNameByTagId(tagId));
             }
-            map.put("tags",tagListMap);
+            map.put("tags",photoTagList);
             listMap.add(map);
         }
         return listMap;
@@ -747,15 +743,13 @@ public class PhotoServiceImpl implements PhotoService {
             {
                 map.put("userLike",(userLikePhotoMapper.selectUserLikePhotoIdByUserIdAndPhotoId(Integer.parseInt(userIdObject.toString()),photoId) == null) ? 0 : 1);
             }
-            List<Map<String,String>> tagListMap = new ArrayList<>();
+            List<String> photoTagList = new ArrayList<>();
             List<Integer> photoTagIdList = photoTagRelationMapper.selectTagIdByPhotoId(photo.getPhotoId());
             for(int tagId : photoTagIdList)
             {
-                Map<String,String> temp = new HashMap<>();
-                temp.put("tag",tagMapper.selectNameByTagId(tagId));
-                tagListMap.add(temp);
+                photoTagList.add(tagMapper.selectNameByTagId(tagId));
             }
-            map.put("tags",tagListMap);
+            map.put("tags",photoTagList);
             listMap.add(map);
         }
         return listMap;
@@ -819,15 +813,13 @@ public class PhotoServiceImpl implements PhotoService {
             map.put("width",photo.getWidth());
             map.put("height",photo.getHeight());
             map.put("originalTime",photo.getOriginalTime());
-            List<Map<String,String>> tagListMap = new ArrayList<>();
+            List<String> photoTagList = new ArrayList<>();
             List<Integer> photoTagIdList = photoTagRelationMapper.selectTagIdByPhotoId(photo.getPhotoId());
             for(int tagId : photoTagIdList)
             {
-                Map<String,String> temp = new HashMap<>();
-                temp.put("tag",tagMapper.selectNameByTagId(tagId));
-                tagListMap.add(temp);
+                photoTagList.add(tagMapper.selectNameByTagId(tagId));
             }
-            map.put("tags",tagListMap);
+            map.put("tags",photoTagList);
             listMap.add(map);
         }
         return listMap;

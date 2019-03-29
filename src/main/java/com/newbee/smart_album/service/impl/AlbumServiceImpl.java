@@ -180,15 +180,13 @@ public class AlbumServiceImpl implements AlbumService {
             map.put("width",photo.getWidth());
             map.put("height",photo.getHeight());
             map.put("originalTime",photo.getOriginalTime());
-            List<Map<String,String>> tagListMap = new ArrayList<>();
+            List<String> photoTagList = new ArrayList<>();
             List<Integer> photoTagIdList = photoTagRelationMapper.selectTagIdByPhotoId(photo.getPhotoId());
             for(int tagId : photoTagIdList)
             {
-                Map<String,String> temp = new HashMap<>();
-                temp.put("tag",tagMapper.selectNameByTagId(tagId));
-                tagListMap.add(temp);
+                photoTagList.add(tagMapper.selectNameByTagId(tagId));
             }
-            map.put("tags",tagListMap);
+            map.put("tags",photoTagList);
             listMap.add(map);
         }
         return listMap;
