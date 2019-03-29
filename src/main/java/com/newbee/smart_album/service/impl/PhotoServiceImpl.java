@@ -706,8 +706,22 @@ public class PhotoServiceImpl implements PhotoService {
 
     @Override
     public List<Map<String, Object>> globalSearch(Object userIdObject,String keyword) {
+        //以空格分割关键字搜索
+        List<String> keywordList = new ArrayList<>();
+        int space = keyword.indexOf(" ");
+        while(space != -1)
+        {
+            keywordList.add("%" + keyword.substring(0,space) + "%");
+            keyword = keyword.substring(space + 1);
+            while(keyword.startsWith(" "))
+                keyword = keyword.substring(1);
+            space = keyword.indexOf(" ");
+        }
+        keywordList.add("%" + keyword + "%");
         List<Map<String, Object>> listMap = new ArrayList<>();
-        List<Integer> tagIdList = tagMapper.selectTagIdLikeName("%" + keyword + "%");
+        List<Integer> tagIdList = tagMapper.selectTagIdLikeName(keywordList);
+        if(tagIdList.size() == 0)
+            return listMap;
         List<Integer> photoIdList = photoTagRelationMapper.selectPhotoIdByTagIdOrderByScoreDesc(tagIdList);
         //去重
         LinkedHashSet<Integer> hashSet = new LinkedHashSet<>();

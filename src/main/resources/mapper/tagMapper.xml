@@ -17,7 +17,10 @@
         select tag_id from tag where name=#{name}
     </select>
 
-    <select id="selectTagIdLikeName" resultType="INTEGER">
-        select tag_id from tag where name like #{keyword}
+    <select id="selectTagIdLikeName" resultType="INTEGER" parameterType="java.util.List">
+        select tag_id from tag where
+        <foreach collection="list" item="keyword" separator=" or name like " open=" name like ">
+            #{keyword}
+        </foreach>
     </select>
 </mapper>
