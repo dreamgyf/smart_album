@@ -14,4 +14,6 @@ public interface PhotoTagRelationMapper {
 
     void deleteByRelationId(@Param("relationId") long relationId);
 
+    List<Integer> selectTagIdByPhotoId(@Param("photoId") int photoId);
+
 }

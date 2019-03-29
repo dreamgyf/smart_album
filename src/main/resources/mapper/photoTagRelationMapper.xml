@@ -24,4 +24,8 @@
     <delete id="deleteByRelationId">
         delete from photo_tag_relation where relation_id=#{relationId}
     </delete>
+
+    <select id="selectTagIdByPhotoId" resultType="INTEGER">
+        select tag_id from photo_tag_relation where photo_id=#{photoId}
+    </select>
 </mapper>

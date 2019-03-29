@@ -13,4 +13,6 @@ public interface TagMapper {
     Integer selectTagIdByName(@Param("name") String name);
 
     List<Integer> selectTagIdLikeName(List<String> keywordList);
+
+    String selectNameByTagId(@Param("tagId") int tagId);
 }

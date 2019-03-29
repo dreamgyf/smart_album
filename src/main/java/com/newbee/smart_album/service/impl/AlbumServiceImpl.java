@@ -1,8 +1,6 @@
 package com.newbee.smart_album.service.impl;
 
-import com.newbee.smart_album.dao.mapper.AlbumMapper;
-import com.newbee.smart_album.dao.mapper.PhotoMapper;
-import com.newbee.smart_album.dao.mapper.UserMapper;
+import com.newbee.smart_album.dao.mapper.*;
 import com.newbee.smart_album.entity.Album;
 import com.newbee.smart_album.entity.Photo;
 import com.newbee.smart_album.exception.ForbiddenAccessException;
@@ -34,6 +32,12 @@ public class AlbumServiceImpl implements AlbumService {
 
     @Resource
     private UserMapper userMapper;
+
+    @Resource
+    private TagMapper tagMapper;
+
+    @Resource
+    private PhotoTagRelationMapper photoTagRelationMapper;
 
     @Autowired
     private PhotoTool photoTool;
@@ -176,6 +180,15 @@ public class AlbumServiceImpl implements AlbumService {
             map.put("width",photo.getWidth());
             map.put("height",photo.getHeight());
             map.put("originalTime",photo.getOriginalTime());
+            List<Map<String,String>> tagListMap = new ArrayList<>();
+            List<Integer> photoTagIdList = photoTagRelationMapper.selectTagIdByPhotoId(photo.getPhotoId());
+            for(int tagId : photoTagIdList)
+            {
+                Map<String,String> temp = new HashMap<>();
+                temp.put("tag",tagMapper.selectNameByTagId(tagId));
+                tagListMap.add(temp);
+            }
+            map.put("tags",tagListMap);
             listMap.add(map);
         }
         return listMap;

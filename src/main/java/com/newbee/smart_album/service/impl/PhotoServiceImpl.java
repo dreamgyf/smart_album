@@ -172,16 +172,6 @@ public class PhotoServiceImpl implements PhotoService {
         albumMapper.updatePhotoAmountByAlbumId(albumId,1);
         albumMapper.updateLastEditTimeByAlbumId(albumId,new Timestamp(System.currentTimeMillis()));
         //图片AI智能识别标签
-//        String tagJsonString = tencent.photoTagIdentification(thumbnailFile,suffix);
-//        List<String> tagList = tencent.photoTag(tagJsonString);
-//        for(String tag : tagList)
-//        {
-//            if(tagMapper.selectExistByName(tag) == null)
-//                tagMapper.insert(tag);
-//            int photoId = photoMapper.selectPhotoIdByPath(uploadPath);
-//            int tagId = tagMapper.selectTagIdByName(tag);
-//            photoTagRelationMapper.insert(photoId,tagId);
-//        }
         String tagJsonString = baidu.photoTagIdentification(thumbnailFile,suffix);
         List<Map<String,Object>> tagList = baidu.photoTag(tagJsonString);
         for(Map<String,Object> tag : tagList)
@@ -305,16 +295,6 @@ public class PhotoServiceImpl implements PhotoService {
             albumMapper.updatePhotoAmountByAlbumId(albumId,1);
             albumMapper.updateLastEditTimeByAlbumId(albumId,new Timestamp(System.currentTimeMillis()));
             //图片AI智能识别标签
-//        String tagJsonString = tencent.photoTagIdentification(thumbnailFile,suffix);
-//        List<String> tagList = tencent.photoTag(tagJsonString);
-//        for(String tag : tagList)
-//        {
-//            if(tagMapper.selectExistByName(tag) == null)
-//                tagMapper.insert(tag);
-//            int photoId = photoMapper.selectPhotoIdByPath(uploadPath);
-//            int tagId = tagMapper.selectTagIdByName(tag);
-//            photoTagRelationMapper.insert(photoId,tagId);
-//        }
             String tagJsonString = baidu.photoTagIdentification(thumbnailFile,suffix);
             List<Map<String,Object>> tagList = baidu.photoTag(tagJsonString);
             for(Map<String,Object> tag : tagList)
@@ -605,6 +585,15 @@ public class PhotoServiceImpl implements PhotoService {
             map.put("height",photo.getHeight());
             map.put("originalTime",photo.getOriginalTime());
             map.put("deleteTime",photo.getDeleteTime());
+            List<Map<String,String>> tagListMap = new ArrayList<>();
+            List<Integer> photoTagIdList = photoTagRelationMapper.selectTagIdByPhotoId(photo.getPhotoId());
+            for(int tagId : photoTagIdList)
+            {
+                Map<String,String> temp = new HashMap<>();
+                temp.put("tag",tagMapper.selectNameByTagId(tagId));
+                tagListMap.add(temp);
+            }
+            map.put("tags",tagListMap);
             listMap.add(map);
         }
         return listMap;
@@ -699,6 +688,15 @@ public class PhotoServiceImpl implements PhotoService {
             map.put("width",photo.getWidth());
             map.put("height",photo.getHeight());
             map.put("originalTime",photo.getOriginalTime());
+            List<Map<String,String>> tagListMap = new ArrayList<>();
+            List<Integer> photoTagIdList = photoTagRelationMapper.selectTagIdByPhotoId(photo.getPhotoId());
+            for(int tagId : photoTagIdList)
+            {
+                Map<String,String> temp = new HashMap<>();
+                temp.put("tag",tagMapper.selectNameByTagId(tagId));
+                tagListMap.add(temp);
+            }
+            map.put("tags",tagListMap);
             listMap.add(map);
         }
         return listMap;
@@ -749,6 +747,15 @@ public class PhotoServiceImpl implements PhotoService {
             {
                 map.put("userLike",(userLikePhotoMapper.selectUserLikePhotoIdByUserIdAndPhotoId(Integer.parseInt(userIdObject.toString()),photoId) == null) ? 0 : 1);
             }
+            List<Map<String,String>> tagListMap = new ArrayList<>();
+            List<Integer> photoTagIdList = photoTagRelationMapper.selectTagIdByPhotoId(photo.getPhotoId());
+            for(int tagId : photoTagIdList)
+            {
+                Map<String,String> temp = new HashMap<>();
+                temp.put("tag",tagMapper.selectNameByTagId(tagId));
+                tagListMap.add(temp);
+            }
+            map.put("tags",tagListMap);
             listMap.add(map);
         }
         return listMap;
@@ -812,6 +819,15 @@ public class PhotoServiceImpl implements PhotoService {
             map.put("width",photo.getWidth());
             map.put("height",photo.getHeight());
             map.put("originalTime",photo.getOriginalTime());
+            List<Map<String,String>> tagListMap = new ArrayList<>();
+            List<Integer> photoTagIdList = photoTagRelationMapper.selectTagIdByPhotoId(photo.getPhotoId());
+            for(int tagId : photoTagIdList)
+            {
+                Map<String,String> temp = new HashMap<>();
+                temp.put("tag",tagMapper.selectNameByTagId(tagId));
+                tagListMap.add(temp);
+            }
+            map.put("tags",tagListMap);
             listMap.add(map);
         }
         return listMap;

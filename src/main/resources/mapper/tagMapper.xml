@@ -23,4 +23,8 @@
             #{keyword}
         </foreach>
     </select>
+
+    <select id="selectNameByTagId" resultType="String">
+        select name from tag where tag_id=#{tagId}
+    </select>
 </mapper>
