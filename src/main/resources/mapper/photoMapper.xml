@@ -40,9 +40,9 @@
         update photo set is_public=#{isPublic} where photo_id=#{photoId}
     </update>
 
-    <select id="selectAllPhotoNotInRecycleBinByAlbumIdOrderByOriginalTimeAndUploadTimeDesc" resultType="com.newbee.smart_album.entity.Photo">
+    <select id="selectAllPhotoNotInRecycleBinByAlbumIdOrderByUploadTimeDesc" resultType="com.newbee.smart_album.entity.Photo">
         select photo_id,name,suffix,path,description,information,user_id,album_id,likes,is_public,size,width,height,in_recycle_bin,original_time,upload_time,delete_time
-         from photo where album_id=#{albumId} and in_recycle_bin=0 order by original_time desc,upload_time desc
+         from photo where album_id=#{albumId} and in_recycle_bin=0 order by upload_time desc
     </select>
 
     <select id="selectInRecycleBinByPhotoId" resultType="INTEGER">
@@ -66,9 +66,9 @@
         delete from photo where photo_id=#{photoId}
     </delete>
 
-    <select id="selectAllPhotoNotInRecycleBinByUserIdOrderByOriginalTimeAndUploadTimeDesc" resultType="com.newbee.smart_album.entity.Photo">
+    <select id="selectAllPhotoNotInRecycleBinByUserIdOrderByUploadTimeDesc" resultType="com.newbee.smart_album.entity.Photo">
         select photo_id,name,suffix,path,description,information,user_id,album_id,likes,is_public,size,width,height,in_recycle_bin,original_time,upload_time,delete_time
-        from photo where user_id=#{userId} and in_recycle_bin=0 order by original_time desc,upload_time desc
+        from photo where user_id=#{userId} and in_recycle_bin=0 order by upload_time desc
     </select>
 
     <select id="selectPhotoIdByPath" resultType="INTEGER">

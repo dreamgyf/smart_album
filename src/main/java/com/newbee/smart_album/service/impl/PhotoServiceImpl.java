@@ -305,17 +305,17 @@ public class PhotoServiceImpl implements PhotoService {
             //更新相册信息
             albumMapper.updatePhotoAmountByAlbumId(albumId,1);
             albumMapper.updateLastEditTimeByAlbumId(albumId,new Timestamp(System.currentTimeMillis()));
-//            //图片AI智能识别标签
-//            String tagJsonString = baidu.photoTagIdentification(thumbnailFile,suffix);
-//            List<Map<String,Object>> tagList = baidu.photoTag(tagJsonString);
-//            for(Map<String,Object> tag : tagList)
-//            {
-//                if(tagMapper.selectExistByName(tag.get("keyword").toString()) == null)
-//                    tagMapper.insert(tag.get("keyword").toString());
-//                int photoId = photoMapper.selectPhotoIdByPath(uploadPath);
-//                int tagId = tagMapper.selectTagIdByName(tag.get("keyword").toString());
-//                photoTagRelationMapper.insert(photoId,tagId,Double.parseDouble(tag.get("score").toString()));
-//            }
+            //图片AI智能识别标签
+            String tagJsonString = baidu.photoTagIdentification(thumbnailFile,suffix);
+            List<Map<String,Object>> tagList = baidu.photoTag(tagJsonString);
+            for(Map<String,Object> tag : tagList)
+            {
+                if(tagMapper.selectExistByName(tag.get("keyword").toString()) == null)
+                    tagMapper.insert(tag.get("keyword").toString());
+                int photoId = photoMapper.selectPhotoIdByPath(uploadPath);
+                int tagId = tagMapper.selectTagIdByName(tag.get("keyword").toString());
+                photoTagRelationMapper.insert(photoId,tagId,Double.parseDouble(tag.get("score").toString()));
+            }
             successCount++;//成功
         }
         Map<String,Object> result = new HashMap<>();
@@ -716,7 +716,7 @@ public class PhotoServiceImpl implements PhotoService {
     @Override
     public List<Map<String, Object>> getPhotos(int userId) {
         List<Map<String, Object>> listMap = new ArrayList<>();
-        List<Photo> photos = photoMapper.selectAllPhotoNotInRecycleBinByUserIdOrderByOriginalTimeAndUploadTimeDesc(userId);
+        List<Photo> photos = photoMapper.selectAllPhotoNotInRecycleBinByUserIdOrderByUploadTimeDesc(userId);
         for(Photo photo : photos)
         {
             Map<String, Object> map = new HashMap<>();

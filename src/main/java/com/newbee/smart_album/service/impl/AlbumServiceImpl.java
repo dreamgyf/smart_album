@@ -110,7 +110,7 @@ public class AlbumServiceImpl implements AlbumService {
     public void download(int albumId, HttpServletResponse response) {
         List<String> fileFullName = new ArrayList<>();
         List<String> filePath = new ArrayList<>();
-        List<Photo> photos = photoMapper.selectAllPhotoNotInRecycleBinByAlbumIdOrderByOriginalTimeAndUploadTimeDesc(albumId);
+        List<Photo> photos = photoMapper.selectAllPhotoNotInRecycleBinByAlbumIdOrderByUploadTimeDesc(albumId);
         for(Photo photo : photos)
         {
             if(!fileFullName.contains(photo.getName() + "." + photo.getSuffix()))
@@ -165,7 +165,7 @@ public class AlbumServiceImpl implements AlbumService {
         //校验user_id和album_id
         if(albumMapper.selectUserIdByAlbumId(albumId) != userId)
             throw new ForbiddenAccessException();
-        List<Photo> photos = photoMapper.selectAllPhotoNotInRecycleBinByAlbumIdOrderByOriginalTimeAndUploadTimeDesc(albumId);
+        List<Photo> photos = photoMapper.selectAllPhotoNotInRecycleBinByAlbumIdOrderByUploadTimeDesc(albumId);
         List<Map<String, Object>> listMap = new ArrayList<>();
         for(Photo photo : photos)
         {
