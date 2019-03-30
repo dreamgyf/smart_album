@@ -20,6 +20,7 @@ import javax.mail.MessagingException;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
@@ -73,7 +74,7 @@ public class UserServiceImpl implements UserService {
         int userId = userReturn.getUserId();
         Album album = new Album();
         album.setUserId(userId);
-        album.setName("default_album");
+        album.setName("默认相册");
         album.setCover(0);
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         album.setCreateTime(timestamp);
@@ -155,6 +156,8 @@ public class UserServiceImpl implements UserService {
                         throw new UploadFailedException();//上传失败,文件创建失败
                 }
                 avatar.transferTo(uploadFile);
+                File uploadFileTarget = new File(photoTool.LOCAL_DIR + "/target/classes/static" + newAvatarPath);
+                Files.copy(uploadFile.toPath(),uploadFileTarget.toPath());
                 String preAvatarPath = userMapper.selectAllByUserId(userId).getAvatar();
                 userMapper.updateAvatarByUserId(userId,newAvatarPath);
                 if(!preAvatarPath.equals(photoTool.DEFAULT_AVATAR_FILE))
@@ -200,5 +203,6 @@ public class UserServiceImpl implements UserService {
         if(userIdGet != userId)
             throw new ForbiddenEditException();
         userMapper.updatePasswordByUserId(userId,DigestUtils.md5DigestAsHex(newPassword.getBytes()));
+        retrievePasswordMapper.deleteBySid(sid);
     }
 }

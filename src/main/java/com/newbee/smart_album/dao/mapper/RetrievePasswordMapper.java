@@ -15,4 +15,6 @@ public interface RetrievePasswordMapper {
 
     void deleteByRetrievePasswordId(@Param("id") int id);
 
+    void deleteBySid(@Param("sid") String sid);
+
 }

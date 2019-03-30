@@ -28,12 +28,13 @@ public class PhotoController {
                                       @RequestParam String description,
                                       @RequestParam int albumId,
                                       @RequestParam int isPublic,
+                                      @RequestParam String[] tags,
                                       HttpServletRequest request) throws IOException {
         Object userIdObject = request.getSession().getAttribute("userId");
         if(userIdObject == null)
             throw new NotLogInException();
         int userId = Integer.parseInt(userIdObject.toString());
-        photoService.upload(userId,file,name,description,albumId,isPublic);
+        photoService.upload(userId,file,name,description,albumId,isPublic,tags);
         Map<String,Object> mapReturn = new HashMap<>();
         mapReturn.put("status","ok");
         return mapReturn;
@@ -93,7 +94,7 @@ public class PhotoController {
         int userId = Integer.parseInt(userIdObject.toString());
         photoService.edit(userId,Integer.parseInt(map.get("photoId").toString()),
                 map.get("name").toString(),map.get("description").toString(),
-                Integer.parseInt(map.get("isPublic").toString()));
+                Integer.parseInt(map.get("isPublic").toString()),(ArrayList<String>)map.get("tags"));
         Map<String,String> mapReturn = new HashMap<>();
         mapReturn.put("status","ok");
         return mapReturn;

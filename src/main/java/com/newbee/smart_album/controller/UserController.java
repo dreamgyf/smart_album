@@ -54,7 +54,7 @@ public class UserController {
         return mapReturn;
     }
 
-    @RequestMapping(value = "/changePassword")
+    @RequestMapping(value = "/changePassword",method = RequestMethod.POST)
     public Map<String,String> changePassword(@RequestParam String prePassword,@RequestParam String newPassword,HttpServletRequest request)
     {
         Object userIdObject = request.getSession().getAttribute("userId");

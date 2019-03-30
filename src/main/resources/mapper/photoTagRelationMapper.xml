@@ -28,4 +28,12 @@
     <select id="selectTagIdByPhotoId" resultType="INTEGER">
         select tag_id from photo_tag_relation where photo_id=#{photoId}
     </select>
+
+    <select id="selectExistByPhotoIdAndTagId" resultType="INTEGER">
+        select 1 from photo_tag_relation where photo_id=#{photoId} and tag_id=#{tagId} limit 1
+    </select>
+
+    <select id="selectRelationIdByPhotoIdAndTagId" resultType="Long">
+        select relation_id from photo_tag_relation where photo_id=#{photoId} and tag_id=#{tagId} limit 1
+    </select>
 </mapper>

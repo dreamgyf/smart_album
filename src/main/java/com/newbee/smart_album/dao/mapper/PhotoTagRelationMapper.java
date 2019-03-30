@@ -16,4 +16,8 @@ public interface PhotoTagRelationMapper {
 
     List<Integer> selectTagIdByPhotoId(@Param("photoId") int photoId);
 
+    Integer selectExistByPhotoIdAndTagId(@Param("photoId") int photoId,@Param("tagId") int tagId);
+
+    Long selectRelationIdByPhotoIdAndTagId(@Param("photoId") int photoId,@Param("tagId") int tagId);
+
 }

@@ -62,7 +62,7 @@ public class PhotoServiceImpl implements PhotoService {
     private UserLikePhotoMapper userLikePhotoMapper;
 
     @Override
-    public void upload(int userId, MultipartFile file, String name, String description,int albumId, int isPublic) throws IOException {
+    public void upload(int userId, MultipartFile file, String name, String description,int albumId, int isPublic,String[] tags) throws IOException {
         if(file == null)
             throw new EmptyFileException();//上传空文件
         String fileName = file.getOriginalFilename();
@@ -174,13 +174,22 @@ public class PhotoServiceImpl implements PhotoService {
         //图片AI智能识别标签
         String tagJsonString = baidu.photoTagIdentification(thumbnailFile,suffix);
         List<Map<String,Object>> tagList = baidu.photoTag(tagJsonString);
+        int photoId = photoMapper.selectPhotoIdByPath(uploadPath);
         for(Map<String,Object> tag : tagList)
         {
             if(tagMapper.selectExistByName(tag.get("keyword").toString()) == null)
                 tagMapper.insert(tag.get("keyword").toString());
-            int photoId = photoMapper.selectPhotoIdByPath(uploadPath);
             int tagId = tagMapper.selectTagIdByName(tag.get("keyword").toString());
             photoTagRelationMapper.insert(photoId,tagId,Double.parseDouble(tag.get("score").toString()));
+        }
+        //添加用户自定义的标签
+        for(String tag : tags)
+        {
+            if(tagMapper.selectExistByName(tag) == null)
+                tagMapper.insert(tag);
+            int tagId = tagMapper.selectTagIdByName(tag);
+            if(photoTagRelationMapper.selectExistByPhotoIdAndTagId(photoId,tagId) == null)
+                photoTagRelationMapper.insert(photoId,tagId,1);
         }
     }
 
@@ -434,7 +443,7 @@ public class PhotoServiceImpl implements PhotoService {
     }
 
     @Override
-    public void edit(int userId,int photoId, String name, String description, int isPublic) {
+    public void edit(int userId,int photoId, String name, String description, int isPublic,List<String> tags) {
         //对photo_id和user_id进行校验
         if(photoMapper.selectAllByPhotoId(photoId).getUserId() != userId)
             throw new ForbiddenEditException();
@@ -445,6 +454,34 @@ public class PhotoServiceImpl implements PhotoService {
             photoMapper.updateByPhotoId(photoId,name,description,isPublic);
         else
             photoMapper.updateByPhotoId(photoId,photoMapper.selectAllByPhotoId(photoId).getName(),description,isPublic);
+        List<Integer> tagIdInSQL = photoTagRelationMapper.selectTagIdByPhotoId(photoId);
+        List<String> tagsInSQL = new ArrayList<>();
+        for(int tagId : tagIdInSQL)
+        {
+            tagsInSQL.add(tagMapper.selectNameByTagId(tagId));
+        }
+        List<String> tempTags = new ArrayList<>();
+        tempTags.addAll(tags);
+        for(String tag : tempTags)
+        {
+            if(tagsInSQL.contains(tag))
+            {
+                tagsInSQL.remove(tag);
+                tags.remove(tag);
+            }
+        }
+        for(String tag : tagsInSQL)
+        {
+            photoTagRelationMapper.deleteByRelationId(photoTagRelationMapper.selectRelationIdByPhotoIdAndTagId(photoId,tagMapper.selectTagIdByName(tag)));
+        }
+        for(String tag : tags)
+        {
+            if(tagMapper.selectExistByName(tag) == null)
+                tagMapper.insert(tag);
+            int tagId = tagMapper.selectTagIdByName(tag);
+            if(photoTagRelationMapper.selectExistByPhotoIdAndTagId(photoId,tagId) == null)
+                photoTagRelationMapper.insert(photoId,tagId,1);
+        }
     }
 
     @Override
