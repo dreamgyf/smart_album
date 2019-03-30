@@ -26,7 +26,7 @@ public class PhotoTool {
 
     public final String DEFAULT_COVER_FILE = "/images/cover/default_cover.png";
 
-    private static final String[] ALLOW_SUFFIX = {"jpg","jpeg","png","bmp","tiff","tif"};
+    private static final String[] ALLOW_SUFFIX = {"jpg","jpeg","png","bmp","tiff","tif","gif"};
 
     public PhotoTool()
     {
@@ -64,6 +64,12 @@ public class PhotoTool {
     {
         return "tif".equals(suffix.toLowerCase()) || "tiff".equals(suffix.toLowerCase());
     }
+
+    public boolean isGif(String suffix)
+    {
+        return "gif".equals(suffix.toLowerCase());
+    }
+
     public Timestamp exifTimeToTimestamp(String exifTime)
     {
         int tag = exifTime.indexOf(" ");

@@ -34,6 +34,8 @@ public class Photo {
 
     private Timestamp originalTime;
 
+    private Timestamp uploadTime;
+
     private int inRecycleBin;
 
     private Timestamp deleteTime;
@@ -164,6 +166,14 @@ public class Photo {
 
     public void setOriginalTime(Timestamp originalTime) {
         this.originalTime = originalTime;
+    }
+
+    public Timestamp getUploadTime() {
+        return uploadTime;
+    }
+
+    public void setUploadTime(Timestamp uploadTime) {
+        this.uploadTime = uploadTime;
     }
 
     public Timestamp getDeleteTime() {

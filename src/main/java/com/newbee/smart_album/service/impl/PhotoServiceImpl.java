@@ -162,6 +162,7 @@ public class PhotoServiceImpl implements PhotoService {
         photo.setIsPublic(isPublic);
         photo.setInRecycleBin(0);
         photo.setPath(uploadPath);
+        photo.setUploadTime(new Timestamp(System.currentTimeMillis()));
         //将photo对象写入数据库
         photoMapper.insert(photo);
         //更新已用空间
@@ -294,6 +295,7 @@ public class PhotoServiceImpl implements PhotoService {
             photo.setInRecycleBin(0);
             photo.setPath(uploadPath);
             photo.setDescription("");
+            photo.setUploadTime(new Timestamp(System.currentTimeMillis()));
             //将photo对象写入数据库
             photoMapper.insert(photo);
             //更新已用空间
@@ -303,17 +305,17 @@ public class PhotoServiceImpl implements PhotoService {
             //更新相册信息
             albumMapper.updatePhotoAmountByAlbumId(albumId,1);
             albumMapper.updateLastEditTimeByAlbumId(albumId,new Timestamp(System.currentTimeMillis()));
-            //图片AI智能识别标签
-            String tagJsonString = baidu.photoTagIdentification(thumbnailFile,suffix);
-            List<Map<String,Object>> tagList = baidu.photoTag(tagJsonString);
-            for(Map<String,Object> tag : tagList)
-            {
-                if(tagMapper.selectExistByName(tag.get("keyword").toString()) == null)
-                    tagMapper.insert(tag.get("keyword").toString());
-                int photoId = photoMapper.selectPhotoIdByPath(uploadPath);
-                int tagId = tagMapper.selectTagIdByName(tag.get("keyword").toString());
-                photoTagRelationMapper.insert(photoId,tagId,Double.parseDouble(tag.get("score").toString()));
-            }
+//            //图片AI智能识别标签
+//            String tagJsonString = baidu.photoTagIdentification(thumbnailFile,suffix);
+//            List<Map<String,Object>> tagList = baidu.photoTag(tagJsonString);
+//            for(Map<String,Object> tag : tagList)
+//            {
+//                if(tagMapper.selectExistByName(tag.get("keyword").toString()) == null)
+//                    tagMapper.insert(tag.get("keyword").toString());
+//                int photoId = photoMapper.selectPhotoIdByPath(uploadPath);
+//                int tagId = tagMapper.selectTagIdByName(tag.get("keyword").toString());
+//                photoTagRelationMapper.insert(photoId,tagId,Double.parseDouble(tag.get("score").toString()));
+//            }
             successCount++;//成功
         }
         Map<String,Object> result = new HashMap<>();
@@ -524,6 +526,8 @@ public class PhotoServiceImpl implements PhotoService {
                 response.setContentType("application/x-bmp");
             else if(photoTool.isTiff(photo.getSuffix()))
                 response.setContentType("image/tiff");
+            else if(photoTool.isGif(photo.getSuffix()))
+                response.setContentType("image/gif");
             else
             {
                 throw new SuffixErrorException();
@@ -584,6 +588,8 @@ public class PhotoServiceImpl implements PhotoService {
                 response.setContentType("application/x-bmp");
             else if(photoTool.isTiff(photo.getSuffix()))
                 response.setContentType("image/tiff");
+            else if(photoTool.isGif(photo.getSuffix()))
+                response.setContentType("image/gif");
             else
             {
                 throw new SuffixErrorException();
@@ -607,7 +613,7 @@ public class PhotoServiceImpl implements PhotoService {
     @Override
     public List<Map<String, Object>> getRecycleBinPhotos(int userId) {
         List<Map<String, Object>> listMap = new ArrayList<>();
-        List<Photo> photos = photoMapper.selectPhotoInRecycleBinByUserId(userId);
+        List<Photo> photos = photoMapper.selectPhotoInRecycleBinByUserIdOrderByDeleteTimeDesc(userId);
         for(Photo photo : photos)
         {
             Map<String, Object> map = new HashMap<>();
@@ -622,6 +628,7 @@ public class PhotoServiceImpl implements PhotoService {
             map.put("height",photo.getHeight());
             map.put("originalTime",photo.getOriginalTime());
             map.put("deleteTime",photo.getDeleteTime());
+            map.put("uploadTime",photo.getUploadTime());
             List<String> photoTagList = new ArrayList<>();
             List<Integer> photoTagIdList = photoTagRelationMapper.selectTagIdByPhotoId(photo.getPhotoId());
             for(int tagId : photoTagIdList)
@@ -709,7 +716,7 @@ public class PhotoServiceImpl implements PhotoService {
     @Override
     public List<Map<String, Object>> getPhotos(int userId) {
         List<Map<String, Object>> listMap = new ArrayList<>();
-        List<Photo> photos = photoMapper.selectAllPhotoNotInRecycleBinByUserId(userId);
+        List<Photo> photos = photoMapper.selectAllPhotoNotInRecycleBinByUserIdOrderByOriginalTimeAndUploadTimeDesc(userId);
         for(Photo photo : photos)
         {
             Map<String, Object> map = new HashMap<>();
@@ -723,6 +730,7 @@ public class PhotoServiceImpl implements PhotoService {
             map.put("width",photo.getWidth());
             map.put("height",photo.getHeight());
             map.put("originalTime",photo.getOriginalTime());
+            map.put("uploadTime",photo.getUploadTime());
             List<String> photoTagList = new ArrayList<>();
             List<Integer> photoTagIdList = photoTagRelationMapper.selectTagIdByPhotoId(photo.getPhotoId());
             for(int tagId : photoTagIdList)
@@ -774,6 +782,7 @@ public class PhotoServiceImpl implements PhotoService {
             map.put("width",photo.getWidth());
             map.put("height",photo.getHeight());
             map.put("originalTime",photo.getOriginalTime());
+            map.put("uploadTime",photo.getUploadTime());
             if(userIdObject == null)
                 map.put("userLike",0);
             else
@@ -850,6 +859,7 @@ public class PhotoServiceImpl implements PhotoService {
             map.put("width",photo.getWidth());
             map.put("height",photo.getHeight());
             map.put("originalTime",photo.getOriginalTime());
+            map.put("uploadTime",photo.getUploadTime());
             List<String> photoTagList = new ArrayList<>();
             List<Integer> photoTagIdList = photoTagRelationMapper.selectTagIdByPhotoId(photo.getPhotoId());
             for(int tagId : photoTagIdList)

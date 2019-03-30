@@ -6,17 +6,17 @@
 <mapper namespace="com.newbee.smart_album.dao.mapper.PhotoMapper">
 
     <insert id="insert" parameterType="com.newbee.smart_album.entity.Photo">
-        insert into photo (name,suffix,path,thumbnail_path,description,information,user_id,album_id,likes,is_public,size,width,height,in_recycle_bin,original_time,delete_time)
-         VALUES (#{name},#{suffix},#{path},#{thumbnailPath},#{description},#{information},#{userId},#{albumId},#{likes},#{isPublic},#{size},#{width},#{height},#{inRecycleBin},#{originalTime},#{deleteTime})
+        insert into photo (name,suffix,path,thumbnail_path,description,information,user_id,album_id,likes,is_public,size,width,height,in_recycle_bin,original_time,upload_time,delete_time)
+         VALUES (#{name},#{suffix},#{path},#{thumbnailPath},#{description},#{information},#{userId},#{albumId},#{likes},#{isPublic},#{size},#{width},#{height},#{inRecycleBin},#{originalTime},#{uploadTime},#{deleteTime})
     </insert>
 
     <select id="selectAllByPhotoId" resultType="com.newbee.smart_album.entity.Photo">
-        select photo_id,name,suffix,path,thumbnail_path,description,information,user_id,album_id,likes,is_public,size,width,height,in_recycle_bin,original_time,delete_time
+        select photo_id,name,suffix,path,thumbnail_path,description,information,user_id,album_id,likes,is_public,size,width,height,in_recycle_bin,original_time,upload_time,delete_time
         from photo where photo_id=#{photoId}
     </select>
 
     <select id="selectAllByPhotoIdWhereIsPublic" resultType="com.newbee.smart_album.entity.Photo">
-        select photo_id,name,suffix,path,thumbnail_path,description,information,user_id,album_id,likes,is_public,size,width,height,in_recycle_bin,original_time,delete_time
+        select photo_id,name,suffix,path,thumbnail_path,description,information,user_id,album_id,likes,is_public,size,width,height,in_recycle_bin,original_time,upload_time,delete_time
         from photo where photo_id=#{photoId} and is_public=1
     </select>
 
@@ -40,18 +40,18 @@
         update photo set is_public=#{isPublic} where photo_id=#{photoId}
     </update>
 
-    <select id="selectAllPhotoNotInRecycleBinByAlbumIdOrderByOriginalTimeDesc" resultType="com.newbee.smart_album.entity.Photo">
-        select photo_id,name,suffix,path,description,information,user_id,album_id,likes,is_public,size,width,height,in_recycle_bin,original_time,delete_time
-         from photo where album_id=#{albumId} and in_recycle_bin=0 order by original_time desc;
+    <select id="selectAllPhotoNotInRecycleBinByAlbumIdOrderByOriginalTimeAndUploadTimeDesc" resultType="com.newbee.smart_album.entity.Photo">
+        select photo_id,name,suffix,path,description,information,user_id,album_id,likes,is_public,size,width,height,in_recycle_bin,original_time,upload_time,delete_time
+         from photo where album_id=#{albumId} and in_recycle_bin=0 order by original_time desc,upload_time desc
     </select>
 
     <select id="selectInRecycleBinByPhotoId" resultType="INTEGER">
         select 1 from photo where photo_id=#{photoId} and in_recycle_bin=1;
     </select>
 
-    <select id="selectPhotoInRecycleBinByUserId" resultType="com.newbee.smart_album.entity.Photo">
-        select photo_id,name,suffix,path,description,information,user_id,album_id,likes,is_public,size,width,height,in_recycle_bin,original_time,delete_time
-         from photo where user_id=#{userId} and in_recycle_bin=1
+    <select id="selectPhotoInRecycleBinByUserIdOrderByDeleteTimeDesc" resultType="com.newbee.smart_album.entity.Photo">
+        select photo_id,name,suffix,path,description,information,user_id,album_id,likes,is_public,size,width,height,in_recycle_bin,original_time,upload_time,delete_time
+         from photo where user_id=#{userId} and in_recycle_bin=1 order by delete_time desc
     </select>
 
     <update id="moveOutRecycleBinByPhotoId">
@@ -66,9 +66,9 @@
         delete from photo where photo_id=#{photoId}
     </delete>
 
-    <select id="selectAllPhotoNotInRecycleBinByUserId" resultType="com.newbee.smart_album.entity.Photo">
-        select photo_id,name,suffix,path,description,information,user_id,album_id,likes,is_public,size,width,height,in_recycle_bin,original_time,delete_time
-        from photo where user_id=#{userId} and in_recycle_bin=0
+    <select id="selectAllPhotoNotInRecycleBinByUserIdOrderByOriginalTimeAndUploadTimeDesc" resultType="com.newbee.smart_album.entity.Photo">
+        select photo_id,name,suffix,path,description,information,user_id,album_id,likes,is_public,size,width,height,in_recycle_bin,original_time,upload_time,delete_time
+        from photo where user_id=#{userId} and in_recycle_bin=0 order by original_time desc,upload_time desc
     </select>
 
     <select id="selectPhotoIdByPath" resultType="INTEGER">

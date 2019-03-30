@@ -110,7 +110,7 @@ public class AlbumServiceImpl implements AlbumService {
     public void download(int albumId, HttpServletResponse response) {
         List<String> fileFullName = new ArrayList<>();
         List<String> filePath = new ArrayList<>();
-        List<Photo> photos = photoMapper.selectAllPhotoNotInRecycleBinByAlbumIdOrderByOriginalTimeDesc(albumId);
+        List<Photo> photos = photoMapper.selectAllPhotoNotInRecycleBinByAlbumIdOrderByOriginalTimeAndUploadTimeDesc(albumId);
         for(Photo photo : photos)
         {
             if(!fileFullName.contains(photo.getName() + "." + photo.getSuffix()))
@@ -165,7 +165,7 @@ public class AlbumServiceImpl implements AlbumService {
         //校验user_id和album_id
         if(albumMapper.selectUserIdByAlbumId(albumId) != userId)
             throw new ForbiddenAccessException();
-        List<Photo> photos = photoMapper.selectAllPhotoNotInRecycleBinByAlbumIdOrderByOriginalTimeDesc(albumId);
+        List<Photo> photos = photoMapper.selectAllPhotoNotInRecycleBinByAlbumIdOrderByOriginalTimeAndUploadTimeDesc(albumId);
         List<Map<String, Object>> listMap = new ArrayList<>();
         for(Photo photo : photos)
         {
@@ -180,6 +180,7 @@ public class AlbumServiceImpl implements AlbumService {
             map.put("width",photo.getWidth());
             map.put("height",photo.getHeight());
             map.put("originalTime",photo.getOriginalTime());
+            map.put("uploadTime",photo.getUploadTime());
             List<String> photoTagList = new ArrayList<>();
             List<Integer> photoTagIdList = photoTagRelationMapper.selectTagIdByPhotoId(photo.getPhotoId());
             for(int tagId : photoTagIdList)

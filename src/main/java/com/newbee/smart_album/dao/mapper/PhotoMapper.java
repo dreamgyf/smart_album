@@ -25,11 +25,11 @@ public interface PhotoMapper {
 
     void updateIsPublicByPhotoId(@Param("photoId") int photoId,@Param("isPublic") int isPublic);
 
-    List<Photo> selectAllPhotoNotInRecycleBinByAlbumIdOrderByOriginalTimeDesc(@Param("albumId") int albumId);
+    List<Photo> selectAllPhotoNotInRecycleBinByAlbumIdOrderByOriginalTimeAndUploadTimeDesc(@Param("albumId") int albumId);
 
     Integer selectInRecycleBinByPhotoId(@Param("photoId") int photoId);
 
-    List<Photo> selectPhotoInRecycleBinByUserId(@Param("userId") int userId);
+    List<Photo> selectPhotoInRecycleBinByUserIdOrderByDeleteTimeDesc(@Param("userId") int userId);
 
     void moveOutRecycleBinByPhotoId(@Param("photoId") int photoId);
 
@@ -37,7 +37,7 @@ public interface PhotoMapper {
 
     void deleteByPhotoId(@Param("photoId") int photoId);
 
-    List<Photo> selectAllPhotoNotInRecycleBinByUserId(@Param("userId") int userId);
+    List<Photo> selectAllPhotoNotInRecycleBinByUserIdOrderByOriginalTimeAndUploadTimeDesc(@Param("userId") int userId);
 
     Integer selectPhotoIdByPath(@Param("path") String path);
 
