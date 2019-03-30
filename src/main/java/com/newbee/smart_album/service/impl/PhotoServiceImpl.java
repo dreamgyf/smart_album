@@ -7,10 +7,12 @@ import com.drew.metadata.Metadata;
 import com.drew.metadata.Tag;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.newbee.smart_album.dao.mapper.*;
+import com.newbee.smart_album.entity.Count;
 import com.newbee.smart_album.entity.Photo;
 import com.newbee.smart_album.exception.*;
 import com.newbee.smart_album.externalAPI.Baidu;
 import com.newbee.smart_album.externalAPI.Tencent;
+import com.newbee.smart_album.service.AsyncTaskService;
 import com.newbee.smart_album.service.PhotoService;
 import com.newbee.smart_album.tools.PhotoTool;
 import com.newbee.smart_album.tools.ZipTool;
@@ -42,6 +44,9 @@ public class PhotoServiceImpl implements PhotoService {
 
     @Autowired
     private Baidu baidu;
+
+    @Autowired
+    private AsyncTaskService asyncTaskService;
 
     @Resource
     private AlbumMapper albumMapper;
@@ -196,13 +201,12 @@ public class PhotoServiceImpl implements PhotoService {
 
     @Override
     public Map<String,Object> uploads(int userId,int albumId, MultipartFile[] files) throws IOException {
-        int successCount = 0;
-        int failedCount = 0;
+        Count count = new Count();
         for(MultipartFile file : files)
         {
             if(file == null)
             {
-                failedCount++;//上传文件为空文件
+                count.setFailedCount(count.getFailedCount() + 1);//上传文件为空文件
                 continue;
             }
             String fileName = file.getOriginalFilename();
@@ -212,18 +216,18 @@ public class PhotoServiceImpl implements PhotoService {
                 suffix = fileName.substring(dot + 1);
             else
             {
-                failedCount++;//文件没有后缀名
+                count.setFailedCount(count.getFailedCount() + 1);//文件没有后缀名
                 continue;
             }
             if(!photoTool.checkSuffix(suffix))
             {
-                failedCount++;//文件没有后缀名
+                count.setFailedCount(count.getFailedCount() + 1);//文件没有后缀名
                 continue;
             }
             BufferedImage image = ImageIO.read(file.getInputStream());
             if(image == null)
             {
-                failedCount++;//文件不是图片
+                count.setFailedCount(count.getFailedCount() + 1);//文件不是图片
                 continue;
             }
             //给文件一个随机UUID作为文件在服务器保存的文件名
@@ -236,91 +240,17 @@ public class PhotoServiceImpl implements PhotoService {
             {
                 if(!uploadFile.getParentFile().mkdirs())
                 {
-                    failedCount++;
+                    count.setFailedCount(count.getFailedCount() + 1);
                     continue;
                 }
             }
             file.transferTo(uploadFile);
-            //新建一个Photo对象用来保存照片信息并写入数据库
-            Photo photo = new Photo();
-            photo.setName(fileName.substring(0,dot));
-            photo.setSuffix(suffix);
-            //压缩并保存
-            String thumbnailPath = photoTool.THUMBNAIL_DIR + userId + "/" + UUID.randomUUID() + "." + suffix;
-            File thumbnailFile = new File(photoTool.LOCAL_DIR + thumbnailPath);
-            if(!thumbnailFile.getParentFile().exists())
-            {
-                if(!thumbnailFile.getParentFile().mkdirs())
-                    throw new UploadFailedException();//上传失败,文件创建失败
-            }
-            Thumbnails.of(uploadFile).scale(0.5).outputQuality(0.5).toFile(thumbnailFile);
-            photo.setThumbnailPath(thumbnailPath);
-            //计算文件大小，保存在数据库中
-            long fileSizeB = file.getSize();
-            photo.setSize(fileSizeB);
-            if(userMapper.selectAvailableSpaceByUserId(userId) < fileSizeB)
-            {
-                failedCount++;//可用空间不足
-                continue;
-            }
-            //如果是jpeg格式的图片，处理EXIF信息
-            if(photoTool.isJpeg(suffix))
-            {
-                try {
-                    Metadata metadata = ImageMetadataReader.readMetadata(uploadFile);
-                    Map<String,String> map = new HashMap<>();
-                    for (Directory directory : metadata.getDirectories())
-                    {
-                        for (Tag tag : directory.getTags())
-                        {
-                            map.put(tag.getTagName(),tag.getDescription());
-                            if(tag.getTagName().equals("Date/Time Original"))
-                            {
-                                photo.setOriginalTime(photoTool.exifTimeToTimestamp(tag.getDescription()));
-                            }
-                        }
-                    }
-                    //MAP转JSON,并写入photo对象
-                    ObjectMapper objectMapper = new ObjectMapper();
-                    photo.setInformation(objectMapper.writeValueAsString(map));
-                } catch (ImageProcessingException e) {
-                    e.printStackTrace();
-                }
-            }
-            photo.setWidth(image.getWidth());
-            photo.setHeight(image.getHeight());
-            photo.setUserId(userId);
-            photo.setLikes(0);
-            photo.setAlbumId(albumId);
-            photo.setInRecycleBin(0);
-            photo.setPath(uploadPath);
-            photo.setDescription("");
-            photo.setUploadTime(new Timestamp(System.currentTimeMillis()));
-            //将photo对象写入数据库
-            photoMapper.insert(photo);
-            //更新已用空间
-            userMapper.updateUsedSpaceByUserId(userId,fileSizeB);
-            //更新照片数量
-            userMapper.updatePhotoAmountByUserId(userId,1);
-            //更新相册信息
-            albumMapper.updatePhotoAmountByAlbumId(albumId,1);
-            albumMapper.updateLastEditTimeByAlbumId(albumId,new Timestamp(System.currentTimeMillis()));
-            //图片AI智能识别标签
-            String tagJsonString = baidu.photoTagIdentification(thumbnailFile,suffix);
-            List<Map<String,Object>> tagList = baidu.photoTag(tagJsonString);
-            for(Map<String,Object> tag : tagList)
-            {
-                if(tagMapper.selectExistByName(tag.get("keyword").toString()) == null)
-                    tagMapper.insert(tag.get("keyword").toString());
-                int photoId = photoMapper.selectPhotoIdByPath(uploadPath);
-                int tagId = tagMapper.selectTagIdByName(tag.get("keyword").toString());
-                photoTagRelationMapper.insert(photoId,tagId,Double.parseDouble(tag.get("score").toString()));
-            }
-            successCount++;//成功
+            //多线程异步上传
+            asyncTaskService.photoUploadTask(userId,albumId,fileName.substring(0,dot),suffix,uploadPath,uploadFile,count);
         }
         Map<String,Object> result = new HashMap<>();
-        result.put("successCount",successCount);
-        result.put("failedCount",failedCount);
+        result.put("successCount",count.getSuccessCount());
+        result.put("failedCount",count.getFailedCount());
         return result;
     }
 
