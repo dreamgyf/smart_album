@@ -45,6 +45,11 @@
          from photo where album_id=#{albumId} and in_recycle_bin=0 order by upload_time desc
     </select>
 
+    <select id="selectAllPhotoNotInRecycleBinByAlbumIdOrderByUploadTimeDescLimitPage" resultType="com.newbee.smart_album.entity.Photo">
+        select photo_id,name,suffix,path,description,information,user_id,album_id,likes,is_public,size,width,height,in_recycle_bin,original_time,upload_time,delete_time
+         from photo where album_id=#{albumId} and in_recycle_bin=0 order by upload_time desc limit #{(page-1)*50},50
+    </select>
+
     <select id="selectInRecycleBinByPhotoId" resultType="INTEGER">
         select 1 from photo where photo_id=#{photoId} and in_recycle_bin=1;
     </select>
@@ -66,9 +71,9 @@
         delete from photo where photo_id=#{photoId}
     </delete>
 
-    <select id="selectAllPhotoNotInRecycleBinByUserIdOrderByUploadTimeDesc" resultType="com.newbee.smart_album.entity.Photo">
+    <select id="selectAllPhotoNotInRecycleBinByUserIdOrderByUploadTimeDescLimitPage" resultType="com.newbee.smart_album.entity.Photo">
         select photo_id,name,suffix,path,description,information,user_id,album_id,likes,is_public,size,width,height,in_recycle_bin,original_time,upload_time,delete_time
-        from photo where user_id=#{userId} and in_recycle_bin=0 order by upload_time desc
+        from photo where user_id=#{userId} and in_recycle_bin=0 order by upload_time desc limit #{(page-1)*50},50
     </select>
 
     <select id="selectPhotoIdByPath" resultType="INTEGER">

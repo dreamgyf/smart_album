@@ -5,6 +5,7 @@ import com.newbee.smart_album.entity.Album;
 import com.newbee.smart_album.entity.Photo;
 import com.newbee.smart_album.exception.ForbiddenAccessException;
 import com.newbee.smart_album.exception.ForbiddenEditException;
+import com.newbee.smart_album.exception.PageNotExistException;
 import com.newbee.smart_album.service.AlbumService;
 import com.newbee.smart_album.tools.PhotoTool;
 import com.newbee.smart_album.tools.ZipTool;
@@ -161,11 +162,21 @@ public class AlbumServiceImpl implements AlbumService {
     }
 
     @Override
-    public List<Map<String, Object>> getAlbumPhotos(int userId, int albumId) {
+    public Map<String, Object> getAlbumPhotos(int userId, int albumId,int page) {
         //校验user_id和album_id
         if(albumMapper.selectUserIdByAlbumId(albumId) != userId)
             throw new ForbiddenAccessException();
-        List<Photo> photos = photoMapper.selectAllPhotoNotInRecycleBinByAlbumIdOrderByUploadTimeDesc(albumId);
+        Map<String,Object> mapReturn = new HashMap<>();
+        int photoAmount = albumMapper.selectAllByAlbumId(albumId).getPhotoAmount();
+        int pages;
+        if(photoAmount % 50 > 0)
+            pages = photoAmount / 50 + 1;
+        else
+            pages = photoAmount / 50;
+        mapReturn.put("pages",pages);
+        if(page > pages || page <= 0)
+            throw new PageNotExistException();
+        List<Photo> photos = photoMapper.selectAllPhotoNotInRecycleBinByAlbumIdOrderByUploadTimeDescLimitPage(albumId,page);
         List<Map<String, Object>> listMap = new ArrayList<>();
         for(Photo photo : photos)
         {
@@ -190,7 +201,8 @@ public class AlbumServiceImpl implements AlbumService {
             map.put("tags",photoTagList);
             listMap.add(map);
         }
-        return listMap;
+        mapReturn.put("photos",listMap);
+        return mapReturn;
     }
 
     @Override

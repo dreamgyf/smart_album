@@ -67,13 +67,13 @@ public class AlbumController {
     }
 
     @RequestMapping(value = "/getAlbumPhotos",method = RequestMethod.GET)
-    public List<Map<String, Object>> getAlbumPhotos(@RequestParam int albumId, HttpServletRequest request)
+    public Map<String, Object> getAlbumPhotos(@RequestParam int albumId,@RequestParam int page, HttpServletRequest request)
     {
         Object userIdObject = request.getSession().getAttribute("userId");
         if(userIdObject == null)
             throw new NotLogInException();
         int userId = Integer.parseInt(userIdObject.toString());
-        return albumService.getAlbumPhotos(userId,albumId);
+        return albumService.getAlbumPhotos(userId,albumId,page);
     }
 
     @RequestMapping(value = "/getAlbumList")

@@ -25,7 +25,7 @@ public class SendEmailToRetrievePassword {
     @Autowired
     private SpringTemplateEngine templateEngine;
 
-    public void send(String to,String sid) throws MessagingException {
+    public void send(String to,String name,String sid) throws MessagingException {
         MimeMessage mailMessage = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mailMessage,true);
         helper.setFrom(FROM);
@@ -33,6 +33,7 @@ public class SendEmailToRetrievePassword {
         helper.setSubject("找回密码");
         Context context = new Context();
         context.setVariable("link",DOMAIN + ROUTE + "?sid=" + sid);
+        context.setVariable("name",name);
         String text = templateEngine.process("retrievePasswordEmail",context);
         helper.setText(text,true);
         mailSender.send(mailMessage);

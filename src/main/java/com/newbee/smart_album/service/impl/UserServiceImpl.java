@@ -181,7 +181,7 @@ public class UserServiceImpl implements UserService {
         String sid = DigestUtils.md5DigestAsHex(temp.getBytes());
         retrievePasswordMapper.insert(user.getUserId(),sid,new Timestamp(System.currentTimeMillis()));
         try {
-            sendEmailToRetrievePassword.send(email,sid);
+            sendEmailToRetrievePassword.send(email,user.getUsername(),sid);
         } catch (MessagingException e) {
             e.printStackTrace();
         }

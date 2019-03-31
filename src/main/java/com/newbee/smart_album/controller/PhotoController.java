@@ -2,7 +2,6 @@ package com.newbee.smart_album.controller;
 
 import com.newbee.smart_album.exception.NotLogInException;
 import com.newbee.smart_album.service.PhotoService;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -188,20 +187,20 @@ public class PhotoController {
 
     //获取用户所有照片
     @RequestMapping(value = "/getPhotos")
-    public List<Map<String,Object>> getPhotos(HttpServletRequest request)
+    public Map<String,Object> getPhotos(@RequestParam int page, HttpServletRequest request)
     {
         Object userIdObject = request.getSession().getAttribute("userId");
         if(userIdObject == null)
             throw new NotLogInException();
         int userId = Integer.parseInt(userIdObject.toString());
-        return photoService.getPhotos(userId);
+        return photoService.getPhotos(userId,page);
     }
 
     @RequestMapping(value = "/globalSearch",method = RequestMethod.GET)
-    public List<Map<String,Object>> globalSearch(@Param("keyword") String keyword,HttpServletRequest request)
+    public Map<String,Object> globalSearch(@RequestParam String keyword,@RequestParam int page, HttpServletRequest request)
     {
         Object userIdObject = request.getSession().getAttribute("userId");
-        return photoService.globalSearch(userIdObject,keyword);
+        return photoService.globalSearch(userIdObject,keyword,page);
     }
 
     @RequestMapping(value = "/like",method = RequestMethod.GET)
@@ -218,13 +217,13 @@ public class PhotoController {
     }
 
     @RequestMapping(value = "/personalSearch",method = RequestMethod.GET)
-    public List<Map<String,Object>> personalSearch(@Param("keyword") String keyword,HttpServletRequest request)
+    public Map<String,Object> personalSearch(@RequestParam String keyword,@RequestParam int page, HttpServletRequest request)
     {
         Object userIdObject = request.getSession().getAttribute("userId");
         if(userIdObject == null)
             throw new NotLogInException();
         int userId = Integer.parseInt(userIdObject.toString());
-        return photoService.personalSearch(userId,keyword);
+        return photoService.personalSearch(userId,keyword,page);
     }
 
 }

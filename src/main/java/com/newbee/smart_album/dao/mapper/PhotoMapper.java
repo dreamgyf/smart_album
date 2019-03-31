@@ -27,6 +27,8 @@ public interface PhotoMapper {
 
     List<Photo> selectAllPhotoNotInRecycleBinByAlbumIdOrderByUploadTimeDesc(@Param("albumId") int albumId);
 
+    List<Photo> selectAllPhotoNotInRecycleBinByAlbumIdOrderByUploadTimeDescLimitPage(@Param("albumId") int albumId,@Param("page") int page);
+
     Integer selectInRecycleBinByPhotoId(@Param("photoId") int photoId);
 
     List<Photo> selectPhotoInRecycleBinByUserIdOrderByDeleteTimeDesc(@Param("userId") int userId);
@@ -37,7 +39,7 @@ public interface PhotoMapper {
 
     void deleteByPhotoId(@Param("photoId") int photoId);
 
-    List<Photo> selectAllPhotoNotInRecycleBinByUserIdOrderByUploadTimeDesc(@Param("userId") int userId);
+    List<Photo> selectAllPhotoNotInRecycleBinByUserIdOrderByUploadTimeDescLimitPage(@Param("userId") int userId,@Param("page") int page);
 
     Integer selectPhotoIdByPath(@Param("path") String path);
 

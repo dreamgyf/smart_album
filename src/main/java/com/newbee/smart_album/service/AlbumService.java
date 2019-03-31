@@ -16,7 +16,7 @@ public interface AlbumService {
 
     void download(int albumId, HttpServletResponse response);
 
-    List<Map<String, Object>> getAlbumPhotos(int userId, int albumId);
+    Map<String, Object> getAlbumPhotos(int userId, int albumId,int page);
 
     List<Album> getAlbumList(int userId);
 

@@ -34,11 +34,11 @@ public interface PhotoService {
 
     void completelyDelete(int userId,List<Integer> photos);
 
-    List<Map<String,Object>> getPhotos(int userId);
+    Map<String,Object> getPhotos(int userId,int page);
 
-    List<Map<String,Object>> globalSearch(Object userIdObject,String keyword);
+    Map<String,Object> globalSearch(Object userIdObject,String keyword,int page);
 
     void like(int userId,int photoId);
 
-    List<Map<String,Object>> personalSearch(int userId,String keyword);
+    Map<String,Object> personalSearch(int userId,String keyword,int page);
 }

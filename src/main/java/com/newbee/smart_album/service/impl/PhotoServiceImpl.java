@@ -712,9 +712,19 @@ public class PhotoServiceImpl implements PhotoService {
     }
 
     @Override
-    public List<Map<String, Object>> getPhotos(int userId) {
+    public Map<String, Object> getPhotos(int userId,int page) {
         List<Map<String, Object>> listMap = new ArrayList<>();
-        List<Photo> photos = photoMapper.selectAllPhotoNotInRecycleBinByUserIdOrderByUploadTimeDesc(userId);
+        Map<String,Object> mapReturn = new HashMap<>();
+        int photoAmount = userMapper.selectAllByUserId(userId).getPhotoAmount();
+        int pages;
+        if(photoAmount % 50 > 0)
+            pages = photoAmount / 50 + 1;
+        else
+            pages = photoAmount / 50;
+        mapReturn.put("pages",pages);
+        if(page > pages || page <= 0)
+            throw new PageNotExistException();
+        List<Photo> photos = photoMapper.selectAllPhotoNotInRecycleBinByUserIdOrderByUploadTimeDescLimitPage(userId,page);
         for(Photo photo : photos)
         {
             Map<String, Object> map = new HashMap<>();
@@ -738,11 +748,12 @@ public class PhotoServiceImpl implements PhotoService {
             map.put("tags",photoTagList);
             listMap.add(map);
         }
-        return listMap;
+        mapReturn.put("photos",listMap);
+        return mapReturn;
     }
 
     @Override
-    public List<Map<String, Object>> globalSearch(Object userIdObject,String keyword) {
+    public Map<String, Object> globalSearch(Object userIdObject,String keyword,int page) {
         //以空格分割关键字搜索
         List<String> keywordList = new ArrayList<>();
         int space = keyword.indexOf(" ");
@@ -757,17 +768,39 @@ public class PhotoServiceImpl implements PhotoService {
         keywordList.add("%" + keyword + "%");
         List<Map<String, Object>> listMap = new ArrayList<>();
         List<Integer> tagIdList = tagMapper.selectTagIdLikeName(keywordList);
-        if(tagIdList.size() == 0)
-            return listMap;
-        List<Integer> photoIdList = photoTagRelationMapper.selectPhotoIdByTagIdOrderByScoreDesc(tagIdList);
+        List<Integer> photoIdList = null;
+        if(tagIdList.size() != 0)
+            photoIdList = photoTagRelationMapper.selectPhotoIdByTagIdOrderByScoreDesc(tagIdList);
+        else
+            photoIdList = new ArrayList<>();
         //去重
         LinkedHashSet<Integer> hashSet = new LinkedHashSet<>();
         hashSet.addAll(photoIdList);
         photoIdList.clear();
         photoIdList.addAll(hashSet);
-        for(int photoId : photoIdList)
+        int pages;
+        if(photoIdList.size() % 50 > 0)
+            pages = photoIdList.size() / 50 + 1;
+        else
+            pages = photoIdList.size() / 50;
+        int begin,end;
+        if(page > pages || page <= 0)
+            throw new PageNotExistException();
+        else
         {
-            Photo photo = photoMapper.selectAllByPhotoIdWhereIsPublic(photoId);
+            begin = (page - 1) * 50;
+            if(page * 50 > photoIdList.size())
+            {
+                end = photoIdList.size();
+            }
+            else
+            {
+                end = page * 50;
+            }
+        }
+        for(int i = begin;i < end;i++)
+        {
+            Photo photo = photoMapper.selectAllByPhotoIdWhereIsPublic(photoIdList.get(i));
             if(photo == null || photo.getInRecycleBin() == 1)
                 continue;
             Map<String,Object> map = new HashMap<>();
@@ -785,7 +818,7 @@ public class PhotoServiceImpl implements PhotoService {
                 map.put("userLike",0);
             else
             {
-                map.put("userLike",(userLikePhotoMapper.selectUserLikePhotoIdByUserIdAndPhotoId(Integer.parseInt(userIdObject.toString()),photoId) == null) ? 0 : 1);
+                map.put("userLike",(userLikePhotoMapper.selectUserLikePhotoIdByUserIdAndPhotoId(Integer.parseInt(userIdObject.toString()),photoIdList.get(i)) == null) ? 0 : 1);
             }
             List<String> photoTagList = new ArrayList<>();
             List<Integer> photoTagIdList = photoTagRelationMapper.selectTagIdByPhotoId(photo.getPhotoId());
@@ -796,7 +829,10 @@ public class PhotoServiceImpl implements PhotoService {
             map.put("tags",photoTagList);
             listMap.add(map);
         }
-        return listMap;
+        Map<String,Object> mapReturn = new HashMap<>();
+        mapReturn.put("photos",listMap);
+        mapReturn.put("pages",pages);
+        return mapReturn;
     }
 
     @Override
@@ -815,7 +851,7 @@ public class PhotoServiceImpl implements PhotoService {
     }
 
     @Override
-    public List<Map<String, Object>> personalSearch(int userId, String keyword) {
+    public Map<String, Object> personalSearch(int userId, String keyword,int page) {
         //以空格分割关键字搜索
         List<String> keywordList = new ArrayList<>();
         int space = keyword.indexOf(" ");
@@ -842,9 +878,29 @@ public class PhotoServiceImpl implements PhotoService {
         hashSet.addAll(photoIdList);
         photoIdList.clear();
         photoIdList.addAll(hashSet);
-        for(int photoId : photoIdList)
+        int pages;
+        if(photoIdList.size() % 50 > 0)
+            pages = photoIdList.size() / 50 + 1;
+        else
+            pages = photoIdList.size() / 50;
+        int begin,end;
+        if(page > pages || page <= 0)
+            throw new PageNotExistException();
+        else
         {
-            Photo photo = photoMapper.selectAllByPhotoId(photoId);
+            begin = (page - 1) * 50;
+            if(page * 50 > photoIdList.size())
+            {
+                end = photoIdList.size();
+            }
+            else
+            {
+                end = page * 50;
+            }
+        }
+        for(int i = begin;i < end;i++)
+        {
+            Photo photo = photoMapper.selectAllByPhotoId(photoIdList.get(i));
             if(photo.getUserId() != userId || photo.getInRecycleBin() == 1)
                 continue;
             Map<String,Object> map = new HashMap<>();
@@ -867,7 +923,10 @@ public class PhotoServiceImpl implements PhotoService {
             map.put("tags",photoTagList);
             listMap.add(map);
         }
-        return listMap;
+        Map<String,Object> mapReturn = new HashMap<>();
+        mapReturn.put("photos",listMap);
+        mapReturn.put("pages",pages);
+        return mapReturn;
     }
 }
 
