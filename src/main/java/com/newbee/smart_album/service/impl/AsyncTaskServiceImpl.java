@@ -7,7 +7,6 @@ import com.drew.metadata.Metadata;
 import com.drew.metadata.Tag;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.newbee.smart_album.dao.mapper.*;
-import com.newbee.smart_album.entity.Count;
 import com.newbee.smart_album.entity.Photo;
 import com.newbee.smart_album.externalAPI.Baidu;
 import com.newbee.smart_album.service.AsyncTaskService;
@@ -57,15 +56,18 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
     private Baidu baidu;
 
     @Override
-    public void photoUploadTask(int userId, int albumId, String prefix, String suffix, String uploadPath, File uploadFile, Count count) {
+    public void photoUploadTask(int userId, int albumId, String prefix, String suffix, String uploadPath, File uploadFile) {
 
-        //新建一个Photo对象用来保存照片信息并写入数据库
+        System.err.println("我是一个新的线程");
+
         BufferedImage image = null;
         try {
             image = ImageIO.read(new FileInputStream(uploadFile));
         } catch (IOException e) {
             e.printStackTrace();
+            return;
         }
+        //新建一个Photo对象用来保存照片信息并写入数据库
         Photo photo = new Photo();
         photo.setName(prefix);
         photo.setSuffix(suffix);
@@ -75,16 +77,7 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
         if(!thumbnailFile.getParentFile().exists())
         {
             if(!thumbnailFile.getParentFile().mkdirs())
-            {
-                try {
-                    semaphore.acquire();
-                    count.setFailedCount(count.getFailedCount() + 1);
-                    semaphore.release();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
                 return;
-            }
         }
         try {
             Thumbnails.of(uploadFile).scale(0.5).outputQuality(0.5).toFile(thumbnailFile);
@@ -95,17 +88,6 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
         //计算文件大小，保存在数据库中
         long fileSizeB = uploadFile.length();
         photo.setSize(fileSizeB);
-        if(userMapper.selectAvailableSpaceByUserId(userId) < fileSizeB)
-        {
-            try {
-                semaphore.acquire();
-                count.setFailedCount(count.getFailedCount() + 1);
-                semaphore.release();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }//可用空间不足
-            return;
-        }
         //如果是jpeg格式的图片，处理EXIF信息
         if(photoTool.isJpeg(suffix))
         {
@@ -167,12 +149,5 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
 //                photoTagRelationMapper.insert(photoId,tagId,Double.parseDouble(tag.get("score").toString()));
 //            }
 //        }
-        try {
-            semaphore.acquire();
-            count.setSuccessCount(count.getSuccessCount() + 1);//成功
-            semaphore.release();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 }
