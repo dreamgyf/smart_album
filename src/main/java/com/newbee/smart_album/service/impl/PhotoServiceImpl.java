@@ -724,7 +724,7 @@ public class PhotoServiceImpl implements PhotoService {
         mapReturn.put("pages",pages);
         if(page > pages || page <= 0)
             throw new PageNotExistException();
-        List<Photo> photos = photoMapper.selectAllPhotoNotInRecycleBinByUserIdOrderByUploadTimeDescLimitPage(userId,page);
+        List<Photo> photos = photoMapper.selectAllPhotoNotInRecycleBinByUserIdOrderByUploadTimeDescLimitPage(userId,(page - 1) * 50);
         for(Photo photo : photos)
         {
             Map<String, Object> map = new HashMap<>();

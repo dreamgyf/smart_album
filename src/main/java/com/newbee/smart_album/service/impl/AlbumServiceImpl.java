@@ -176,7 +176,7 @@ public class AlbumServiceImpl implements AlbumService {
         mapReturn.put("pages",pages);
         if(page > pages || page <= 0)
             throw new PageNotExistException();
-        List<Photo> photos = photoMapper.selectAllPhotoNotInRecycleBinByAlbumIdOrderByUploadTimeDescLimitPage(albumId,page);
+        List<Photo> photos = photoMapper.selectAllPhotoNotInRecycleBinByAlbumIdOrderByUploadTimeDescLimitPage(albumId,(page - 1) * 50);
         List<Map<String, Object>> listMap = new ArrayList<>();
         for(Photo photo : photos)
         {
