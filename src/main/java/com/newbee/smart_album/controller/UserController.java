@@ -122,4 +122,16 @@ public class UserController {
         mapReturn.put("status","ok");
         return mapReturn;
     }
+
+    @RequestMapping(value = "/checkLoginStatus")
+    public Map<String,String> checkLoginStatus(HttpServletRequest request)
+    {
+        Map<String,String> mapReturn = new HashMap<>();
+        Object userIdObject = request.getSession().getAttribute("userId");
+        if(userIdObject == null)
+            mapReturn.put("status","not login");
+        else
+            mapReturn.put("status","already login");
+        return mapReturn;
+    }
 }
