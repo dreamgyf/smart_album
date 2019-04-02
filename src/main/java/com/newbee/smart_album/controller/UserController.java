@@ -136,7 +136,7 @@ public class UserController {
     }
 
     @RequestMapping(value = "showAvatar")
-    public void showAvatar(HttpServletRequest request,HttpServletResponse response)
+    public void showAvatar(@RequestParam int random, HttpServletRequest request,HttpServletResponse response)
     {
         Object userIdObject = request.getSession().getAttribute("userId");
         if(userIdObject == null)
