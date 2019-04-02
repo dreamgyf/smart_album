@@ -57,9 +57,6 @@ public class AsyncTaskServiceImpl implements AsyncTaskService {
 
     @Override
     public void photoUploadTask(int userId, int albumId, String prefix, String suffix, String uploadPath, File uploadFile) {
-
-        System.err.println("我是一个新的线程");
-
         BufferedImage image = null;
         try {
             image = ImageIO.read(new FileInputStream(uploadFile));

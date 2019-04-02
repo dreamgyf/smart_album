@@ -134,4 +134,14 @@ public class UserController {
             mapReturn.put("status","already login");
         return mapReturn;
     }
+
+    @RequestMapping(value = "showAvatar")
+    public void showAvatar(HttpServletRequest request,HttpServletResponse response)
+    {
+        Object userIdObject = request.getSession().getAttribute("userId");
+        if(userIdObject == null)
+            throw new NotLogInException();
+        int userId = Integer.parseInt(userIdObject.toString());
+        userService.showAvatar(userId,response);
+    }
 }

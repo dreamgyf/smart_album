@@ -200,53 +200,6 @@ public class PhotoServiceImpl implements PhotoService {
     }
 
     @Override
-    public void uploadsTest(int userId, int albumId, MultipartFile file) {
-        if(file == null)
-            throw new EmptyFileException();//上传空文件
-        String fileName = file.getOriginalFilename();
-        int dot = fileName.lastIndexOf(".");
-        String suffix;
-        if(dot != -1 && dot < fileName.length())
-            suffix = fileName.substring(dot + 1);
-        else
-            throw new SuffixErrorException();//文件没有后缀名
-        if(!photoTool.checkSuffix(suffix))
-            throw new SuffixErrorException();//不支持的文件后缀
-        ImageIO.scanForPlugins();
-        BufferedImage image = null;
-        try {
-            image = ImageIO.read(file.getInputStream());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        if(image == null)
-            throw new NotImageException();//文件不是图片
-        //给文件一个随机UUID作为文件在服务器保存的文件名
-        String uuidName = UUID.randomUUID().toString() + '.' + suffix;
-        //计算文件大小
-        long fileSizeB = file.getSize();
-        if(userMapper.selectAvailableSpaceByUserId(userId) < fileSizeB)
-            throw new SpaceAlreadyFullException();//可用空间不足
-        //创建上传路径
-        String uploadPath = photoTool.UPLOAD_DIR + userId + "/" + uuidName;
-        //上传文件
-        File uploadFile = new File(photoTool.LOCAL_DIR + uploadPath);
-        if(!uploadFile.getParentFile().exists())
-        {
-            if(!uploadFile.getParentFile().mkdirs())
-                throw new UploadFailedException();//上传失败,文件创建失败
-        }
-        try {
-            file.transferTo(uploadFile);
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new UploadFailedException();
-        }
-        //开启新线程
-        asyncTaskService.photoUploadTask(userId,albumId,fileName.substring(0,dot),suffix,uploadPath,uploadFile);
-    }
-
-    @Override
     public Map<String,Object> uploads(int userId,int albumId, MultipartFile[] files) {
         Count count = new Count();
         for(MultipartFile file : files)

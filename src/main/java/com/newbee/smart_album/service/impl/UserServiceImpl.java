@@ -17,10 +17,9 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import javax.imageio.ImageIO;
 import javax.mail.MessagingException;
+import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
+import java.io.*;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
@@ -149,15 +148,13 @@ public class UserServiceImpl implements UserService {
                 String uuidName = UUID.randomUUID().toString() + '.' + suffix;
                 //上传文件
                 String newAvatarPath = "/images/avatar/" + userId + "/" + uuidName;
-                File uploadFile = new File(photoTool.LOCAL_DIR + "/src/main/resources/static" + newAvatarPath);
+                File uploadFile = new File(photoTool.LOCAL_DIR + newAvatarPath);
                 if(!uploadFile.getParentFile().exists())
                 {
                     if(!uploadFile.getParentFile().mkdirs())
                         throw new UploadFailedException();//上传失败,文件创建失败
                 }
                 avatar.transferTo(uploadFile);
-                File uploadFileTarget = new File(photoTool.LOCAL_DIR + "/target/classes/static" + newAvatarPath);
-                Files.copy(uploadFile.toPath(),uploadFileTarget.toPath());
                 String preAvatarPath = userMapper.selectAllByUserId(userId).getAvatar();
                 userMapper.updateAvatarByUserId(userId,newAvatarPath);
                 if(!preAvatarPath.equals(photoTool.DEFAULT_AVATAR_FILE))
@@ -204,5 +201,40 @@ public class UserServiceImpl implements UserService {
             throw new ForbiddenEditException();
         userMapper.updatePasswordByUserId(userId,DigestUtils.md5DigestAsHex(newPassword.getBytes()));
         retrievePasswordMapper.deleteBySid(sid);
+    }
+
+    @Override
+    public void showAvatar(int userId, HttpServletResponse response) {
+        String avatarPath = userMapper.selectAllByUserId(userId).getAvatar();
+        int dot = avatarPath.lastIndexOf(".");
+        String suffix = avatarPath.substring(dot + 1);
+        response.reset();
+        if(photoTool.isJpeg(suffix))
+            response.setContentType("image/jpeg");
+        else if(photoTool.isPng(suffix))
+            response.setContentType("image/png");
+        else if(photoTool.isBmp(suffix))
+            response.setContentType("application/x-bmp");
+        else if(photoTool.isTiff(suffix))
+            response.setContentType("image/tiff");
+        else if(photoTool.isGif(suffix))
+            response.setContentType("image/gif");
+        else
+        {
+            throw new SuffixErrorException();
+        }
+        try {
+            OutputStream outputStream = response.getOutputStream();
+            File file = new File(photoTool.LOCAL_DIR + avatarPath);
+            InputStream inputStream = new FileInputStream(file);
+            int len;
+            byte[] buffer = new byte[1024];
+            while((len = inputStream.read(buffer)) > 0)
+            {
+                outputStream.write(buffer,0,len);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

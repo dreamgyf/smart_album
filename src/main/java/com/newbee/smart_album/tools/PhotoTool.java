@@ -31,8 +31,14 @@ public class PhotoTool {
     public PhotoTool()
     {
         //生成相对路径
-        File file = new File(this.getClass().getResource("/").getPath());
-        LOCAL_DIR = file.getParentFile().getParent();
+        File file = new File(this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
+        String path = file.getParentFile().getParentFile().getParentFile().getAbsolutePath();
+        int start = path.indexOf("/file:");
+        if(start != -1)
+            LOCAL_DIR = path.substring(0,start);
+        else
+            LOCAL_DIR = path;
+        System.err.println("路径是" + LOCAL_DIR);
     }
 
     public boolean checkSuffix(String suffix)

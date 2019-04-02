@@ -2,6 +2,7 @@ package com.newbee.smart_album.service;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
 public interface UserService {
@@ -21,4 +22,6 @@ public interface UserService {
     int verifySid(String sid);
 
     void retrievePassword(String sid,int userId,String newPassword);
+
+    void showAvatar(int userId, HttpServletResponse response);
 }

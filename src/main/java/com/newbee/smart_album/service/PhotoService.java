@@ -10,8 +10,6 @@ import java.util.Map;
 public interface PhotoService {
     void upload(int userId,MultipartFile file,String name,String description,int albumId,int isPublic,String[] tags) throws IOException;
 
-    void uploadsTest(int userId,int albumId,MultipartFile file);
-
     Map<String,Object> uploads(int userId,int albumId, MultipartFile[] files) throws IOException;
 
     void download(int photoId, HttpServletResponse response);

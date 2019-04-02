@@ -39,19 +39,6 @@ public class PhotoController {
         return mapReturn;
     }
 
-    @RequestMapping(value = "/uploadsTest",method = RequestMethod.POST)
-    public Map<String,String> uploadsTest(@RequestParam MultipartFile file,@RequestParam int albumId,HttpServletRequest request)
-    {
-        Object userIdObject = request.getSession().getAttribute("userId");
-        if(userIdObject == null)
-            throw new NotLogInException();
-        int userId = Integer.parseInt(userIdObject.toString());
-        photoService.uploadsTest(userId,albumId,file);
-        Map<String,String> mapReturn = new HashMap<>();
-        mapReturn.put("status","ok");
-        return mapReturn;
-    }
-
     @RequestMapping(value = "/uploads",method = RequestMethod.POST)
     public Map<String, Object> uploads(@RequestParam MultipartFile[] files,
                                        @RequestParam int albumId,
