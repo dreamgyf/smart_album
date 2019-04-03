@@ -27,9 +27,9 @@ public class Baidu {
     @Autowired
     private PhotoTool photoTool;
 
-    public final static String API_KEY = "tjQGBnNkwakPkMtjoAHEQ3nE";
+    public final static String API_KEY = "";
 
-    public final static String SECRET_KEY = "LHyDms6VzAu6k3xzN6eMRb40o8rEgE1s";
+    public final static String SECRET_KEY = "";
 
     public static String ACCESS_TOKEN;
 

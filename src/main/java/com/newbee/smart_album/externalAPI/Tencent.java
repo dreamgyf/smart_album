@@ -26,15 +26,15 @@ public class Tencent {
     @Autowired
     private PhotoTool photoTool;
 
-    private static final int app_id = 2113835477;
+    private static final int APP_ID = ;
 
-    private static final String app_key = "L8enOrgzXIEJsqNZ";
+    private static final String APP_KEY = "";
 
     public String photoTagIdentification(File imageFile, String suffix)
     {
         String base64 = photoTool.encodeImageToBase64(imageFile, suffix);
         SortedMap<String,Object> map = new TreeMap<>();
-        map.put("app_id",app_id);
+        map.put("app_id",APP_ID);
         map.put("time_stamp",System.currentTimeMillis() / 1000);
         map.put("nonce_str", RandomStringUtils.random(32,true,true));
         map.put("sign","");
@@ -45,7 +45,7 @@ public class Tencent {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         MultiValueMap<String, Object> params= new LinkedMultiValueMap<>();
-        params.add("app_id",map.get("app_id"));
+        params.add("APP_ID",map.get("APP_ID"));
         params.add("time_stamp",map.get("time_stamp"));
         params.add("nonce_str",map.get("nonce_str"));
         params.add("sign",map.get("sign"));
@@ -62,7 +62,7 @@ public class Tencent {
                 result.append(key + "=" + URLEncoder.encode(map.get(key).toString()) + "&");
             }
         }
-        result.append("app_key=").append(app_key);
+        result.append("APP_KEY=").append(APP_KEY);
         return DigestUtils.md5DigestAsHex(result.toString().getBytes()).toUpperCase();
     }
 
