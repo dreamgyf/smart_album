@@ -1,6 +1,6 @@
 # 智能相册WEB应用
 ### 项目简介
-本项目为使用SpringBoot+Mybatis搭建的智能相册WEB应用的后端部分
+本项目为使用SpringBoot+Mybatis搭建的智能相册WEB应用的后端部分，还有部分未完成。
 ### 项目说明
 本智能相册会在用户上传照片时使用百度的AI图像识别来给图片打标签。你可以在首页看到最热照片，也可以通过搜索功能搜索其他用户公开的照片，同时，你也可以给这些照片点赞。
 ### 项目链接
@@ -19,6 +19,7 @@
 │   │   │               ├── config
 │   │   │               │   └── ThreadConfig.java    //对线程池进行配置
 │   │   │               ├── controller
+│   │   │               │   ├── AdminController.java
 │   │   │               │   ├── AlbumController.java
 │   │   │               │   ├── PhotoController.java
 │   │   │               │   └── UserController.java
@@ -59,6 +60,8 @@
 │   │   │               ├── externalAPI
 │   │   │               │   ├── Baidu.java    //接入百度的AI图像识别
 │   │   │               │   └── Tencent.java    //腾讯的AI图像识别(未使用)
+│   │   │               ├── httpSessionListener
+│   │   │               │   └── OnlineUserStatistics.java    //通过session监听器统计用户在线人数
 │   │   │               ├── service
 │   │   │               │   ├── AlbumService.java
 │   │   │               │   ├── AsyncTaskService.java
