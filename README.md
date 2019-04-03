@@ -287,4 +287,4 @@
    
    SET FOREIGN_KEY_CHECKS = 1;
 ```
-最后运行SmartAlbumApplication主类，浏览器访问http://localhost:3000/即可
+最后运行SmartAlbumApplication主类，浏览器访问 http://localhost:3000 即可
