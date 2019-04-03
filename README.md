@@ -101,6 +101,7 @@
 ```
 ### 项目使用
 > SpringBoot  
+> Maven   
 > Mybatis  
 > MySql  
 > Redis  
