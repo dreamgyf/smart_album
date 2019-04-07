@@ -39,4 +39,6 @@ public interface PhotoService {
     void like(int userId,int photoId);
 
     Map<String,Object> personalSearch(int userId,String keyword,int page);
+
+    List<Map<String ,Object>> timeline(int userId);
 }

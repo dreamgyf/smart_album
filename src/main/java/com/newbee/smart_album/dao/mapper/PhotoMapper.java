@@ -46,4 +46,6 @@ public interface PhotoMapper {
     void updateLikesByPhotoId(@Param("photoId") int photoId,@Param("amount") int amount);
 
     List<Integer> selectPhotoIdLikeName(List<String> keyword);
+
+    List<Photo> selectAllPhotoNotInRecycleBinByUserIdOrderByOriginalTimeAndUploadTimeDesc(@Param("userId") int userId);
 }

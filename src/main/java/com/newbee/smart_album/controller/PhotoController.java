@@ -213,4 +213,13 @@ public class PhotoController {
         return photoService.personalSearch(userId,keyword,page);
     }
 
+    @RequestMapping(value = "/timeline")
+    public List<Map<String,Object>> timeline(HttpServletRequest request)
+    {
+        Object userIdObject = request.getSession().getAttribute("userId");
+        if(userIdObject == null)
+            throw new NotLogInException();
+        int userId = Integer.parseInt(userIdObject.toString());
+        return photoService.timeline(userId);
+    }
 }

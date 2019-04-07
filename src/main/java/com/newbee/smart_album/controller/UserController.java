@@ -135,7 +135,7 @@ public class UserController {
         return mapReturn;
     }
 
-    @RequestMapping(value = "showAvatar")
+    @RequestMapping(value = "/showAvatar")
     public void showAvatar(HttpServletRequest request,HttpServletResponse response)
     {
         Object userIdObject = request.getSession().getAttribute("userId");

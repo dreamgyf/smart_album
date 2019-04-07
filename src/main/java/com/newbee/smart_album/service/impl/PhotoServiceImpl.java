@@ -28,6 +28,7 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URLEncoder;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
@@ -880,6 +881,132 @@ public class PhotoServiceImpl implements PhotoService {
         mapReturn.put("photos",listMap);
         mapReturn.put("pages",pages);
         return mapReturn;
+    }
+
+    @Override
+    public List<Map<String, Object>> timeline(int userId) {
+        List<Photo> photos = photoMapper.selectAllPhotoNotInRecycleBinByUserIdOrderByOriginalTimeAndUploadTimeDesc(userId);
+        int i;
+        String time = "";
+        List<Map<String ,Object>> photosListMap = new ArrayList<>();
+        Map<String,Object> timeMap = new HashMap<>();
+        List<Map<String ,Object>> listReturn = new ArrayList<>();
+        boolean firstCycleFlag = true;
+        for(i = 0;1 < photos.size();i++)
+        {
+            if(photos.get(i).getOriginalTime() == null)
+            {
+                if(firstCycleFlag)
+                    break;
+                else
+                {
+                    timeMap.put("time",time);
+                    timeMap.put("photos",photosListMap);
+                    listReturn.add(timeMap);
+                    timeMap.clear();
+                    photosListMap.clear();
+                    break;
+                }
+            }
+            if(new SimpleDateFormat("yyyy-MM").format(photos.get(i).getOriginalTime()).equals(time))
+            {
+                Map<String, Object> map = new HashMap<>();
+                map.put("photoId",photos.get(i).getPhotoId());
+                map.put("name",photos.get(i).getName());
+                map.put("description",photos.get(i).getDescription());
+                map.put("albumId",photos.get(i).getAlbumId());
+                map.put("likes",photos.get(i).getLikes());
+                map.put("isPublic",photos.get(i).getIsPublic());
+                map.put("size",photos.get(i).getSize());
+                map.put("width",photos.get(i).getWidth());
+                map.put("height",photos.get(i).getHeight());
+                map.put("originalTime",photos.get(i).getOriginalTime());
+                map.put("uploadTime",photos.get(i).getUploadTime());
+                List<String> photoTagList = new ArrayList<>();
+                List<Integer> photoTagIdList = photoTagRelationMapper.selectTagIdByPhotoId(photos.get(i).getPhotoId());
+                for(int tagId : photoTagIdList)
+                {
+                    photoTagList.add(tagMapper.selectNameByTagId(tagId));
+                }
+                map.put("tags",photoTagList);
+                photosListMap.add(map);
+            }
+            else
+            {
+                if(firstCycleFlag)
+                {
+                    time = new SimpleDateFormat("yyyy-MM").format(photos.get(i).getOriginalTime());
+                    firstCycleFlag = false;
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("photoId",photos.get(i).getPhotoId());
+                    map.put("name",photos.get(i).getName());
+                    map.put("description",photos.get(i).getDescription());
+                    map.put("albumId",photos.get(i).getAlbumId());
+                    map.put("likes",photos.get(i).getLikes());
+                    map.put("isPublic",photos.get(i).getIsPublic());
+                    map.put("size",photos.get(i).getSize());
+                    map.put("width",photos.get(i).getWidth());
+                    map.put("height",photos.get(i).getHeight());
+                    map.put("originalTime",photos.get(i).getOriginalTime());
+                    map.put("uploadTime",photos.get(i).getUploadTime());
+                    List<String> photoTagList = new ArrayList<>();
+                    List<Integer> photoTagIdList = photoTagRelationMapper.selectTagIdByPhotoId(photos.get(i).getPhotoId());
+                    for(int tagId : photoTagIdList)
+                    {
+                        photoTagList.add(tagMapper.selectNameByTagId(tagId));
+                    }
+                    map.put("tags",photoTagList);
+                    photosListMap.add(map);
+                }
+                else
+                {
+                    timeMap.put("time",time);
+                    time = new SimpleDateFormat("yyyy-MM").format(photos.get(i).getOriginalTime());
+                    timeMap.put("photos",photosListMap);
+                    listReturn.add(timeMap);
+                    timeMap.clear();
+                    photosListMap.clear();
+                }
+            }
+        }
+        if(!photosListMap.isEmpty())
+        {
+            timeMap.put("time",time);
+            timeMap.put("photos",photosListMap);
+            listReturn.add(timeMap);
+            timeMap.clear();
+            photosListMap.clear();
+        }
+        for(;i<photos.size();i++)
+        {
+            Map<String, Object> map = new HashMap<>();
+            map.put("photoId",photos.get(i).getPhotoId());
+            map.put("name",photos.get(i).getName());
+            map.put("description",photos.get(i).getDescription());
+            map.put("albumId",photos.get(i).getAlbumId());
+            map.put("likes",photos.get(i).getLikes());
+            map.put("isPublic",photos.get(i).getIsPublic());
+            map.put("size",photos.get(i).getSize());
+            map.put("width",photos.get(i).getWidth());
+            map.put("height",photos.get(i).getHeight());
+            map.put("originalTime",photos.get(i).getOriginalTime());
+            map.put("uploadTime",photos.get(i).getUploadTime());
+            List<String> photoTagList = new ArrayList<>();
+            List<Integer> photoTagIdList = photoTagRelationMapper.selectTagIdByPhotoId(photos.get(i).getPhotoId());
+            for(int tagId : photoTagIdList)
+            {
+                photoTagList.add(tagMapper.selectNameByTagId(tagId));
+            }
+            map.put("tags",photoTagList);
+            photosListMap.add(map);
+        }
+        if(!photosListMap.isEmpty())
+        {
+            timeMap.put("time","未知");
+            timeMap.put("photos",photosListMap);
+            listReturn.add(timeMap);
+        }
+        return listReturn;
     }
 }
 
