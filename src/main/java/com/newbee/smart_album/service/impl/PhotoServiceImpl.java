@@ -903,12 +903,12 @@ public class PhotoServiceImpl implements PhotoService {
                     timeMap.put("time",time);
                     timeMap.put("photos",photosListMap);
                     listReturn.add(timeMap);
-                    timeMap.clear();
-                    photosListMap.clear();
+                    timeMap = new HashMap<>();
+                    photosListMap = new ArrayList<>();
                     break;
                 }
             }
-            if(new SimpleDateFormat("yyyy-MM").format(photos.get(i).getOriginalTime()).equals(time))
+            if(new SimpleDateFormat("yyyy年MM月").format(photos.get(i).getOriginalTime()).equals(time))
             {
                 Map<String, Object> map = new HashMap<>();
                 map.put("photoId",photos.get(i).getPhotoId());
@@ -935,7 +935,7 @@ public class PhotoServiceImpl implements PhotoService {
             {
                 if(firstCycleFlag)
                 {
-                    time = new SimpleDateFormat("yyyy-MM").format(photos.get(i).getOriginalTime());
+                    time = new SimpleDateFormat("yyyy年MM月").format(photos.get(i).getOriginalTime());
                     firstCycleFlag = false;
                     Map<String, Object> map = new HashMap<>();
                     map.put("photoId",photos.get(i).getPhotoId());
@@ -961,11 +961,11 @@ public class PhotoServiceImpl implements PhotoService {
                 else
                 {
                     timeMap.put("time",time);
-                    time = new SimpleDateFormat("yyyy-MM").format(photos.get(i).getOriginalTime());
+                    time = new SimpleDateFormat("yyyy年MM月").format(photos.get(i).getOriginalTime());
                     timeMap.put("photos",photosListMap);
                     listReturn.add(timeMap);
-                    timeMap.clear();
-                    photosListMap.clear();
+                    timeMap = new HashMap<>();
+                    photosListMap = new ArrayList<>();
                 }
             }
         }
@@ -974,8 +974,8 @@ public class PhotoServiceImpl implements PhotoService {
             timeMap.put("time",time);
             timeMap.put("photos",photosListMap);
             listReturn.add(timeMap);
-            timeMap.clear();
-            photosListMap.clear();
+            timeMap = new HashMap<>();
+            photosListMap = new ArrayList<>();
         }
         for(;i<photos.size();i++)
         {
