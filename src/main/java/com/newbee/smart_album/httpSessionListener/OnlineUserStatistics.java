@@ -11,14 +11,18 @@ public class OnlineUserStatistics implements HttpSessionListener {
 
     @Override
     public void sessionCreated(HttpSessionEvent se) {
-        onlineUserCount++;
-        se.getSession().setAttribute("onlineUserCount",onlineUserCount);
+        synchronized(this) {
+            onlineUserCount++;
+            se.getSession().setAttribute("onlineUserCount", onlineUserCount);
+        }
     }
 
     @Override
     public void sessionDestroyed(HttpSessionEvent se) {
-        onlineUserCount--;
-        se.getSession().setAttribute("onlineUserCount",onlineUserCount);
+        synchronized(this) {
+            onlineUserCount--;
+            se.getSession().setAttribute("onlineUserCount", onlineUserCount);
+        }
     }
 
 }
