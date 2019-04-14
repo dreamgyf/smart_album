@@ -48,4 +48,6 @@ public interface PhotoMapper {
     List<Integer> selectPhotoIdLikeName(List<String> keyword);
 
     List<Photo> selectAllPhotoNotInRecycleBinByUserIdOrderByOriginalTimeAndUploadTimeDesc(@Param("userId") int userId);
+
+    List<Photo> selectOrderByLikesLimit(@Param("limit") int limit);
 }

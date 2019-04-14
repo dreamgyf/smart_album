@@ -222,4 +222,11 @@ public class PhotoController {
         int userId = Integer.parseInt(userIdObject.toString());
         return photoService.timeline(userId);
     }
+
+    @RequestMapping(value = "/recommend")
+    public List<Map<String,Object>> recommend(HttpServletRequest request)
+    {
+        Object userIdObject = request.getSession().getAttribute("userId");
+        return photoService.recommend(userIdObject);
+    }
 }

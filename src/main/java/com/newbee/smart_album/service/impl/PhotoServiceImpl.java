@@ -1008,5 +1008,40 @@ public class PhotoServiceImpl implements PhotoService {
         }
         return listReturn;
     }
+
+    @Override
+    public List<Map<String, Object>> recommend(Object userIdObject) {
+        List<Map<String, Object>> listMap = new ArrayList<>();
+        List<Photo> photos = photoMapper.selectOrderByLikesLimit(50);
+        for(Photo photo : photos)
+        {
+            Map<String,Object> map = new HashMap<>();
+            map.put("photoId",photo.getPhotoId());
+            map.put("name",photo.getName());
+            map.put("description",photo.getDescription());
+            map.put("albumId",photo.getAlbumId());
+            map.put("likes",photo.getLikes());
+            map.put("size",photo.getSize());
+            map.put("width",photo.getWidth());
+            map.put("height",photo.getHeight());
+            map.put("originalTime",photo.getOriginalTime());
+            map.put("uploadTime",photo.getUploadTime());
+            if(userIdObject == null)
+                map.put("userLike",0);
+            else
+            {
+                map.put("userLike",(userLikePhotoMapper.selectUserLikePhotoIdByUserIdAndPhotoId(Integer.parseInt(userIdObject.toString()),photo.getPhotoId()) == null) ? 0 : 1);
+            }
+            List<String> photoTagList = new ArrayList<>();
+            List<Integer> photoTagIdList = photoTagRelationMapper.selectTagIdByPhotoId(photo.getPhotoId());
+            for(int tagId : photoTagIdList)
+            {
+                photoTagList.add(tagMapper.selectNameByTagId(tagId));
+            }
+            map.put("tags",photoTagList);
+            listMap.add(map);
+        }
+        return listMap;
+    }
 }
 

@@ -95,4 +95,9 @@
         select photo_id,name,suffix,path,description,information,user_id,album_id,likes,is_public,size,width,height,in_recycle_bin,original_time,upload_time,delete_time
         from photo where user_id=#{userId} and in_recycle_bin=0 order by original_time desc,upload_time desc
     </select>
+
+    <select id="selectOrderByLikesLimit" resultType="com.newbee.smart_album.entity.Photo">
+        select photo_id,name,suffix,path,description,information,user_id,album_id,likes,is_public,size,width,height,in_recycle_bin,original_time,upload_time,delete_time
+        from photo where is_public=1 and in_recycle_bin=0 order by likes limit #{limit}
+    </select>
 </mapper>
