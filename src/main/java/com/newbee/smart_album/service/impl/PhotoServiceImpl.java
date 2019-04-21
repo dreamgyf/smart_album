@@ -790,17 +790,19 @@ public class PhotoServiceImpl implements PhotoService {
     }
 
     @Override
-    public void like(int userId, int photoId) {
+    public String like(int userId, int photoId) {
         Long userLikePhotoId = userLikePhotoMapper.selectUserLikePhotoIdByUserIdAndPhotoId(userId,photoId);
         if(userLikePhotoId == null)
         {
             userLikePhotoMapper.insert(userId,photoId);
             photoMapper.updateLikesByPhotoId(photoId,1);
+            return "like success";
         }
         else
         {
             userLikePhotoMapper.deleteByUserLikePhotoId(userLikePhotoId);
             photoMapper.updateLikesByPhotoId(photoId,-1);
+            return "like failed";
         }
     }
 

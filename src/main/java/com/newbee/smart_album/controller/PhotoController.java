@@ -190,16 +190,15 @@ public class PhotoController {
         return photoService.globalSearch(userIdObject,keyword,page);
     }
 
-    @RequestMapping(value = "/like",method = RequestMethod.GET)
+    @RequestMapping(value = "/like")
     public Map<String,String> like(@RequestParam int photoId,HttpServletRequest request)
     {
         Object userIdObject = request.getSession().getAttribute("userId");
         if(userIdObject == null)
             throw new NotLogInException();
         int userId = Integer.parseInt(userIdObject.toString());
-        photoService.like(userId,photoId);
         Map<String,String> mapReturn = new HashMap<>();
-        mapReturn.put("status","ok");
+        mapReturn.put("status",photoService.like(userId,photoId));
         return mapReturn;
     }
 

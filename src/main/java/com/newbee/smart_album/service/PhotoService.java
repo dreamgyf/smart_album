@@ -36,7 +36,7 @@ public interface PhotoService {
 
     Map<String,Object> globalSearch(Object userIdObject,String keyword,int page);
 
-    void like(int userId,int photoId);
+    String like(int userId,int photoId);
 
     Map<String,Object> personalSearch(int userId,String keyword,int page);
 
