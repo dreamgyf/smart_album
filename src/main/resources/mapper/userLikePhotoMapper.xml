@@ -5,6 +5,8 @@
 
 <mapper namespace="com.newbee.smart_album.dao.mapper.UserLikePhotoMapper">
 
+    <cache type="com.newbee.smart_album.dao.config.RedisConfig"/>
+
     <select id="selectUserLikePhotoIdByUserIdAndPhotoId" resultType="Long">
         select user_like_photo_id from user_like_photo where user_id=#{userId} and photo_id=#{photoId} limit 1
     </select>

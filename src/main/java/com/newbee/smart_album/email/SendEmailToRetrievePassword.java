@@ -15,7 +15,7 @@ public class SendEmailToRetrievePassword {
 
     private final String FROM = "497163175@qq.com";
 
-    private final String DOMAIN = "http://localhost:3000";
+    private final String DOMAIN = "http://www.newbee.cf:3000";
 
     private final String ROUTE = "/retrievePassword";
 

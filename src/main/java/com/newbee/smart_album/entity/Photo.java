@@ -1,8 +1,9 @@
 package com.newbee.smart_album.entity;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 
-public class Photo {
+public class Photo implements Serializable {
 
     private int photoId;
 

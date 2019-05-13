@@ -1,6 +1,8 @@
 package com.newbee.smart_album.entity;
 
-public class User {
+import java.io.Serializable;
+
+public class User implements Serializable {
     private int userId;
 
     private String username;

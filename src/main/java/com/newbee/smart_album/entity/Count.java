@@ -1,6 +1,8 @@
 package com.newbee.smart_album.entity;
 
-public class Count {
+import java.io.Serializable;
+
+public class Count implements Serializable {
 
     private int successCount = 0;
 

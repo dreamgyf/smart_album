@@ -5,6 +5,8 @@
 
 <mapper namespace="com.newbee.smart_album.dao.mapper.PhotoTagRelationMapper">
 
+    <cache type="com.newbee.smart_album.dao.config.RedisConfig"/>
+
     <insert id="insert">
         insert into photo_tag_relation (photo_id,tag_id,score) values (#{photoId},#{tagId},#{score})
     </insert>

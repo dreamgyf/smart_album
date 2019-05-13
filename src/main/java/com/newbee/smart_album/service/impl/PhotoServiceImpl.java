@@ -1,11 +1,5 @@
 package com.newbee.smart_album.service.impl;
 
-import com.drew.imaging.ImageMetadataReader;
-import com.drew.imaging.ImageProcessingException;
-import com.drew.metadata.Directory;
-import com.drew.metadata.Metadata;
-import com.drew.metadata.Tag;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.newbee.smart_album.dao.mapper.*;
 import com.newbee.smart_album.entity.Count;
 import com.newbee.smart_album.entity.Photo;
@@ -16,7 +10,6 @@ import com.newbee.smart_album.service.AsyncTaskService;
 import com.newbee.smart_album.service.PhotoService;
 import com.newbee.smart_album.tools.PhotoTool;
 import com.newbee.smart_album.tools.ZipTool;
-import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -108,96 +101,99 @@ public class PhotoServiceImpl implements PhotoService {
                 throw new UploadFailedException();//上传失败,文件创建失败
         }
         file.transferTo(uploadFile);
-        //压缩并保存
-        String thumbnailPath = photoTool.THUMBNAIL_DIR + userId + "/" + UUID.randomUUID() + "." + suffix;
-        File thumbnailFile = new File(photoTool.LOCAL_DIR + thumbnailPath);
-        if(!thumbnailFile.getParentFile().exists())
-        {
-            if(!thumbnailFile.getParentFile().mkdirs())
-                throw new UploadFailedException();//上传失败,文件创建失败
-        }
-        Thumbnails.of(uploadFile).scale(0.5).outputQuality(0.5).toFile(thumbnailFile);
-        photo.setThumbnailPath(thumbnailPath);
-        //如果是jpeg格式的图片，处理EXIF信息
-        if(photoTool.isJpeg(suffix))
-        {
-            try {
-                Metadata metadata = ImageMetadataReader.readMetadata(uploadFile);
-                Map<String,String> map = new HashMap<>();
-                for (Directory directory : metadata.getDirectories())
-                {
-                    for (Tag tag : directory.getTags())
-                    {
-                        map.put(tag.getTagName(),tag.getDescription());
-                        if(tag.getTagName().equals("Date/Time Original"))
-                        {
-                            photo.setOriginalTime(photoTool.exifTimeToTimestamp(tag.getDescription()));
-                        }
-                    }
-                }
-                //MAP转JSON,并写入photo对象
-                ObjectMapper objectMapper = new ObjectMapper();
-                photo.setInformation(objectMapper.writeValueAsString(map));
-            } catch (ImageProcessingException e) {
-                e.printStackTrace();
-            }
-        }
-//        else if(photoTool.is_png(suffix)) {
+
+        asyncTaskService.photoUploadTask(userId,albumId,fileName.substring(0,dot),suffix,uploadPath,uploadFile,photo);
+
+//        //压缩并保存
+//        String thumbnailPath = photoTool.THUMBNAIL_DIR + userId + "/" + UUID.randomUUID() + "." + suffix;
+//        File thumbnailFile = new File(photoTool.LOCAL_DIR + thumbnailPath);
+//        if(!thumbnailFile.getParentFile().exists())
+//        {
+//            if(!thumbnailFile.getParentFile().mkdirs())
+//                throw new UploadFailedException();//上传失败,文件创建失败
+//        }
+//        Thumbnails.of(uploadFile).scale(0.5).outputQuality(0.5).toFile(thumbnailFile);
+//        photo.setThumbnailPath(thumbnailPath);
+//        //如果是jpeg格式的图片，处理EXIF信息
+//        if(photoTool.isJpeg(suffix))
+//        {
 //            try {
 //                Metadata metadata = ImageMetadataReader.readMetadata(uploadFile);
+//                Map<String,String> map = new HashMap<>();
 //                for (Directory directory : metadata.getDirectories())
 //                {
 //                    for (Tag tag : directory.getTags())
 //                    {
-//                        if(tag.getTagName().equals("File Modified Date"))
+//                        map.put(tag.getTagName(),tag.getDescription());
+//                        if(tag.getTagName().equals("Date/Time Original"))
 //                        {
-//                            photo.setOriginal_time(photoTool.pngTimeToTimestamp(tag.getDescription()));
+//                            photo.setOriginalTime(photoTool.exifTimeToTimestamp(tag.getDescription()));
 //                        }
 //                    }
 //                }
+//                //MAP转JSON,并写入photo对象
+//                ObjectMapper objectMapper = new ObjectMapper();
+//                photo.setInformation(objectMapper.writeValueAsString(map));
 //            } catch (ImageProcessingException e) {
 //                e.printStackTrace();
 //            }
 //        }
-        photo.setWidth(image.getWidth());
-        photo.setHeight(image.getHeight());
-        photo.setUserId(userId);
-        photo.setDescription(description);
-        photo.setLikes(0);
-        photo.setAlbumId(albumId);
-        photo.setIsPublic(isPublic);
-        photo.setInRecycleBin(0);
-        photo.setPath(uploadPath);
-        photo.setUploadTime(new Timestamp(System.currentTimeMillis()));
-        //将photo对象写入数据库
-        photoMapper.insert(photo);
-        //更新已用空间
-        userMapper.updateUsedSpaceByUserId(userId,fileSizeB);
-        //更新用户照片数量
-        userMapper.updatePhotoAmountByUserId(userId,1);
-        //更新相册信息
-        albumMapper.updatePhotoAmountByAlbumId(albumId,1);
-        albumMapper.updateLastEditTimeByAlbumId(albumId,new Timestamp(System.currentTimeMillis()));
-        //图片AI智能识别标签
-        String tagJsonString = baidu.photoTagIdentification(thumbnailFile,suffix);
-        List<Map<String,Object>> tagList = baidu.photoTag(tagJsonString);
-        int photoId = photoMapper.selectPhotoIdByPath(uploadPath);
-        for(Map<String,Object> tag : tagList)
-        {
-            if(tagMapper.selectExistByName(tag.get("keyword").toString()) == null)
-                tagMapper.insert(tag.get("keyword").toString());
-            int tagId = tagMapper.selectTagIdByName(tag.get("keyword").toString());
-            photoTagRelationMapper.insert(photoId,tagId,Double.parseDouble(tag.get("score").toString()));
-        }
-        //添加用户自定义的标签
-        for(String tag : tags)
-        {
-            if(tagMapper.selectExistByName(tag) == null)
-                tagMapper.insert(tag);
-            int tagId = tagMapper.selectTagIdByName(tag);
-            if(photoTagRelationMapper.selectExistByPhotoIdAndTagId(photoId,tagId) == null)
-                photoTagRelationMapper.insert(photoId,tagId,1);
-        }
+////        else if(photoTool.is_png(suffix)) {
+////            try {
+////                Metadata metadata = ImageMetadataReader.readMetadata(uploadFile);
+////                for (Directory directory : metadata.getDirectories())
+////                {
+////                    for (Tag tag : directory.getTags())
+////                    {
+////                        if(tag.getTagName().equals("File Modified Date"))
+////                        {
+////                            photo.setOriginal_time(photoTool.pngTimeToTimestamp(tag.getDescription()));
+////                        }
+////                    }
+////                }
+////            } catch (ImageProcessingException e) {
+////                e.printStackTrace();
+////            }
+////        }
+//        photo.setWidth(image.getWidth());
+//        photo.setHeight(image.getHeight());
+//        photo.setUserId(userId);
+//        photo.setDescription(description);
+//        photo.setLikes(0);
+//        photo.setAlbumId(albumId);
+//        photo.setIsPublic(isPublic);
+//        photo.setInRecycleBin(0);
+//        photo.setPath(uploadPath);
+//        photo.setUploadTime(new Timestamp(System.currentTimeMillis()));
+//        //将photo对象写入数据库
+//        photoMapper.insert(photo);
+//        //更新已用空间
+//        userMapper.updateUsedSpaceByUserId(userId,fileSizeB);
+//        //更新用户照片数量
+//        userMapper.updatePhotoAmountByUserId(userId,1);
+//        //更新相册信息
+//        albumMapper.updatePhotoAmountByAlbumId(albumId,1);
+//        albumMapper.updateLastEditTimeByAlbumId(albumId,new Timestamp(System.currentTimeMillis()));
+//        //图片AI智能识别标签
+//        String tagJsonString = baidu.photoTagIdentification(thumbnailFile,suffix);
+//        List<Map<String,Object>> tagList = baidu.photoTag(tagJsonString);
+//        int photoId = photoMapper.selectPhotoIdByPath(uploadPath);
+//        for(Map<String,Object> tag : tagList)
+//        {
+//            if(tagMapper.selectExistByName(tag.get("keyword").toString()) == null)
+//                tagMapper.insert(tag.get("keyword").toString());
+//            int tagId = tagMapper.selectTagIdByName(tag.get("keyword").toString());
+//            photoTagRelationMapper.insert(photoId,tagId,Double.parseDouble(tag.get("score").toString()));
+//        }
+//        //添加用户自定义的标签
+//        for(String tag : tags)
+//        {
+//            if(tagMapper.selectExistByName(tag) == null)
+//                tagMapper.insert(tag);
+//            int tagId = tagMapper.selectTagIdByName(tag);
+//            if(photoTagRelationMapper.selectExistByPhotoIdAndTagId(photoId,tagId) == null)
+//                photoTagRelationMapper.insert(photoId,tagId,1);
+//        }
     }
 
     @Override
@@ -1014,7 +1010,7 @@ public class PhotoServiceImpl implements PhotoService {
     @Override
     public List<Map<String, Object>> recommend(Object userIdObject) {
         List<Map<String, Object>> listMap = new ArrayList<>();
-        List<Photo> photos = photoMapper.selectOrderByLikesLimit(50);
+        List<Photo> photos = photoMapper.selectOrderByLikesLimit(36);
         for(Photo photo : photos)
         {
             Map<String,Object> map = new HashMap<>();
