@@ -114,7 +114,7 @@
 > Commons codec  
 > Thumbnailator&nbsp;&nbsp;&nbsp;&nbsp;//图片压缩
 ### 项目展示
-项目已部署，[点击这里](http://www.newbee.cf:3000/)访问，服务器带宽只有1Mbps比较慢，请见谅。
+项目已部署，[点击这里](http://dreamgyf.me:3000/)访问，服务器带宽只有1Mbps比较慢，请见谅。
 ### 项目部署
 1. 前端部分  
 `git clone https://github.com/jueinin/smart-album-frontend.git`  
