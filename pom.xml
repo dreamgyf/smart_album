@@ -58,7 +58,7 @@
         <dependency>
             <groupId>com.drewnoakes</groupId>
             <artifactId>metadata-extractor</artifactId>
-            <version>2.11.0</version>
+            <version>2.18.0</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.github.jai-imageio/jai-imageio-core -->
         <dependency>
